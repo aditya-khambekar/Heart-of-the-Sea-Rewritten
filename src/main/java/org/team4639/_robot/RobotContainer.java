@@ -22,8 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
 import org.team4639._lib.oi.OI;
-import org.team4639.commands.drive.DriveCommands;
-import org.team4639.commands.drive.DriveTriggers;
+import org.team4639.commands.DriveCommands;
 import org.team4639.constants.FieldConstants;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
@@ -36,6 +35,7 @@ import org.team4639.subsystems.vision.*;
 import org.team4639.subsystems.vision.VisionIO;
 import org.team4639.subsystems.vision.VisionIOLimelight;
 import org.team4639.subsystems.vision.VisionIOPhotonVisionSim;
+import org.team4639.modaltriggers.DriveTriggers;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a

@@ -1,4 +1,4 @@
-package org.team4639.commands.drive;
+package org.team4639.modaltriggers;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team4639._robot.Subsystems;
