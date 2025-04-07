@@ -1,8 +1,8 @@
 package org.team4639.commands.drive;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import org.team4639.constants.FieldConstants;
 import org.team4639._robot.Subsystems;
+import org.team4639.constants.FieldConstants;
 
 public class DriveTriggers {
   public static Trigger closeToLeftStation =

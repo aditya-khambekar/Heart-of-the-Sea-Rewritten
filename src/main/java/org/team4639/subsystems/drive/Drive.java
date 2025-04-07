@@ -54,10 +54,10 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.team4639.Constants;
 import org.team4639.Constants.Mode;
-import org.team4639.subsystems.drive.generated.TunerConstants;
-import org.team4639.subsystems.vision.RawVisionPoses;
-import org.team4639.subsystems.vision.Vision;
 import org.team4639._util.LocalADStarAK;
+import org.team4639.subsystems.drive.generated.TunerConstants;
+import org.team4639.subsystems.vision.Vision;
+import org.team4639.subsystems.vision.VisionPoses;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   // TunerConstants doesn't include these org.team4639.constants, so they are declared locally
@@ -223,9 +223,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
     field.setRobotPose(getPose());
-    field
-        .getObject("Vision Pose")
-        .setPose(RawVisionPoses.frontCamerasPoseEstimate.getPoseEstimate());
+    field.getObject("Vision Pose").setPose(VisionPoses.frontCamerasPoseEstimate.getPoseEstimate());
     SmartDashboard.putData("Field", field);
   }
 

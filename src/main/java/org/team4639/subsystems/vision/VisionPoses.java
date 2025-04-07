@@ -9,7 +9,7 @@ import edu.wpi.first.math.numbers.N3;
 import java.util.stream.IntStream;
 import org.team4639.subsystems.vision.Vision.VisionConsumer;
 
-public class RawVisionPoses {
+public class VisionPoses {
   public static LinearFilterPoseEstimator frontCamerasPoseEstimate =
       new LinearFilterPoseEstimator(1, 2);
 

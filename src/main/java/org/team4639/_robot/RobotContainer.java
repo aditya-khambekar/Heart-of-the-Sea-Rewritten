@@ -14,7 +14,6 @@
 package org.team4639._robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import org.team4639.constants.FieldConstants;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,9 +21,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
+import org.team4639._lib.oi.OI;
 import org.team4639.commands.drive.DriveCommands;
 import org.team4639.commands.drive.DriveTriggers;
-import org.team4639._lib.oi.OI;
+import org.team4639.constants.FieldConstants;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
 import org.team4639.subsystems.drive.GyroIOPigeon2;
@@ -113,7 +113,7 @@ public class RobotContainer {
     }
 
     VisionUpdates.addConsumer(Subsystems.drive);
-    VisionUpdates.addConsumer(RawVisionPoses.frontCamerasPoseEstimate);
+    VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
