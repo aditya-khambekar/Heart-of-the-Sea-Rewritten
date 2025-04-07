@@ -12,9 +12,9 @@ public class RawVisionPoses {
   public LinearFilterPoseEstimator frontCameras = new LinearFilterPoseEstimator(1, 2);
 
   public static class LinearFilterPoseEstimator {
-    private LinearFilter xFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
-    private LinearFilter yFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
-    private LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+    private final LinearFilter xFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+    private final LinearFilter yFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+    private final LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
     int[] acceptedIndices;
 
     private Pose2d poseEstimate = new Pose2d();

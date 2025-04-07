@@ -34,7 +34,7 @@ import org.team4639.subsystems.drive.generated.TunerConstants;
  */
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
-  private RobotContainer robotContainer;
+  private final RobotContainer robotContainer;
 
   public Robot() {
     // Record metadata
