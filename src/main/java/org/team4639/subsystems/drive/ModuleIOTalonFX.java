@@ -13,7 +13,7 @@
 
 package org.team4639.subsystems.drive;
 
-import static org.team4639.util.PhoenixUtil.*;
+import static org.team4639._util.PhoenixUtil.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;

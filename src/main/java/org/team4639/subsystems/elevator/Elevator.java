@@ -3,10 +3,10 @@ import com.ctre.phoenix6.controls.Follower;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import org.team4639.lib.motorcontrol.generic.NeutralMode;
-import org.team4639.lib.motorcontrol.talonfx.RSTalonFX;
-import org.team4639.lib.motorcontrol.talonfx.RSTalonFXTemplate;
-import org.team4639.lib.subsystem.RSSubsystem;
+import org.team4639._lib.motorcontrol.generic.NeutralMode;
+import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
+import org.team4639._lib.motorcontrol.talonfx.RSTalonFXTemplate;
+import org.team4639._lib.subsystem.RSSubsystem;
 
 import static org.team4639.constants.IDs.*;
 

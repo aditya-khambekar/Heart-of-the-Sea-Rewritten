@@ -57,7 +57,7 @@ import org.team4639.Constants.Mode;
 import org.team4639.subsystems.drive.generated.TunerConstants;
 import org.team4639.subsystems.vision.RawVisionPoses;
 import org.team4639.subsystems.vision.Vision;
-import org.team4639.util.LocalADStarAK;
+import org.team4639._util.LocalADStarAK;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   // TunerConstants doesn't include these org.team4639.constants, so they are declared locally

@@ -24,7 +24,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
 import org.team4639.commands.drive.DriveCommands;
 import org.team4639.commands.drive.DriveTriggers;
-import org.team4639.lib.oi.OI;
+import org.team4639._lib.oi.OI;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
 import org.team4639.subsystems.drive.GyroIOPigeon2;
