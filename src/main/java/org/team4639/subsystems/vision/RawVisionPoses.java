@@ -7,14 +7,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import java.util.stream.IntStream;
+import org.team4639.subsystems.vision.Vision.VisionConsumer;
 
 public class RawVisionPoses {
-  public LinearFilterPoseEstimator frontCameras = new LinearFilterPoseEstimator(1, 2);
+  public static LinearFilterPoseEstimator frontCamerasPoseEstimate =
+      new LinearFilterPoseEstimator(1, 2);
 
-  public static class LinearFilterPoseEstimator {
-    private final LinearFilter xFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
-    private final LinearFilter yFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
-    private final LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.1, 0.02);
+  public static class LinearFilterPoseEstimator implements VisionConsumer {
+    private final LinearFilter xFilter = LinearFilter.singlePoleIIR(0.06, 0.02);
+    private final LinearFilter yFilter = LinearFilter.singlePoleIIR(0.06, 0.02);
+    private final LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.06, 0.02);
     int[] acceptedIndices;
 
     private Pose2d poseEstimate = new Pose2d();

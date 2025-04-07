@@ -54,8 +54,8 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.team4639.Constants;
 import org.team4639.Constants.Mode;
-import org.team4639.FieldConstants;
 import org.team4639.subsystems.drive.generated.TunerConstants;
+import org.team4639.subsystems.vision.RawVisionPoses;
 import org.team4639.subsystems.vision.Vision;
 import org.team4639.util.LocalADStarAK;
 
@@ -163,10 +163,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
-
-    field
-        .getObject("Reef Center")
-        .setPose(new Pose2d(FieldConstants.Reef.center, Rotation2d.kZero));
   }
 
   @Override
@@ -227,6 +223,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
     field.setRobotPose(getPose());
+    field
+        .getObject("Vision Pose")
+        .setPose(RawVisionPoses.frontCamerasPoseEstimate.getPoseEstimate());
     SmartDashboard.putData("Field", field);
   }
 

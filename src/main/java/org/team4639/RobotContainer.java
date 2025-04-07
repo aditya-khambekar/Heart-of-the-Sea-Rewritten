@@ -110,6 +110,9 @@ public class RobotContainer {
         break;
     }
 
+    VisionUpdates.addConsumer(Subsystems.drive);
+    VisionUpdates.addConsumer(RawVisionPoses.frontCamerasPoseEstimate);
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
