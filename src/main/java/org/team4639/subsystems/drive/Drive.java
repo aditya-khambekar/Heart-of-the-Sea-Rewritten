@@ -60,7 +60,7 @@ import org.team4639.subsystems.vision.Vision;
 import org.team4639.util.LocalADStarAK;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer {
-  // TunerConstants doesn't include these constants, so they are declared locally
+  // TunerConstants doesn't include these org.team4639.constants, so they are declared locally
   static final double ODOMETRY_FREQUENCY =
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
@@ -72,7 +72,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
               Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
               Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
-  // PathPlanner config constants
+  // PathPlanner config org.team4639.constants
   private static final double ROBOT_MASS_KG = 114.9;
   private static final double ROBOT_MOI = 3.97;
   private static final double WHEEL_COF = 1.5;

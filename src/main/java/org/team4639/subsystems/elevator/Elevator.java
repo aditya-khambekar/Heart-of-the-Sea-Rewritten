@@ -1,7 +1,5 @@
 package org.team4639.subsystems.elevator;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import constants.IDs;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -10,7 +8,7 @@ import org.team4639.lib.motorcontrol.talonfx.RSTalonFX;
 import org.team4639.lib.motorcontrol.talonfx.RSTalonFXTemplate;
 import org.team4639.lib.subsystem.RSSubsystem;
 
-import static constants.IDs.*;
+import static org.team4639.constants.IDs.*;
 
 public class Elevator extends RSSubsystem implements Sendable {
     private final RSTalonFX leftMotor;

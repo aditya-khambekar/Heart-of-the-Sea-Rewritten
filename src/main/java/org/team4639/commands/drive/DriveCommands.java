@@ -164,7 +164,7 @@ public class DriveCommands {
   }
 
   /**
-   * Measures the velocity feedforward constants for the drive motors.
+   * Measures the velocity feedforward org.team4639.constants for the drive motors.
    *
    * <p>This command should only be used in voltage control mode.
    */

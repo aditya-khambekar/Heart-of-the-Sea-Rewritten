@@ -27,10 +27,10 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 /**
  * Physics sim implementation of module IO. The sim models are configured using a set of module
- * constants from Phoenix. Simulation is always based on voltage control.
+ * org.team4639.constants from Phoenix. Simulation is always based on voltage control.
  */
 public class ModuleIOSim implements ModuleIO {
-  // TunerConstants doesn't support separate sim constants, so they are declared locally
+  // TunerConstants doesn't support separate sim org.team4639.constants, so they are declared locally
   private static final double DRIVE_KP = 0.05;
   private static final double DRIVE_KD = 0.0;
   private static final double DRIVE_KS = 0.0;

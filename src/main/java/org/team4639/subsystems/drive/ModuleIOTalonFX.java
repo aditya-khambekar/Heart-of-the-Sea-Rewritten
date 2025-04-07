@@ -45,7 +45,7 @@ import org.team4639.subsystems.drive.generated.TunerConstants;
 
 /**
  * Module IO implementation for Talon FX drive motor controller, Talon FX turn motor controller, and
- * CANcoder. Configured using a set of module constants from Phoenix.
+ * CANcoder. Configured using a set of module org.team4639.constants from Phoenix.
  *
  * <p>Device configuration and other behaviors not exposed by TunerConstants can be customized here.
  */

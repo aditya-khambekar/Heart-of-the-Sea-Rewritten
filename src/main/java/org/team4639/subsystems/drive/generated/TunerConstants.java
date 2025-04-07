@@ -235,12 +235,12 @@ public class TunerConstants {
   /** Swerve Drive class utilizing CTR Electronics' Phoenix 6 API with the selected device types. */
   public static class TunerSwerveDrivetrain extends SwerveDrivetrain<TalonFX, TalonFX, CANcoder> {
     /**
-     * Constructs a CTRE SwerveDrivetrain using the specified constants.
+     * Constructs a CTRE SwerveDrivetrain using the specified org.team4639.constants.
      *
      * <p>This constructs the underlying hardware devices, so users should not construct the devices
      * themselves. If they need the devices, they can access them through getters in the classes.
      *
-     * @param drivetrainConstants Drivetrain-wide constants for the swerve drive
+     * @param drivetrainConstants Drivetrain-wide org.team4639.constants for the swerve drive
      * @param modules Constants for each specific module
      */
     public TunerSwerveDrivetrain(

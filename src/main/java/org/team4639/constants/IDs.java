@@ -1,4 +1,4 @@
-package constants;
+package org.team4639.constants;
 
 //TODO: get IDS
 public class IDs {

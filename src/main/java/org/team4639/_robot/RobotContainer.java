@@ -11,10 +11,10 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package _robot;
+package org.team4639._robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import constants.FieldConstants;
+import org.team4639.constants.FieldConstants;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
