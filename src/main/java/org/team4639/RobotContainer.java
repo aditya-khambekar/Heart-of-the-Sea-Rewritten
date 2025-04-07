@@ -31,6 +31,9 @@ import org.team4639.subsystems.drive.ModuleIOSim;
 import org.team4639.subsystems.drive.ModuleIOTalonFX;
 import org.team4639.subsystems.drive.generated.TunerConstants;
 import org.team4639.subsystems.vision.*;
+import org.team4639.subsystems.vision.VisionIO;
+import org.team4639.subsystems.vision.VisionIOLimelight;
+import org.team4639.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -60,11 +63,13 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        Subsystems.vision = new Vision(
+        Subsystems.vision =
+            new Vision(
                 VisionUpdates.getInstance(),
-                new VisionIOLimelight(VisionConstants.cameraLeftName, Subsystems.drive::getRotation),
-                new VisionIOLimelight(VisionConstants.cameraRightName, Subsystems.drive::getRotation)
-        );
+                new VisionIOLimelight(
+                    VisionConstants.cameraLeftName, Subsystems.drive::getRotation),
+                new VisionIOLimelight(
+                    VisionConstants.cameraRightName, Subsystems.drive::getRotation));
         break;
 
       case SIM:
@@ -77,11 +82,17 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
 
-        Subsystems.vision = new Vision(
+        Subsystems.vision =
+            new Vision(
                 VisionUpdates.getInstance(),
-                new VisionIOPhotonVisionSim(VisionConstants.cameraLeftName, VisionConstants.robotToCameraLeft, Subsystems.drive::getPose),
-                new VisionIOPhotonVisionSim(VisionConstants.cameraRightName, VisionConstants.robotToCameraRight, Subsystems.drive::getPose)
-        );
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.cameraLeftName,
+                    VisionConstants.robotToCameraLeft,
+                    Subsystems.drive::getPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.cameraRightName,
+                    VisionConstants.robotToCameraRight,
+                    Subsystems.drive::getPose));
         break;
 
       default:
@@ -94,11 +105,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
 
-        Subsystems.vision = new Vision(
-                VisionUpdates.getInstance(),
-                new VisionIO() {},
-                new VisionIO() {}
-        );
+        Subsystems.vision =
+            new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
         break;
     }
 
