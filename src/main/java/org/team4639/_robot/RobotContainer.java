@@ -24,6 +24,7 @@ import org.team4639.Constants;
 import org.team4639._lib.oi.OI;
 import org.team4639.commands.DriveCommands;
 import org.team4639.constants.FieldConstants;
+import org.team4639.modaltriggers.DriveTriggers;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
 import org.team4639.subsystems.drive.GyroIOPigeon2;
@@ -31,11 +32,14 @@ import org.team4639.subsystems.drive.ModuleIO;
 import org.team4639.subsystems.drive.ModuleIOSim;
 import org.team4639.subsystems.drive.ModuleIOTalonFX;
 import org.team4639.subsystems.drive.generated.TunerConstants;
+import org.team4639.subsystems.elevator.Elevator;
+import org.team4639.subsystems.elevator.ElevatorIO;
+import org.team4639.subsystems.elevator.ElevatorIOHardware;
+import org.team4639.subsystems.elevator.ElevatorIOSim;
 import org.team4639.subsystems.vision.*;
 import org.team4639.subsystems.vision.VisionIO;
 import org.team4639.subsystems.vision.VisionIOLimelight;
 import org.team4639.subsystems.vision.VisionIOPhotonVisionSim;
-import org.team4639.modaltriggers.DriveTriggers;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -72,6 +76,8 @@ public class RobotContainer {
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation));
+
+        Subsystems.elevator = new Elevator(new ElevatorIOHardware());
         break;
 
       case SIM:
@@ -95,6 +101,8 @@ public class RobotContainer {
                     VisionConstants.cameraRightName,
                     VisionConstants.robotToCameraRight,
                     Subsystems.drive::getPose));
+
+        Subsystems.elevator = new Elevator(new ElevatorIOSim());
         break;
 
       default:
@@ -109,6 +117,8 @@ public class RobotContainer {
 
         Subsystems.vision =
             new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
+
+        Subsystems.elevator = new Elevator(new ElevatorIO() {});
         break;
     }
 
