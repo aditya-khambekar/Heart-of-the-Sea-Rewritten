@@ -1,6 +1,7 @@
 package org.team4639.subsystems.scoring;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.team4639.constants.IDs;
 import org.team4639.subsystems.scoring.ScoringIO.ScoringIOInputs;
 
 import com.revrobotics.spark.SparkMax;
@@ -20,7 +21,7 @@ public class Scoring extends SubsystemBase{
     private final Debouncer algaeCurrentLimitDebouncer;
 
     public Scoring(ScoringIO io){
-        scoringMotor = new SparkMax(0, MotorType.kBrushless);
+        scoringMotor = new SparkMax(IDs.SCORING_MOTOR, MotorType.kBrushless);
         this.inputs = new ScoringIOInputsAutoLogged();
         this.io = io;
         io.sendSparkMaxData(scoringMotor);
