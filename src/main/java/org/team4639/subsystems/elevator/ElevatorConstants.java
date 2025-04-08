@@ -40,6 +40,8 @@ public class ElevatorConstants {
   public static double UP_POSITION = 64;
   public static double DOWN_POSITION = -0.7;
 
+  public static double ELEVATOR_TOLERANCE = 0.5;
+
   public static final UnitConvertor<Double, Double> ProportionToPosition =
       UnitConvertor.linearConvertingRange(0, 1, DOWN_POSITION, UP_POSITION);
 }

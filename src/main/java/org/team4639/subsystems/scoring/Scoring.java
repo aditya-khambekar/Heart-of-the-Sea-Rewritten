@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Scoring extends SubsystemBase{
+    //TODO: add LaserCAN here
+
     private final SparkMax scoringMotor;
     private final ScoringIOInputsAutoLogged inputs;
     private final ScoringIO io;

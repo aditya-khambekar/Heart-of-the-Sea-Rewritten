@@ -12,6 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.sendable.Sendable;
@@ -29,13 +30,14 @@ import org.team4639._lib.motorcontrol.generic.NeutralMode;
 import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
 import org.team4639._lib.motorcontrol.talonfx.RSTalonFXTemplate;
 import org.team4639._lib.subsystem.RSSubsystem;
+import org.team4639.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
 public class Elevator extends RSSubsystem implements Sendable {
   private final TalonFX leftMotor;
   private final TalonFX rightMotor;
   public double setpointEncoderValue;
 
-  private ElevatorIOInputsAutoLogged inputs;
+  private ElevatorIOInputs inputs;
   private final ElevatorIO io;
 
   private final LoggedMechanism2d elevatorView;
@@ -171,5 +173,9 @@ public class Elevator extends RSSubsystem implements Sendable {
     elevatorViewLigament.setLength(ElevatorConstants.ProportionToPosition.convertBackwards(setpointEncoderValue) * 3);
     SmartDashboard.putData(elevatorView);
     return run(() -> leftMotor.setControl(new MotionMagicVoltage(this.setpointEncoderValue)));
+  }
+
+  public boolean atPosition() {
+      return MathUtil.isNear(setpointEncoderValue, inputs.encoderMeasurement, ElevatorConstants.ELEVATOR_TOLERANCE);
   }
 }
