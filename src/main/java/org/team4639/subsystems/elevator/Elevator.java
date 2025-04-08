@@ -11,24 +11,15 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-import org.team4639._lib.motorcontrol.generic.NeutralMode;
-import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
-import org.team4639._lib.motorcontrol.talonfx.RSTalonFXTemplate;
 import org.team4639._lib.subsystem.RSSubsystem;
 import org.team4639.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
@@ -56,13 +47,13 @@ public class Elevator extends RSSubsystem implements Sendable {
 
     this.io = io;
     this.inputs = new ElevatorIOInputsAutoLogged();
-    io.sendTalonInputs(
-        leftMotor);
+    io.sendTalonInputs(leftMotor);
     regenerateConfiguration();
 
     this.elevatorView = new LoggedMechanism2d(1, 3);
     this.elevatorViewRoot = elevatorView.getRoot("Elevator View", 0.5, 0);
-    this.elevatorViewLigament = elevatorViewRoot.append(new LoggedMechanismLigament2d("Elevator View Ligament", 0, 0));
+    this.elevatorViewLigament =
+        elevatorViewRoot.append(new LoggedMechanismLigament2d("Elevator View Ligament", 0, 0));
 
     SmartDashboard.putData("Elevator Left", leftMotor);
     SmartDashboard.putData("Elevator View", elevatorView);
@@ -88,7 +79,6 @@ public class Elevator extends RSSubsystem implements Sendable {
             .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(45));
 
     leftMotor.getConfigurator().apply(configuration);
-  
   }
 
   @Override
@@ -170,12 +160,14 @@ public class Elevator extends RSSubsystem implements Sendable {
 
   public Command runToSetpoint(double setpointEncoderValue) {
     this.setpointEncoderValue = setpointEncoderValue;
-    elevatorViewLigament.setLength(ElevatorConstants.ProportionToPosition.convertBackwards(setpointEncoderValue) * 3);
+    elevatorViewLigament.setLength(
+        ElevatorConstants.ProportionToPosition.convertBackwards(setpointEncoderValue) * 3);
     SmartDashboard.putData(elevatorView);
     return run(() -> leftMotor.setControl(new MotionMagicVoltage(this.setpointEncoderValue)));
   }
 
   public boolean atPosition() {
-      return MathUtil.isNear(setpointEncoderValue, inputs.encoderMeasurement, ElevatorConstants.ELEVATOR_TOLERANCE);
+    return MathUtil.isNear(
+        setpointEncoderValue, inputs.encoderMeasurement, ElevatorConstants.ELEVATOR_TOLERANCE);
   }
 }

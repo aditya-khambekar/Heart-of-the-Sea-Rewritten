@@ -16,7 +16,6 @@ public interface ElevatorIO {
    * Only used in {@link ElevatorIOHardware} because it pulls inputs from the TalonFX motors that
    * live in the main {@link Elevator} subsystem. This should be called in the constructor of the
    * elevator system to the ElevatorIO objects that are passed into it.
-   *
    */
   default void sendTalonInputs(TalonFX motor) {}
 }

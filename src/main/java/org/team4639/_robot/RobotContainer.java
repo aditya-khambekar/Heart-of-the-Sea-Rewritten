@@ -82,9 +82,7 @@ public class RobotContainer {
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation));
 
         Subsystems.elevator = new Elevator(new ElevatorIOHardware());
-        Subsystems.scoring = new Scoring(
-            new ScoringIOHardware()
-        );
+        Subsystems.scoring = new Scoring(new ScoringIOHardware());
         break;
 
       case SIM:
@@ -110,9 +108,7 @@ public class RobotContainer {
                     Subsystems.drive::getPose));
 
         Subsystems.elevator = new Elevator(new ElevatorIOSim());
-        Subsystems.scoring = new Scoring(
-            new ScoringIOSim()
-        );
+        Subsystems.scoring = new Scoring(new ScoringIOSim());
         break;
 
       default:
@@ -129,9 +125,7 @@ public class RobotContainer {
             new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
 
         Subsystems.elevator = new Elevator(new ElevatorIO() {});
-        Subsystems.scoring = new Scoring(
-            new ScoringIO() {}
-        );
+        Subsystems.scoring = new Scoring(new ScoringIO() {});
         break;
     }
 

@@ -1,17 +1,16 @@
 package org.team4639.subsystems.scoring;
 
+import com.revrobotics.spark.SparkMax;
 import org.littletonrobotics.junction.AutoLog;
 
-import com.revrobotics.spark.SparkMax;
-
 public interface ScoringIO {
-    
-    @AutoLog
-    class ScoringIOInputs {
-        double currentAmps;
-    }
 
-    default void updateInputs(ScoringIOInputs inputs){}
+  @AutoLog
+  class ScoringIOInputs {
+    double currentAmps;
+  }
 
-    default void sendSparkMaxData(SparkMax spark){}
+  default void updateInputs(ScoringIOInputs inputs) {}
+
+  default void sendSparkMaxData(SparkMax spark) {}
 }

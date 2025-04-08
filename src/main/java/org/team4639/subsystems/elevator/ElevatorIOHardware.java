@@ -1,8 +1,6 @@
 package org.team4639.subsystems.elevator;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
-
 import java.util.function.DoubleSupplier;
 
 public class ElevatorIOHardware implements ElevatorIO {
