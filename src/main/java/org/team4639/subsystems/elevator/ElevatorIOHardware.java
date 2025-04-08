@@ -16,7 +16,7 @@ public class ElevatorIOHardware implements ElevatorIO {
   }
 
   @Override
-  public void sendTalonInputs(RSTalonFX talon) {
+  public void sendTalonInputs(TalonFX talon) {
     this.speedSupplier = () -> talon.getVelocity().getValueAsDouble();
     this.positionSupplier = () -> talon.getPosition().getValueAsDouble();
   }

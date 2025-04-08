@@ -8,33 +8,46 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
+import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 import org.team4639._lib.motorcontrol.generic.NeutralMode;
 import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
 import org.team4639._lib.motorcontrol.talonfx.RSTalonFXTemplate;
 import org.team4639._lib.subsystem.RSSubsystem;
 
 public class Elevator extends RSSubsystem implements Sendable {
-  private final RSTalonFX leftMotor;
-  private final RSTalonFX rightMotor;
+  private final TalonFX leftMotor;
+  private final TalonFX rightMotor;
   public double setpointEncoderValue;
 
   private ElevatorIOInputsAutoLogged inputs;
   private final ElevatorIO io;
 
-  public Elevator(ElevatorIO io) {
-    leftMotor = RSTalonFXTemplate.KrakenX60(ELEVATOR_LEFT);
-    rightMotor = RSTalonFXTemplate.KrakenX60(ELEVATOR_RIGHT);
+  private final LoggedMechanism2d elevatorView;
+  private final LoggedMechanismRoot2d elevatorViewRoot;
+  private final LoggedMechanismLigament2d elevatorViewLigament;
 
-    leftMotor.setNeutralMode(NeutralMode.BRAKE);
-    rightMotor.setNeutralMode(NeutralMode.BRAKE);
+  public Elevator(ElevatorIO io) {
+    leftMotor = new TalonFX(ELEVATOR_LEFT);
+    rightMotor = new TalonFX(ELEVATOR_RIGHT);
+
+    leftMotor.setNeutralMode(NeutralModeValue.Brake);
+    rightMotor.setNeutralMode(NeutralModeValue.Brake);
 
     rightMotor.setControl(new Follower(ELEVATOR_LEFT, true));
     SmartDashboard.putData("Elevator Tuning", this);
@@ -45,7 +58,12 @@ public class Elevator extends RSSubsystem implements Sendable {
         leftMotor);
     regenerateConfiguration();
 
+    this.elevatorView = new LoggedMechanism2d(1, 3);
+    this.elevatorViewRoot = elevatorView.getRoot("Elevator View", 0.5, 0);
+    this.elevatorViewLigament = elevatorViewRoot.append(new LoggedMechanismLigament2d("Elevator View Ligament", 0, 0));
+
     SmartDashboard.putData("Elevator Left", leftMotor);
+    SmartDashboard.putData("Elevator View", elevatorView);
   }
 
   private void regenerateConfiguration() {
@@ -68,7 +86,7 @@ public class Elevator extends RSSubsystem implements Sendable {
             .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(45));
 
     leftMotor.getConfigurator().apply(configuration);
-    leftMotor.setPlant(LinearSystemId.createElevatorSystem(DCMotor.getKrakenX60(2), 25, 0.25, 1/13.44));
+  
   }
 
   @Override
@@ -150,6 +168,8 @@ public class Elevator extends RSSubsystem implements Sendable {
 
   public Command runToSetpoint(double setpointEncoderValue) {
     this.setpointEncoderValue = setpointEncoderValue;
+    elevatorViewLigament.setLength(ElevatorConstants.ProportionToPosition.convertBackwards(setpointEncoderValue) * 3);
+    SmartDashboard.putData(elevatorView);
     return run(() -> leftMotor.setControl(new MotionMagicVoltage(this.setpointEncoderValue)));
   }
 }

@@ -21,5 +21,5 @@ public interface ElevatorIO {
    * elevator system to the ElevatorIO objects that are passed into it.
    *
    */
-  default void sendTalonInputs(RSTalonFX motor) {}
+  default void sendTalonInputs(TalonFX motor) {}
 }
