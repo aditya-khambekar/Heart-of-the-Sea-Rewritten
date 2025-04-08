@@ -1,10 +1,7 @@
 package org.team4639.subsystems.elevator;
 
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix6.hardware.TalonFX;
 import org.littletonrobotics.junction.AutoLog;
-import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
 
 public interface ElevatorIO {
   @AutoLog
