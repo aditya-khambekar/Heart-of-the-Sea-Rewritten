@@ -53,7 +53,7 @@ public class Elevator extends RSSubsystem implements Sendable {
     this.elevatorView = new LoggedMechanism2d(1, 3);
     this.elevatorViewRoot = elevatorView.getRoot("Elevator View", 0.5, 0);
     this.elevatorViewLigament =
-        elevatorViewRoot.append(new LoggedMechanismLigament2d("Elevator View Ligament", 0, 0));
+        elevatorViewRoot.append(new LoggedMechanismLigament2d("Elevator View Ligament", 0, 90));
 
     SmartDashboard.putData("Elevator Left", leftMotor);
     SmartDashboard.putData("Elevator View", elevatorView);
@@ -87,6 +87,9 @@ public class Elevator extends RSSubsystem implements Sendable {
     io.updateInputs(inputs);
     Logger.recordOutput("Elevator/Speed", inputs.encoderSpeed);
     Logger.recordOutput("Elevator/Position", inputs.encoderMeasurement);
+    if (getCurrentCommand() != null) {
+      SmartDashboard.putString("Elevator Command", getCurrentCommand().getName());
+    }
   }
 
   @Override
@@ -162,7 +165,7 @@ public class Elevator extends RSSubsystem implements Sendable {
     this.setpointEncoderValue = setpointEncoderValue;
     elevatorViewLigament.setLength(
         ElevatorConstants.ProportionToPosition.convertBackwards(setpointEncoderValue) * 3);
-    SmartDashboard.putData(elevatorView);
+    SmartDashboard.putData("Elevator View", elevatorView);
     return run(() -> leftMotor.setControl(new MotionMagicVoltage(this.setpointEncoderValue)));
   }
 

@@ -23,8 +23,10 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
 import org.team4639._lib.oi.OI;
 import org.team4639.commands.DriveCommands;
+import org.team4639.commands.SuperstructureCommands;
 import org.team4639.constants.FieldConstants;
 import org.team4639.modaltriggers.DriveTriggers;
+import org.team4639.modaltriggers.SuperstructureTriggers;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
 import org.team4639.subsystems.drive.GyroIOPigeon2;
@@ -33,6 +35,7 @@ import org.team4639.subsystems.drive.ModuleIOSim;
 import org.team4639.subsystems.drive.ModuleIOTalonFX;
 import org.team4639.subsystems.drive.generated.TunerConstants;
 import org.team4639.subsystems.elevator.Elevator;
+import org.team4639.subsystems.elevator.ElevatorConstants;
 import org.team4639.subsystems.elevator.ElevatorIO;
 import org.team4639.subsystems.elevator.ElevatorIOHardware;
 import org.team4639.subsystems.elevator.ElevatorIOSim;
@@ -41,9 +44,6 @@ import org.team4639.subsystems.scoring.ScoringIO;
 import org.team4639.subsystems.scoring.ScoringIOHardware;
 import org.team4639.subsystems.scoring.ScoringIOSim;
 import org.team4639.subsystems.vision.*;
-import org.team4639.subsystems.vision.VisionIO;
-import org.team4639.subsystems.vision.VisionIOLimelight;
-import org.team4639.subsystems.vision.VisionIOPhotonVisionSim;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -174,7 +174,10 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
 
-    Subsystems.elevator.setDefaultCommand(Subsystems.elevator.runToSetpoint(0.5));
+    Subsystems.elevator.setDefaultCommand(
+        Subsystems.elevator
+            .runToSetpoint(ElevatorConstants.ProportionToPosition.convert(0.5))
+            .withName("Default"));
 
     DriveTriggers.closeToLeftStation.whileTrue(
         DriveCommands.joystickDriveAtAngle(
@@ -189,6 +192,8 @@ public class RobotContainer {
             () -> -driver.getLeftY(),
             () -> -driver.getLeftX(),
             FieldConstants.CoralStation.rightCenterFace::getRotation));
+
+    SuperstructureTriggers.intake.whileTrue(SuperstructureCommands.intakeCoral().withName("Intake"));
   }
 
   /**

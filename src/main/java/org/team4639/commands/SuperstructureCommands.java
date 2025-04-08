@@ -6,7 +6,7 @@ import org.team4639._robot.Subsystems;
 import org.team4639.subsystems.elevator.ElevatorConstants;
 
 public class SuperstructureCommands {
-  public Command intakeCoral() {
+  public static Command intakeCoral() {
     return Commands.sequence(
         Subsystems.elevator
             .runToSetpoint(
