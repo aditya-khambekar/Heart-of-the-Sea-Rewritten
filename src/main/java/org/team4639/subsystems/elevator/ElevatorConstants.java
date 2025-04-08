@@ -18,7 +18,7 @@ public class ElevatorConstants {
     static double velocity = 300.0;
   }
 
-  static class Setpoints {
+  public static class Setpoints {
     @Untuned public static final double IDLE_Proportion = 0.04;
     public static final double HP_Proportion = 0.048;
     public static final double Processor_Proportion = 0.0513;
