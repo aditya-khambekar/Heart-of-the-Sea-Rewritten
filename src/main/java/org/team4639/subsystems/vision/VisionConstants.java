@@ -17,6 +17,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.util.Units;
 import org.team4639._lib.annotation.Untuned;
 
 public class VisionConstants {
@@ -32,11 +33,11 @@ public class VisionConstants {
   // (Not used by Limelight, configure in web UI instead)
   @Untuned // TODO
   public static Transform3d robotToCameraLeft =
-      new Transform3d(-0.254, 0.1323, 0.0118, new Rotation3d(0.0, -0, -Math.PI / 6));
+      new Transform3d(0.1323, 0.254, 0.0118, new Rotation3d(0.0, -0, -Units.degreesToRadians(5)));
 
   @Untuned
   public static Transform3d robotToCameraRight =
-      new Transform3d(0.254, 0.1323, 0.0118, new Rotation3d(0.0, -0, Math.PI / 6));
+      new Transform3d(0.1323, -0.254, 0.0118, new Rotation3d(0.0, -0, Units.degreesToRadians(5)));
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;
