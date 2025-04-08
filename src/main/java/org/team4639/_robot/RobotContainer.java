@@ -36,6 +36,10 @@ import org.team4639.subsystems.elevator.Elevator;
 import org.team4639.subsystems.elevator.ElevatorIO;
 import org.team4639.subsystems.elevator.ElevatorIOHardware;
 import org.team4639.subsystems.elevator.ElevatorIOSim;
+import org.team4639.subsystems.scoring.Scoring;
+import org.team4639.subsystems.scoring.ScoringIO;
+import org.team4639.subsystems.scoring.ScoringIOHardware;
+import org.team4639.subsystems.scoring.ScoringIOSim;
 import org.team4639.subsystems.vision.*;
 import org.team4639.subsystems.vision.VisionIO;
 import org.team4639.subsystems.vision.VisionIOLimelight;
@@ -78,6 +82,9 @@ public class RobotContainer {
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation));
 
         Subsystems.elevator = new Elevator(new ElevatorIOHardware());
+        Subsystems.scoring = new Scoring(
+            new ScoringIOHardware()
+        );
         break;
 
       case SIM:
@@ -103,6 +110,9 @@ public class RobotContainer {
                     Subsystems.drive::getPose));
 
         Subsystems.elevator = new Elevator(new ElevatorIOSim());
+        Subsystems.scoring = new Scoring(
+            new ScoringIOSim()
+        );
         break;
 
       default:
@@ -119,6 +129,9 @@ public class RobotContainer {
             new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
 
         Subsystems.elevator = new Elevator(new ElevatorIO() {});
+        Subsystems.scoring = new Scoring(
+            new ScoringIO() {}
+        );
         break;
     }
 
