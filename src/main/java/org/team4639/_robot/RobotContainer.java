@@ -15,6 +15,8 @@ package org.team4639._robot;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -87,7 +89,7 @@ public class RobotContainer {
             new Elevator(
                 new ElevatorIOHardware(
                     new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
-        Subsystems.scoring = new Scoring(new ScoringIOHardware());
+        Subsystems.scoring = new Scoring(new ScoringIOHardware(new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless)));
         break;
 
       case SIM:
@@ -115,7 +117,7 @@ public class RobotContainer {
         Subsystems.elevator =
             new Elevator(
                 new ElevatorIOSim(new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
-        Subsystems.scoring = new Scoring(new ScoringIOSim());
+        Subsystems.scoring = new Scoring(new ScoringIOSim(new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless)));
         break;
 
       default:

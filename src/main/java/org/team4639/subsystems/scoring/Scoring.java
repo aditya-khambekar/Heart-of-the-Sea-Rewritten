@@ -9,9 +9,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team4639.constants.IDs;
 
 public class Scoring extends SubsystemBase {
-  // TODO: add LaserCAN here
-
-  private final SparkMax scoringMotor;
   private final ScoringIOInputsAutoLogged inputs;
   private final ScoringIO io;
 
@@ -19,17 +16,15 @@ public class Scoring extends SubsystemBase {
   private final Debouncer algaeCurrentLimitDebouncer;
 
   public Scoring(ScoringIO io) {
-    scoringMotor = new SparkMax(IDs.SCORING_MOTOR, MotorType.kBrushless);
     this.inputs = new ScoringIOInputsAutoLogged();
     this.io = io;
-    io.sendSparkMaxData(scoringMotor);
 
     coralCurrentLimitDebouncer = new Debouncer(0.1, DebounceType.kBoth);
     algaeCurrentLimitDebouncer = new Debouncer(0.1, DebounceType.kBoth);
   }
 
   public Command runMotor(double speed) {
-    return run(() -> scoringMotor.set(speed));
+    return run(() -> io.runSparkMax(speed));
   }
 
   public Command intakeCoral() {

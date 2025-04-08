@@ -12,5 +12,5 @@ public interface ScoringIO {
 
   default void updateInputs(ScoringIOInputs inputs) {}
 
-  default void sendSparkMaxData(SparkMax spark) {}
+  default void runSparkMax(double speed) {}
 }
