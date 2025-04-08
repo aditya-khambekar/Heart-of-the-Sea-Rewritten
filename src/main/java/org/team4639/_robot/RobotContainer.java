@@ -13,6 +13,7 @@
 
 package org.team4639._robot;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -25,6 +26,7 @@ import org.team4639._lib.oi.OI;
 import org.team4639.commands.DriveCommands;
 import org.team4639.commands.SuperstructureCommands;
 import org.team4639.constants.FieldConstants;
+import org.team4639.constants.IDs;
 import org.team4639.modaltriggers.DriveTriggers;
 import org.team4639.modaltriggers.SuperstructureTriggers;
 import org.team4639.subsystems.drive.Drive;
@@ -81,7 +83,10 @@ public class RobotContainer {
                 new VisionIOLimelight(
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation));
 
-        Subsystems.elevator = new Elevator(new ElevatorIOHardware());
+        Subsystems.elevator =
+            new Elevator(
+                new ElevatorIOHardware(
+                    new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
         Subsystems.scoring = new Scoring(new ScoringIOHardware());
         break;
 
@@ -107,7 +112,9 @@ public class RobotContainer {
                     VisionConstants.robotToCameraRight,
                     Subsystems.drive::getPose));
 
-        Subsystems.elevator = new Elevator(new ElevatorIOSim());
+        Subsystems.elevator =
+            new Elevator(
+                new ElevatorIOSim(new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
         Subsystems.scoring = new Scoring(new ScoringIOSim());
         break;
 
@@ -193,7 +200,8 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             FieldConstants.CoralStation.rightCenterFace::getRotation));
 
-    SuperstructureTriggers.intake.whileTrue(SuperstructureCommands.intakeCoral().withName("Intake"));
+    SuperstructureTriggers.intake.whileTrue(
+        SuperstructureCommands.intakeCoral().withName("Intake"));
   }
 
   /**
