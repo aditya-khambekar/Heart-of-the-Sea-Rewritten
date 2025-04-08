@@ -167,6 +167,8 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
 
+    Subsystems.elevator.setDefaultCommand(Subsystems.elevator.runToSetpoint(0.5));
+
     DriveTriggers.closeToLeftStation.whileTrue(
         DriveCommands.joystickDriveAtAngle(
             Subsystems.drive,

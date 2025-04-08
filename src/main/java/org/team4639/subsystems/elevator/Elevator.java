@@ -9,6 +9,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +24,7 @@ import org.team4639._lib.subsystem.RSSubsystem;
 public class Elevator extends RSSubsystem implements Sendable {
   private final RSTalonFX leftMotor;
   private final RSTalonFX rightMotor;
-  private double setpointEncoderValue;
+  public double setpointEncoderValue;
 
   private ElevatorIOInputsAutoLogged inputs;
   private final ElevatorIO io;
@@ -40,8 +42,10 @@ public class Elevator extends RSSubsystem implements Sendable {
     this.io = io;
     this.inputs = new ElevatorIOInputsAutoLogged();
     io.sendTalonInputs(
-        leftMotor.getVelocity()::getValueAsDouble, leftMotor.getPosition()::getValueAsDouble);
+        leftMotor);
     regenerateConfiguration();
+
+    SmartDashboard.putData("Elevator Left", leftMotor);
   }
 
   private void regenerateConfiguration() {
@@ -64,6 +68,7 @@ public class Elevator extends RSSubsystem implements Sendable {
             .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(45));
 
     leftMotor.getConfigurator().apply(configuration);
+    leftMotor.setPlant(LinearSystemId.createElevatorSystem(DCMotor.getKrakenX60(2), 25, 0.25, 1/13.44));
   }
 
   @Override

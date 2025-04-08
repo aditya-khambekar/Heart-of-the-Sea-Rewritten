@@ -1,7 +1,10 @@
 package org.team4639.subsystems.elevator;
 
 import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.hardware.TalonFX;
 import org.littletonrobotics.junction.AutoLog;
+import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
 
 public interface ElevatorIO {
   @AutoLog
@@ -17,8 +20,6 @@ public interface ElevatorIO {
    * live in the main {@link Elevator} subsystem. This should be called in the constructor of the
    * elevator system to the ElevatorIO objects that are passed into it.
    *
-   * @param speedSupplier supplies the speed of the motor.
-   * @param positionSupplier supplies the position of the motor.
    */
-  default void sendTalonInputs(DoubleSupplier speedSupplier, DoubleSupplier positionSupplier) {}
+  default void sendTalonInputs(RSTalonFX motor) {}
 }

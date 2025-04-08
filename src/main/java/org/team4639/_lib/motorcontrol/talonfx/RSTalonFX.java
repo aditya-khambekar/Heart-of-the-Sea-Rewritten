@@ -54,15 +54,15 @@ public class RSTalonFX implements RSGenericMotorController, Sendable {
 
   private void init() {
     gearbox = DCMotor.getKrakenX60(1);
-    plant = LinearSystemId.createDCMotorSystem(gearbox, 0, 1.0);
-    simMotor = new DCMotorSim(plant, gearbox, 0.0);
+    plant = LinearSystemId.createDCMotorSystem(gearbox, 0.001, 1.0);
+    simMotor = new DCMotorSim(plant, gearbox, 0.0, 0.0);
 
     boolean inverted = false;
     String name = "RSTalonFX" + this;
   }
 
   private void regenerateSim() {
-    simMotor = new DCMotorSim(plant, gearbox, 0.0);
+    simMotor = new DCMotorSim(plant, gearbox, 0.0, 0.0);
   }
 
   /**

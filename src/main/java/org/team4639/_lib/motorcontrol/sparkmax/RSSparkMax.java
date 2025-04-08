@@ -59,6 +59,7 @@ public class RSSparkMax implements RSGenericMotorController, Sendable {
         new DCMotorSim(
             (plant = LinearSystemId.createDCMotorSystem(gearbox, 0.4445 * Math.pow(0.025, 2), 1.0)),
             gearbox,
+            0.0,
             0.0);
     sparkMaxSim = new SparkMaxSim(sparkMax, gearbox);
   }
@@ -669,7 +670,7 @@ public class RSSparkMax implements RSGenericMotorController, Sendable {
   }
 
   private void regenerateSimObjects() {
-    motorSim = new DCMotorSim((plant), gearbox, 0.0);
+    motorSim = new DCMotorSim((plant), gearbox, 0.0, 0.0);
     sparkMaxSim = new SparkMaxSim(sparkMax, gearbox);
   }
 

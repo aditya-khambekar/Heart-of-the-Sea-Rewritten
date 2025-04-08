@@ -1,5 +1,8 @@
 package org.team4639.subsystems.elevator;
 
+import com.ctre.phoenix6.hardware.TalonFX;
+import org.team4639._lib.motorcontrol.talonfx.RSTalonFX;
+
 import java.util.function.DoubleSupplier;
 
 public class ElevatorIOHardware implements ElevatorIO {
@@ -13,8 +16,8 @@ public class ElevatorIOHardware implements ElevatorIO {
   }
 
   @Override
-  public void sendTalonInputs(DoubleSupplier speedSupplier, DoubleSupplier positionSupplier) {
-    this.speedSupplier = speedSupplier;
-    this.positionSupplier = positionSupplier;
+  public void sendTalonInputs(RSTalonFX talon) {
+    this.speedSupplier = () -> talon.getVelocity().getValueAsDouble();
+    this.positionSupplier = () -> talon.getPosition().getValueAsDouble();
   }
 }

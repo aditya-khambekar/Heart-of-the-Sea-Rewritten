@@ -75,6 +75,7 @@ public class RSSparkFlex implements RSGenericMotorController, Sendable {
         new DCMotorSim(
             (plant = LinearSystemId.createDCMotorSystem(gearbox, 0.4445 * Math.pow(0.025, 2), 1.0)),
             gearbox,
+            0.0,
             0.0);
     sparkFlexSim = new SparkFlexSim(sparkFlex, gearbox);
   }
@@ -698,7 +699,7 @@ public class RSSparkFlex implements RSGenericMotorController, Sendable {
   }
 
   private void regenerateSimObjects() {
-    motorSim = new DCMotorSim((plant), gearbox, 0.0);
+    motorSim = new DCMotorSim((plant), gearbox, 0.0, 0.0);
     sparkFlexSim = new SparkFlexSim(sparkFlex, gearbox);
   }
 
