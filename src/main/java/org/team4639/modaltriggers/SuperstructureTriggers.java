@@ -1,10 +1,10 @@
 package org.team4639.modaltriggers;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.team4639._robot.Subsystems;
 
 public class SuperstructureTriggers {
-  // TODO: based on new end effector design, how will this be determined
-  public static Trigger hasCoral = new Trigger(() -> false);
+  public static Trigger hasCoral = new Trigger(Subsystems.scoring::hasCoral);
 
   /** Triggers automatic motion to the intake setpoint. */
   public static Trigger intake =

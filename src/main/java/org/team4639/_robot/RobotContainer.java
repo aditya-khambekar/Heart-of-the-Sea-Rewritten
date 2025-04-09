@@ -197,7 +197,9 @@ public class RobotContainer {
         Subsystems.elevator.defer(
             () ->
                 Subsystems.elevator
-                    .runToSetpoint(ElevatorConstants.ProportionToPosition.convert(ElevatorConstants.Setpoints.IDLE_Proportion))
+                    .runToSetpoint(
+                        ElevatorConstants.ProportionToPosition.convert(
+                            ElevatorConstants.Setpoints.IDLE_Proportion))
                     .withName("Default")));
 
     DriveTriggers.closeToLeftStation.whileTrue(
@@ -217,13 +219,14 @@ public class RobotContainer {
     SuperstructureTriggers.intake.whileTrue(
         Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
 
-    SuperstructureTriggers.raiseElevator.onTrue(
+    SuperstructureTriggers.raiseElevator.whileTrue(
         Subsystems.elevator.defer(
             () ->
                 Subsystems.elevator
-                    .runToSetpoint(ElevatorConstants.ProportionToPosition.convert(ElevatorConstants.Setpoints.L2_Proportion))
-                    .withName("Default"))
-    );
+                    .runToSetpoint(
+                        ElevatorConstants.ProportionToPosition.convert(
+                            ElevatorConstants.Setpoints.SCORE_READY_POSITION))
+                    .withName("Raise Elevator")));
   }
 
   /**
