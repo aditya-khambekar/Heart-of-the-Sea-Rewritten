@@ -209,6 +209,7 @@ public class RobotContainer {
                     .withName("Default")));
 
     DriveTriggers.closeToLeftStation
+        .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -218,6 +219,7 @@ public class RobotContainer {
                 FieldConstants.CoralStation.leftCenterFace::getRotation));
 
     DriveTriggers.closeToRightStation
+        .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
@@ -227,10 +229,12 @@ public class RobotContainer {
                 FieldConstants.CoralStation.rightCenterFace::getRotation));
 
     SuperstructureTriggers.intake
+        .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
         .whileTrue(Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
 
     SuperstructureTriggers.raiseElevator
+        .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
         .whileTrue(
             Subsystems.elevator.defer(
@@ -244,6 +248,7 @@ public class RobotContainer {
     driver
         .rightTrigger()
         .and(RobotModeTriggers.teleop())
+        .and(RobotMode::isComp)
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)));
   }
 
