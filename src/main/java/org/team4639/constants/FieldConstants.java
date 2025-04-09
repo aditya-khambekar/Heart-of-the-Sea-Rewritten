@@ -200,14 +200,4 @@ public class FieldConstants {
     ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_IJ.Pose, 0b1);
     ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_KL.Pose, 0b0);
   }
-
-  public static Pose2d[] reefCenterPoses =
-      new Pose2d[] {
-        TargetPositions.REEF_AB.Pose,
-        TargetPositions.REEF_CD.Pose,
-        TargetPositions.REEF_EF.Pose,
-        TargetPositions.REEF_GH.Pose,
-        TargetPositions.REEF_IJ.Pose,
-        TargetPositions.REEF_KL.Pose
-      };
 }
