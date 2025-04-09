@@ -69,7 +69,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    FieldConstants.Reef.init();
+    FieldConstants.init();
     // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
     double x = FieldConstants.fieldLength;
     switch (Constants.currentMode) {

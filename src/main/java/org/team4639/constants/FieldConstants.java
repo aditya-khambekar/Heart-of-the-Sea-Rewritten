@@ -9,6 +9,8 @@ package org.team4639.constants;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import java.util.HashMap;
+import java.util.Map;
 import org.team4639._util.PoseUtil;
 
 /**
@@ -20,6 +22,11 @@ public class FieldConstants {
   public static final double fieldWidth = Units.inchesToMeters(317);
   public static final double startingLineX =
       Units.inchesToMeters(299.438); // Measured from the inside of starting line
+
+  public static void init() {
+    Reef.init();
+    initAlgaeLocations();
+  }
 
   public static class Processor {
     public static final Pose2d centerFace =
@@ -181,6 +188,17 @@ public class FieldConstants {
 
     private final Pose2d Pose;
     public final Pose2d leftPose, rightPose;
+  }
+
+  public static Map<Pose2d, Integer> ReefCenterPoseToAlgaeLocation = new HashMap<>();
+
+  public static void initAlgaeLocations() {
+    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_AB.Pose, 0b1);
+    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_CD.Pose, 0b0);
+    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_EF.Pose, 0b1);
+    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_GH.Pose, 0b0);
+    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_IJ.Pose, 0b1);
+    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_KL.Pose, 0b0);
   }
 
   public static Pose2d[] reefCenterPoses =

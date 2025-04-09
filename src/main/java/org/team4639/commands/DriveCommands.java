@@ -414,4 +414,8 @@ public class DriveCommands {
                     && pidY.getPositionError() < 0.02
                     && headingController.getError() < 0.002);
   }
+
+  public static Command robotOrientedDrive(Drive drive, ChassisSpeeds speeds) {
+    return drive.run(() -> drive.runVelocity(speeds));
+  }
 }
