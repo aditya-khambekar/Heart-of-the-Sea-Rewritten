@@ -32,6 +32,10 @@ public class Scoring extends SubsystemBase {
                     getCurrent() > ScoringConstants.Currents.CORAL_INTAKE_CURRENT));
   }
 
+  public Command outtakeCoral() {
+    return runMotor(ScoringConstants.Speeds.CORAL_OUTTAKE_SPEED).until(() -> !hasCoral());
+  }
+
   public Command intakeAlgae() {
     return runMotor(ScoringConstants.Speeds.ALGAE_INTAKE_SPEED)
         .until(

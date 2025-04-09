@@ -36,7 +36,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
 import org.team4639._util.PoseUtil;
 import org.team4639.constants.FieldConstants;
 import org.team4639.subsystems.drive.Drive;
@@ -328,48 +327,50 @@ public class DriveCommands {
   }
 
   public static Command reefAlignLeft(Drive drive) {
-      Pose2d drivePose = drive.getPose();
+    Pose2d drivePose = drive.getPose();
 
-      Pose2d nearestReefPose =
-              PoseUtil.ReefRelativeLeftOf(drivePose.nearest(
-                      List.of(
-                              FieldConstants.TargetPositions.REEF_AB.getPose(),
-                              FieldConstants.TargetPositions.REEF_CD.getPose(),
-                              FieldConstants.TargetPositions.REEF_EF.getPose(),
-                              FieldConstants.TargetPositions.REEF_GH.getPose(),
-                              FieldConstants.TargetPositions.REEF_IJ.getPose(),
-                              FieldConstants.TargetPositions.REEF_KL.getPose()))) ;
+    Pose2d nearestReefPose =
+        PoseUtil.ReefRelativeLeftOf(
+            drivePose.nearest(
+                List.of(
+                    FieldConstants.TargetPositions.REEF_AB.getPose(),
+                    FieldConstants.TargetPositions.REEF_CD.getPose(),
+                    FieldConstants.TargetPositions.REEF_EF.getPose(),
+                    FieldConstants.TargetPositions.REEF_GH.getPose(),
+                    FieldConstants.TargetPositions.REEF_IJ.getPose(),
+                    FieldConstants.TargetPositions.REEF_KL.getPose())));
 
-      var dist =
-              Math.max(
-                      Math.abs(nearestReefPose.getX() - drivePose.getX()),
-                      Math.abs(nearestReefPose.getY() - drivePose.getY()));
-      Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+    var dist =
+        Math.max(
+            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
 
-      return PIDto(drive, startPose, nearestReefPose);
+    return PIDto(drive, startPose, nearestReefPose);
   }
 
-    public static Command reefAlignRight(Drive drive) {
-        Pose2d drivePose = drive.getPose();
+  public static Command reefAlignRight(Drive drive) {
+    Pose2d drivePose = drive.getPose();
 
-        Pose2d nearestReefPose =
-                PoseUtil.ReefRelativeRightOf(drivePose.nearest(
-                        List.of(
-                                FieldConstants.TargetPositions.REEF_AB.getPose(),
-                                FieldConstants.TargetPositions.REEF_CD.getPose(),
-                                FieldConstants.TargetPositions.REEF_EF.getPose(),
-                                FieldConstants.TargetPositions.REEF_GH.getPose(),
-                                FieldConstants.TargetPositions.REEF_IJ.getPose(),
-                                FieldConstants.TargetPositions.REEF_KL.getPose()))) ;
+    Pose2d nearestReefPose =
+        PoseUtil.ReefRelativeRightOf(
+            drivePose.nearest(
+                List.of(
+                    FieldConstants.TargetPositions.REEF_AB.getPose(),
+                    FieldConstants.TargetPositions.REEF_CD.getPose(),
+                    FieldConstants.TargetPositions.REEF_EF.getPose(),
+                    FieldConstants.TargetPositions.REEF_GH.getPose(),
+                    FieldConstants.TargetPositions.REEF_IJ.getPose(),
+                    FieldConstants.TargetPositions.REEF_KL.getPose())));
 
-        var dist =
-                Math.max(
-                        Math.abs(nearestReefPose.getX() - drivePose.getX()),
-                        Math.abs(nearestReefPose.getY() - drivePose.getY()));
-        Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+    var dist =
+        Math.max(
+            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
 
-        return PIDto(drive, startPose, nearestReefPose);
-    }
+    return PIDto(drive, startPose, nearestReefPose);
+  }
 
   public static Command PIDto(Drive drive, Pose2d startingPose, Pose2d destinationPose) {
     ProfiledPIDController pidX =
@@ -386,25 +387,31 @@ public class DriveCommands {
     pidY.reset(startingPose.getY());
     pidY.setGoal(destinationPose.getY());
 
-    return drive.run(
-        () -> {
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  new ChassisSpeeds(
-                      pidX.calculate(drive.getPose().getX()),
-                      pidY.calculate(drive.getPose().getY()),
-                      headingController.calculate(drive.getPose().getRotation().getRadians())),
-                  drive.getPose().getRotation()));
-          drive
-              .getField()
-              .getObject("PID Setpoint")
-              .setPose(
-                  new Pose2d(
-                      pidX.getSetpoint().position,
-                      pidY.getSetpoint().position,
-                      Rotation2d.fromRadians(headingController.getSetpoint())));
-          SmartDashboard.putNumber("PIDX Error", pidX.getPositionError());
-          SmartDashboard.putNumber("PIDX Output", pidX.calculate(drive.getPose().getX()));
-        });
+    return drive
+        .run(
+            () -> {
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      new ChassisSpeeds(
+                          pidX.calculate(drive.getPose().getX()),
+                          pidY.calculate(drive.getPose().getY()),
+                          headingController.calculate(drive.getPose().getRotation().getRadians())),
+                      drive.getPose().getRotation()));
+              drive
+                  .getField()
+                  .getObject("PID Setpoint")
+                  .setPose(
+                      new Pose2d(
+                          pidX.getSetpoint().position,
+                          pidY.getSetpoint().position,
+                          Rotation2d.fromRadians(headingController.getSetpoint())));
+              SmartDashboard.putNumber("PIDX Error", pidX.getPositionError());
+              SmartDashboard.putNumber("PIDX Output", pidX.calculate(drive.getPose().getX()));
+            })
+        .until(
+            () ->
+                pidX.getPositionError() < 0.02
+                    && pidY.getPositionError() < 0.02
+                    && headingController.getError() < 0.002);
   }
 }
