@@ -316,7 +316,13 @@ public class DriveCommands {
                 FieldConstants.TargetPositions.REEF_IJ.getPose(),
                 FieldConstants.TargetPositions.REEF_KL.getPose()));
 
-    return PIDto(drive, drive.getPose(), nearestReefPose);
+    var dist =
+        Math.max(
+            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+
+    return PIDto(drive, startPose, nearestReefPose);
   }
 
   public static Command PIDto(Drive drive, Pose2d startingPose, Pose2d destinationPose) {
