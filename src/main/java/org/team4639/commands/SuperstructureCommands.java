@@ -7,12 +7,15 @@ import org.team4639.subsystems.elevator.ElevatorConstants;
 
 public class SuperstructureCommands {
   public static Command intakeCoral() {
-    return Commands.sequence(
-        Subsystems.elevator
-            .runToSetpoint(
-                ElevatorConstants.ProportionToPosition.convert(
-                    ElevatorConstants.Setpoints.HP_Proportion))
-            .until(Subsystems.elevator::atPosition),
-        Subsystems.scoring.intakeCoral());
+    var command =
+        Commands.sequence(
+            Subsystems.elevator
+                .runToSetpoint(
+                    ElevatorConstants.ProportionToPosition.convert(
+                        ElevatorConstants.Setpoints.HP_Proportion))
+                .until(Subsystems.elevator::atPosition),
+            Subsystems.scoring.intakeCoral());
+    command.addRequirements(Subsystems.elevator);
+    return command;
   }
 }

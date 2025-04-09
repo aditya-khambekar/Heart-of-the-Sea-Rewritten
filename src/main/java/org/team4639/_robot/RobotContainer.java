@@ -13,6 +13,8 @@
 
 package org.team4639._robot;
 
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.simulation.MockLaserCan;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.spark.SparkLowLevel;
@@ -89,7 +91,11 @@ public class RobotContainer {
             new Elevator(
                 new ElevatorIOHardware(
                     new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
-        Subsystems.scoring = new Scoring(new ScoringIOHardware(new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless)));
+        Subsystems.scoring =
+            new Scoring(
+                new ScoringIOHardware(
+                    new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless),
+                    new LaserCan(IDs.INTAKE_LASERCAN_ID)));
         break;
 
       case SIM:
@@ -117,7 +123,11 @@ public class RobotContainer {
         Subsystems.elevator =
             new Elevator(
                 new ElevatorIOSim(new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
-        Subsystems.scoring = new Scoring(new ScoringIOSim(new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless)));
+        Subsystems.scoring =
+            new Scoring(
+                new ScoringIOSim(
+                    new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless),
+                    new MockLaserCan()));
         break;
 
       default:
@@ -184,9 +194,11 @@ public class RobotContainer {
             () -> -driver.getRightX()));
 
     Subsystems.elevator.setDefaultCommand(
-        Subsystems.elevator
-            .runToSetpoint(ElevatorConstants.ProportionToPosition.convert(0.5))
-            .withName("Default"));
+        Subsystems.elevator.defer(
+            () ->
+                Subsystems.elevator
+                    .runToSetpoint(ElevatorConstants.ProportionToPosition.convert(0.5))
+                    .withName("Default")));
 
     DriveTriggers.closeToLeftStation.whileTrue(
         DriveCommands.joystickDriveAtAngle(
@@ -203,7 +215,7 @@ public class RobotContainer {
             FieldConstants.CoralStation.rightCenterFace::getRotation));
 
     SuperstructureTriggers.intake.whileTrue(
-        SuperstructureCommands.intakeCoral().withName("Intake"));
+        Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
   }
 
   /**

@@ -1,12 +1,9 @@
 package org.team4639.subsystems.scoring;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.team4639.constants.IDs;
 
 public class Scoring extends SubsystemBase {
   private final ScoringIOInputsAutoLogged inputs;
@@ -45,6 +42,10 @@ public class Scoring extends SubsystemBase {
 
   public double getCurrent() {
     return inputs.currentAmps;
+  }
+
+  public boolean hasCoral() {
+    return inputs.hasCoral;
   }
 
   @Override
