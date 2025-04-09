@@ -1,5 +1,6 @@
 package org.team4639._robot;
 
+import org.team4639.subsystems.DashboardOutputs;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.elevator.Elevator;
 import org.team4639.subsystems.scoring.Scoring;
@@ -10,4 +11,5 @@ public class Subsystems {
   public static Vision vision;
   public static Elevator elevator;
   public static Scoring scoring;
+  public static DashboardOutputs dashboardOutputs;
 }

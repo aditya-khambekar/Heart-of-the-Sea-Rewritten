@@ -384,4 +384,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     addVisionMeasurement(visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
+
+  public Field2d getField() {
+    return field;
+  }
 }

@@ -130,7 +130,7 @@ public class FieldConstants {
       new Transform2d(Units.inchesToMeters(12), 0, Rotation2d.kZero);
   static Transform2d fromBarge = new Transform2d(Units.inchesToMeters(-15), 0, Rotation2d.kZero);
 
-  public enum TargetPositions {
+  public static enum TargetPositions {
     REEF_AB(FieldConstants.Reef.centerFaces[0].transformBy((FieldConstants.fromReef))),
     REEF_CD(FieldConstants.Reef.centerFaces[5].transformBy((FieldConstants.fromReef))),
     REEF_EF(FieldConstants.Reef.centerFaces[4].transformBy((FieldConstants.fromReef))),

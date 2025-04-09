@@ -14,9 +14,9 @@ public class VisionPoses {
       new LinearFilterPoseEstimator(1, 2);
 
   public static class LinearFilterPoseEstimator implements VisionConsumer {
-    private final LinearFilter xFilter = LinearFilter.singlePoleIIR(0.06, 0.02);
-    private final LinearFilter yFilter = LinearFilter.singlePoleIIR(0.06, 0.02);
-    private final LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.06, 0.02);
+    private final LinearFilter xFilter = LinearFilter.singlePoleIIR(0.04, 0.02);
+    private final LinearFilter yFilter = LinearFilter.singlePoleIIR(0.04, 0.02);
+    private final LinearFilter omegaFilter = LinearFilter.singlePoleIIR(0.04, 0.02);
     int[] acceptedIndices;
 
     private Pose2d poseEstimate = new Pose2d();

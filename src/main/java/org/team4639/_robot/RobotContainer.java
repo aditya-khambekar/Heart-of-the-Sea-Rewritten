@@ -34,6 +34,7 @@ import org.team4639.constants.FieldConstants;
 import org.team4639.constants.IDs;
 import org.team4639.modaltriggers.DriveTriggers;
 import org.team4639.modaltriggers.SuperstructureTriggers;
+import org.team4639.subsystems.DashboardOutputs;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
 import org.team4639.subsystems.drive.GyroIOPigeon2;
@@ -69,6 +70,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     FieldConstants.Reef.init();
+    // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
+    double x = FieldConstants.fieldLength;
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -129,6 +132,7 @@ public class RobotContainer {
                 new ScoringIOSim(
                     new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless),
                     new MockLaserCan()));
+        Subsystems.dashboardOutputs = new DashboardOutputs();
         break;
 
       default:
@@ -146,6 +150,7 @@ public class RobotContainer {
 
         Subsystems.elevator = new Elevator(new ElevatorIO() {});
         Subsystems.scoring = new Scoring(new ScoringIO() {});
+        Subsystems.dashboardOutputs = new DashboardOutputs();
         break;
     }
 
@@ -235,6 +240,11 @@ public class RobotContainer {
                             ElevatorConstants.ProportionToPosition.convert(
                                 ElevatorConstants.Setpoints.SCORE_READY_POSITION))
                         .withName("Raise Elevator")));
+
+    driver
+        .rightTrigger()
+        .and(RobotModeTriggers.teleop())
+        .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)));
   }
 
   /**
