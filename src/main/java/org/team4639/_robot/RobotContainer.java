@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
@@ -202,31 +203,38 @@ public class RobotContainer {
                             ElevatorConstants.Setpoints.IDLE_Proportion))
                     .withName("Default")));
 
-    DriveTriggers.closeToLeftStation.whileTrue(
-        DriveCommands.joystickDriveAtAngle(
-            Subsystems.drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            FieldConstants.CoralStation.leftCenterFace::getRotation));
+    DriveTriggers.closeToLeftStation
+        .and(RobotModeTriggers.teleop())
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                Subsystems.drive,
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
+                FieldConstants.CoralStation.leftCenterFace::getRotation));
 
-    DriveTriggers.closeToRightStation.whileTrue(
-        DriveCommands.joystickDriveAtAngle(
-            Subsystems.drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            FieldConstants.CoralStation.rightCenterFace::getRotation));
+    DriveTriggers.closeToRightStation
+        .and(RobotModeTriggers.teleop())
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                Subsystems.drive,
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
+                FieldConstants.CoralStation.rightCenterFace::getRotation));
 
-    SuperstructureTriggers.intake.whileTrue(
-        Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
+    SuperstructureTriggers.intake
+        .and(RobotModeTriggers.teleop())
+        .whileTrue(Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
 
-    SuperstructureTriggers.raiseElevator.whileTrue(
-        Subsystems.elevator.defer(
-            () ->
-                Subsystems.elevator
-                    .runToSetpoint(
-                        ElevatorConstants.ProportionToPosition.convert(
-                            ElevatorConstants.Setpoints.SCORE_READY_POSITION))
-                    .withName("Raise Elevator")));
+    SuperstructureTriggers.raiseElevator
+        .and(RobotModeTriggers.teleop())
+        .whileTrue(
+            Subsystems.elevator.defer(
+                () ->
+                    Subsystems.elevator
+                        .runToSetpoint(
+                            ElevatorConstants.ProportionToPosition.convert(
+                                ElevatorConstants.Setpoints.SCORE_READY_POSITION))
+                        .withName("Raise Elevator")));
   }
 
   /**
