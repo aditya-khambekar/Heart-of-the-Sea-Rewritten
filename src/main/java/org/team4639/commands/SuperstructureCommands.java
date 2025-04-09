@@ -15,7 +15,6 @@ public class SuperstructureCommands {
                         ElevatorConstants.Setpoints.HP_Proportion))
                 .until(Subsystems.elevator::atPosition),
             Subsystems.scoring.intakeCoral());
-    command.addRequirements(Subsystems.elevator);
     return command;
   }
 }
