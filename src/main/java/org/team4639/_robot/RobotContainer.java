@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
+import org.team4639._lib.RobotModes;
 import org.team4639._lib.oi.OI;
 import org.team4639.commands.DriveCommands;
 import org.team4639.commands.SuperstructureCommands;
@@ -266,6 +267,9 @@ public class RobotContainer {
         .and(RobotModeTriggers.teleop())
         .and(RobotMode::isComp)
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)));
+
+        driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
+        driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
   }
 
   /**
