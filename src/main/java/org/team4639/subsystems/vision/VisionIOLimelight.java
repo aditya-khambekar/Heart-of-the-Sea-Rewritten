@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.team4639._util.DriverStationUtil;
+
 /** IO implementation for real Limelight hardware. */
 public class VisionIOLimelight implements VisionIO {
   private final Supplier<Rotation2d> rotationSupplier;
@@ -36,8 +38,10 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleSubscriber latencySubscriber;
   private final DoubleSubscriber txSubscriber;
   private final DoubleSubscriber tySubscriber;
-  private final DoubleArraySubscriber megatag1Subscriber;
-  private final DoubleArraySubscriber megatag2Subscriber;
+  private final DoubleArraySubscriber megatag1SubscriberBlue;
+  private final DoubleArraySubscriber megatag1SubscriberRed;
+  private final DoubleArraySubscriber megatag2SubscriberBlue;
+  private final DoubleArraySubscriber megatag2SubscriberRed;
 
   /**
    * Creates a new VisionIOLimelight.
@@ -52,9 +56,11 @@ public class VisionIOLimelight implements VisionIO {
     latencySubscriber = table.getDoubleTopic("tl").subscribe(0.0);
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
     tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
-    megatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
-    megatag2Subscriber =
+    megatag1SubscriberBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
+    megatag1SubscriberRed = table.getDoubleArrayTopic("botpose_wpired").subscribe(new double[] {});
+    megatag2SubscriberBlue =
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+        megatag2SubscriberRed = table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
   }
 
   @Override
@@ -77,7 +83,7 @@ public class VisionIOLimelight implements VisionIO {
     // Read new pose observations from NetworkTables
     Set<Integer> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
-    for (var rawSample : megatag1Subscriber.readQueue()) {
+    for (var rawSample : getMegatag1Subscriber().readQueue()) {
       if (rawSample.value.length == 0) continue;
       for (int i = 11; i < rawSample.value.length; i += 7) {
         tagIds.add((int) rawSample.value[i]);
@@ -102,7 +108,7 @@ public class VisionIOLimelight implements VisionIO {
               // Observation type
               PoseObservationType.MEGATAG_1));
     }
-    for (var rawSample : megatag2Subscriber.readQueue()) {
+    for (var rawSample : getMegatag2Subscriber().readQueue()) {
       if (rawSample.value.length == 0) continue;
       for (int i = 11; i < rawSample.value.length; i += 7) {
         tagIds.add((int) rawSample.value[i]);
@@ -140,6 +146,14 @@ public class VisionIOLimelight implements VisionIO {
     for (int id : tagIds) {
       inputs.tagIds[i++] = id;
     }
+  }
+
+  private DoubleArraySubscriber getMegatag1Subscriber() {
+    return DriverStationUtil.isBlueAlliance() ? megatag1SubscriberBlue : megatag1SubscriberRed;
+  }
+
+  private DoubleArraySubscriber getMegatag2Subscriber() {
+    return DriverStationUtil.isBlueAlliance() ? megatag2SubscriberBlue : megatag2SubscriberRed;
   }
 
   /** Parses the 3D pose from a Limelight botpose array. */

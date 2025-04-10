@@ -10,6 +10,10 @@ public class DriverStationUtil {
         return DriverStation.getAlliance().orElse(DEFAULT_ALLIANCE);
     }
 
+    public static boolean isBlueAlliance() {
+        return getAlliance() == Alliance.Blue;
+    }
+
     public static boolean usingDSAlliance() {
         return DriverStation.getAlliance().isPresent();
     }
