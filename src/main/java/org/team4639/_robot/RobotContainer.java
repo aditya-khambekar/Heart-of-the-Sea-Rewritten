@@ -51,6 +51,7 @@ import org.team4639.subsystems.elevator.ElevatorIO;
 import org.team4639.subsystems.elevator.ElevatorIOHardware;
 import org.team4639.subsystems.elevator.ElevatorIOSim;
 import org.team4639.subsystems.scoring.Scoring;
+import org.team4639.subsystems.scoring.ScoringConstants;
 import org.team4639.subsystems.scoring.ScoringIO;
 import org.team4639.subsystems.scoring.ScoringIOHardware;
 import org.team4639.subsystems.scoring.ScoringIOSim;
@@ -270,6 +271,9 @@ public class RobotContainer {
 
         driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
         driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
+
+        driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
+        driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
   }
 
   /**
