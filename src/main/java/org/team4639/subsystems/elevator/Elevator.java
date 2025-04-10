@@ -116,6 +116,10 @@ public class Elevator extends RSSubsystem implements Sendable {
     return run(() -> io.setMotionMagicPosition(setpointEncoderValue));
   }
 
+  public Command runVelocity(double velocityRPS) {
+      return run(() -> io.setVelocityControl(velocityRPS));
+  }
+
   public boolean atPosition() {
     return MathUtil.isNear(
         setpointEncoderValue, inputs.encoderMeasurement, ElevatorConstants.ELEVATOR_TOLERANCE);
