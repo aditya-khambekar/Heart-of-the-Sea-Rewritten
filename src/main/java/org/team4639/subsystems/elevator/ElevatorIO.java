@@ -13,5 +13,5 @@ public interface ElevatorIO {
 
   default void setMotionMagicPosition(double setpointEncoder) {}
 
-  default void setVelocityControl(double velocityRPS){}
+  default void setVelocityControl(double velocityRPS) {}
 }

@@ -23,13 +23,12 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
-import org.team4639._lib.RobotModes;
 import org.team4639._lib.oi.OI;
 import org.team4639.commands.DriveCommands;
 import org.team4639.commands.SuperstructureCommands;
@@ -51,13 +50,10 @@ import org.team4639.subsystems.elevator.ElevatorIO;
 import org.team4639.subsystems.elevator.ElevatorIOHardware;
 import org.team4639.subsystems.elevator.ElevatorIOSim;
 import org.team4639.subsystems.scoring.Scoring;
-import org.team4639.subsystems.scoring.ScoringConstants;
 import org.team4639.subsystems.scoring.ScoringIO;
 import org.team4639.subsystems.scoring.ScoringIOHardware;
 import org.team4639.subsystems.scoring.ScoringIOSim;
 import org.team4639.subsystems.vision.*;
-
-import java.util.Set;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -204,10 +200,17 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-      driver.leftStick().onTrue(Commands.defer(() -> Commands.runOnce(() -> {
-        if (RobotMode.isComp()) RobotMode.setRobotMode((byte) 0b1);
-        else RobotMode.setRobotMode((byte) 0b0);
-      }), Set.of()));
+    driver
+        .leftStick()
+        .onTrue(
+            Commands.defer(
+                () ->
+                    Commands.runOnce(
+                        () -> {
+                          if (RobotMode.isComp()) RobotMode.setRobotMode((byte) 0b1);
+                          else RobotMode.setRobotMode((byte) 0b0);
+                        }),
+                Set.of()));
 
     // Default command, normal field-relative drive
     Subsystems.drive.setDefaultCommand(
@@ -269,11 +272,11 @@ public class RobotContainer {
         .and(RobotMode::isComp)
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)));
 
-        driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
-        driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
+    driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
+    driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
 
-        driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
-        driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
+    driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
+    driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
   }
 
   /**

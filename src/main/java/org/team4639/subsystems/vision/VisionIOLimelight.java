@@ -27,7 +27,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-
 import org.team4639._util.DriverStationUtil;
 
 /** IO implementation for real Limelight hardware. */
@@ -56,11 +55,13 @@ public class VisionIOLimelight implements VisionIO {
     latencySubscriber = table.getDoubleTopic("tl").subscribe(0.0);
     txSubscriber = table.getDoubleTopic("tx").subscribe(0.0);
     tySubscriber = table.getDoubleTopic("ty").subscribe(0.0);
-    megatag1SubscriberBlue = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
+    megatag1SubscriberBlue =
+        table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
     megatag1SubscriberRed = table.getDoubleArrayTopic("botpose_wpired").subscribe(new double[] {});
     megatag2SubscriberBlue =
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
-        megatag2SubscriberRed = table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+    megatag2SubscriberRed =
+        table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
   }
 
   @Override
