@@ -22,6 +22,8 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -52,6 +54,8 @@ import org.team4639.subsystems.scoring.ScoringIO;
 import org.team4639.subsystems.scoring.ScoringIOHardware;
 import org.team4639.subsystems.scoring.ScoringIOSim;
 import org.team4639.subsystems.vision.*;
+
+import java.util.Set;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -198,6 +202,11 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+      driver.leftStick().onTrue(Commands.defer(() -> Commands.runOnce(() -> {
+        if (RobotMode.isComp()) RobotMode.setRobotMode((byte) 0b1);
+        else RobotMode.setRobotMode((byte) 0b0);
+      }), Set.of()));
+
     // Default command, normal field-relative drive
     Subsystems.drive.setDefaultCommand(
         DriveCommands.joystickDrive(
