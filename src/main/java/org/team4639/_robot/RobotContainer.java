@@ -67,6 +67,8 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  private final boolean dummySuperstructure = false;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     FieldConstants.init();
@@ -91,15 +93,20 @@ public class RobotContainer {
                 new VisionIOLimelight(
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation));
 
-        Subsystems.elevator =
-            new Elevator(
-                new ElevatorIOHardware(
-                    new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
-        Subsystems.scoring =
-            new Scoring(
-                new ScoringIOHardware(
-                    new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless),
-                    new LaserCan(IDs.INTAKE_LASERCAN_ID)));
+        if (dummySuperstructure) {
+          Subsystems.elevator = new Elevator(new ElevatorIO() {});
+          Subsystems.scoring = new Scoring(new ScoringIO() {});
+        } else {
+          Subsystems.elevator =
+              new Elevator(
+                  new ElevatorIOHardware(
+                      new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
+          Subsystems.scoring =
+              new Scoring(
+                  new ScoringIOHardware(
+                      new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless),
+                      new LaserCan(IDs.INTAKE_LASERCAN_ID)));
+        }
         break;
 
       case SIM:
