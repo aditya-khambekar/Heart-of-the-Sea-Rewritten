@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.photonvision.PhotonCamera;
+import org.team4639._util.AllianceFlipUtil;
 
 /** IO implementation for real PhotonVision hardware. */
 public class VisionIOPhotonVision implements VisionIO {
@@ -76,6 +77,8 @@ public class VisionIOPhotonVision implements VisionIO {
         // Add tag IDs
         tagIds.addAll(multitagResult.fiducialIDsUsed);
 
+        robotPose = AllianceFlipUtil.flipIfRedAlliance(robotPose);
+
         // Add observation
         poseObservations.add(
             new PoseObservation(
@@ -101,6 +104,8 @@ public class VisionIOPhotonVision implements VisionIO {
 
           // Add tag ID
           tagIds.add((short) target.fiducialId);
+
+          robotPose = AllianceFlipUtil.flipIfRedAlliance(robotPose);
 
           // Add observation
           poseObservations.add(
