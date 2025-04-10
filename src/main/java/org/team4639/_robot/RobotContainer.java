@@ -30,6 +30,7 @@ import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
 import org.team4639._lib.oi.OI;
+import org.team4639._util.AllianceFlipUtil;
 import org.team4639.commands.DriveCommands;
 import org.team4639.commands.SuperstructureCommands;
 import org.team4639.constants.FieldConstants;
@@ -121,17 +122,20 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
 
+        // We flip the vision pose in the VisionIO if Red Alliance, so if we are on red we need to
+        // flip the poses back when we feed them in to maintain the VisionIO being given the Blue
+        // Alliance pose.
         Subsystems.vision =
             new Vision(
                 VisionUpdates.getInstance(),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.cameraLeftName,
                     VisionConstants.robotToCameraLeft,
-                    Subsystems.drive::getPose),
+                    () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.cameraRightName,
                     VisionConstants.robotToCameraRight,
-                    Subsystems.drive::getPose));
+                    () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
 
         Subsystems.elevator =
             new Elevator(
