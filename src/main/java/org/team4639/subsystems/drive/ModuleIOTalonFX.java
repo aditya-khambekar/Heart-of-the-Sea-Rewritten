@@ -41,6 +41,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import java.util.Queue;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team4639.subsystems.drive.generated.TunerConstants;
 
 /**
@@ -226,6 +228,8 @@ public class ModuleIOTalonFX implements ModuleIO {
     timestampQueue.clear();
     drivePositionQueue.clear();
     turnPositionQueue.clear();
+
+    SmartDashboard.putNumber("Modules/"+this+" Current Draw", driveTalon.getStatorCurrent().getValueAsDouble());
   }
 
   @Override

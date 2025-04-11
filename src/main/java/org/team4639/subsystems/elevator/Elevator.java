@@ -117,7 +117,7 @@ public class Elevator extends RSSubsystem implements Sendable {
   }
 
   public Command runVelocity(double velocityRPS) {
-    return run(() -> io.setVelocityControl(velocityRPS));
+    return run(() -> io.setVelocityControl(velocityRPS)).finallyDo(() -> io.setVelocityControl(0));
   }
 
   public boolean atPosition() {
