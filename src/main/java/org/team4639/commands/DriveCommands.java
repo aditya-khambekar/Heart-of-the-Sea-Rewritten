@@ -16,6 +16,7 @@ package org.team4639.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -381,6 +382,8 @@ public class DriveCommands {
     pidY.reset(startingPose.getY());
     pidY.setGoal(destinationPose.getY());
 
+    Debouncer toleranceDebouncer = new Debouncer(0.1);
+
     // PhoenixPIDController pidX = new PhoenixPIDController(6, 0, 0);
     // PhoenixPIDController pidY = new PhoenixPIDController(6, 0, 0);
 
@@ -406,10 +409,10 @@ public class DriveCommands {
                           Rotation2d.fromRadians(headingController.getSetpoint())));
             })
         .until(
-            () ->
-                Math.abs(pidX.getPositionError()) < 0.02
-                    && Math.abs(pidY.getPositionError()) < 0.02
-                    && Math.abs(headingController.getError()) < 0.002);
+            () -> toleranceDebouncer.calculate(Math.abs(pidX.getPositionError()) < 0.01
+            && Math.abs(pidY.getPositionError()) < 0.01
+            && Math.abs(headingController.getError()) < 0.001)
+                );
   }
 
   public static Command robotOrientedDrive(Drive drive, ChassisSpeeds speeds) {
