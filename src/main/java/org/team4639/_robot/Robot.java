@@ -27,6 +27,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.team4639.BuildConstants;
 import org.team4639.Constants;
+import org.team4639._util.AllianceFlipUtil;
 import org.team4639.subsystems.drive.generated.TunerConstants;
 
 /**
@@ -122,6 +123,9 @@ public class Robot extends LoggedRobot {
     // Threads.setCurrentThreadPriority(false, 10);
 
     SmartDashboard.putBoolean("Comp Mode", RobotMode.isComp());
+
+    robotContainer.field.setRobotPose(AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose()));
+    SmartDashboard.putData("Robot/Field", robotContainer.field);
   }
 
   /** This function is called once when the robot is disabled. */
