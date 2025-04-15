@@ -196,8 +196,6 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-
-
   }
 
   /**
@@ -241,18 +239,14 @@ public class RobotContainer {
         .and(RobotModeTriggers.teleop())
         .whileTrue(
             DriveCommands.coralStationAlignLeft(
-                Subsystems.drive,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX()));
+                Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
 
     DriveTriggers.closeToRightStation
         .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
         .whileTrue(
             DriveCommands.coralStationAlignRight(
-                Subsystems.drive,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX()));
+                Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
 
     //    SuperstructureTriggers.intake
     //        .and(RobotMode::isComp)
