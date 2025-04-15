@@ -14,6 +14,8 @@
 package org.team4639.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.Debouncer;
@@ -23,6 +25,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -133,6 +136,65 @@ public class DriveCommands {
               // Get linear velocity
               Translation2d linearVelocity =
                   getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+
+              // Calculate angular speed
+              double omega =
+                  angleController.calculate(
+                      drive.getRotation().getRadians(), rotationSupplier.get().getRadians());
+
+              // Convert to field relative speeds & send command
+              ChassisSpeeds speeds =
+                  new ChassisSpeeds(
+                      linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                      linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                      omega);
+              boolean isFlipped = false;
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      speeds,
+                      isFlipped
+                          ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                          : drive.getRotation()));
+
+              SmartDashboard.putNumber(
+                  "Velocity", Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
+            },
+            drive)
+
+        // Reset PID controller when command starts
+        .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+  }
+
+    /**
+   * Field relative drive command using joystick for linear control and PID for angular control, also includes
+   * a translation vector that allows for dynamic combination of alignment and driver input.
+   * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
+   * absolute rotation with a joystick.
+   */
+  public static Command joystickDriveAtAngleWithTranslationVector(
+      Drive drive,
+      DoubleSupplier xSupplier,
+      DoubleSupplier ySupplier,
+      Supplier<Rotation2d> rotationSupplier,
+      Supplier<Vector<N2>> vectorSupplier) {
+
+    // Create PID controller
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            ANGLE_KP,
+            ANGLE_KI,
+            ANGLE_KD,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    // Construct command
+    return Commands.run(
+            () -> {
+              Vector<N2> joystickInput = VecBuilder.fill(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+              Vector<N2> finalInput = joystickInput.plus(vectorSupplier.get());
+              // Get linear velocity
+              Translation2d linearVelocity =
+                  getLinearVelocityFromJoysticks(finalInput.get(0), finalInput.get(1));
 
               // Calculate angular speed
               double omega =
@@ -417,5 +479,23 @@ public class DriveCommands {
 
   public static Command robotOrientedDrive(Drive drive, ChassisSpeeds speeds) {
     return drive.run(() -> drive.runVelocity(speeds));
+  }
+
+  public static Command coralStationAlignLeft(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier){
+    return joystickDriveAtAngleWithTranslationVector(drive, xSupplier, ySupplier, () -> FieldConstants.CoralStation.leftCenterFace.getRotation(), () -> {
+      double speed = FieldConstants.CoralStation.leftCenterFace.getTranslation().getDistance(drive.getPose().getTranslation())/5;
+      double y = Math.abs(Math.sin(FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()));
+      double x = -Math.abs(Math.cos(FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()));
+      return VecBuilder.fill(x, y);
+    });
+  }
+
+  public static Command coralStationAlignRight(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier){
+    return joystickDriveAtAngleWithTranslationVector(drive, xSupplier, ySupplier, () -> FieldConstants.CoralStation.rightCenterFace.getRotation(), () -> {
+      double speed = FieldConstants.CoralStation.rightCenterFace.getTranslation().getDistance(drive.getPose().getTranslation())/5;
+      double y = -Math.abs(Math.sin(FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians()));
+      double x = -Math.abs(Math.cos(FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians()));
+      return VecBuilder.fill(x, y);
+    });
   }
 }
