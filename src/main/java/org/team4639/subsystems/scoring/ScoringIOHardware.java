@@ -36,6 +36,6 @@ public class ScoringIOHardware implements ScoringIO {
   }
 
   public void runSparkMax(double speed) {
-    spark.set(speed);
+    // spark.set(speed);
   }
 }

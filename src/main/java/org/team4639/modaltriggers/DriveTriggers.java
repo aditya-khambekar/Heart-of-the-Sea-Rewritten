@@ -12,7 +12,7 @@ public class DriveTriggers {
                       .getPose()
                       .getTranslation()
                       .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
-                  < 2.5);
+                  < 1.5);
 
   public static Trigger closeToRightStation =
       new Trigger(
@@ -21,5 +21,5 @@ public class DriveTriggers {
                       .getPose()
                       .getTranslation()
                       .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
-                  < 2.5);
+                  < 1.5);
 }

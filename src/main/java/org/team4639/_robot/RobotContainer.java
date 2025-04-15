@@ -32,11 +32,9 @@ import org.team4639.Constants;
 import org.team4639._lib.oi.OI;
 import org.team4639._util.AllianceFlipUtil;
 import org.team4639.commands.DriveCommands;
-import org.team4639.commands.SuperstructureCommands;
 import org.team4639.constants.FieldConstants;
 import org.team4639.constants.IDs;
 import org.team4639.modaltriggers.DriveTriggers;
-import org.team4639.modaltriggers.SuperstructureTriggers;
 import org.team4639.subsystems.DashboardOutputs;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
@@ -253,28 +251,40 @@ public class RobotContainer {
                 () -> -driver.getLeftX(),
                 FieldConstants.CoralStation.rightCenterFace::getRotation));
 
-    SuperstructureTriggers.intake
-        .and(RobotMode::isComp)
-        .and(RobotModeTriggers.teleop())
-        .whileTrue(Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
-
-    SuperstructureTriggers.raiseElevator
-        .and(RobotMode::isComp)
-        .and(RobotModeTriggers.teleop())
-        .whileTrue(
-            Subsystems.elevator.defer(
-                () ->
-                    Subsystems.elevator
-                        .runToSetpoint(
-                            ElevatorConstants.ProportionToPosition.convert(
-                                ElevatorConstants.Setpoints.SCORE_READY_POSITION))
-                        .withName("Raise Elevator")));
+    //    SuperstructureTriggers.intake
+    //        .and(RobotMode::isComp)
+    //        .and(RobotModeTriggers.teleop())
+    //        .whileTrue(Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
+    //
+    //    SuperstructureTriggers.raiseElevator
+    //        .and(RobotMode::isComp)
+    //        .and(RobotModeTriggers.teleop())
+    //        .whileTrue(
+    //            Subsystems.elevator.defer(
+    //                () ->
+    //                    Subsystems.elevator
+    //                        .runToSetpoint(
+    //                            ElevatorConstants.ProportionToPosition.convert(
+    //                                ElevatorConstants.Setpoints.SCORE_READY_POSITION))
+    //                        .withName("Raise Elevator")));
 
     driver
         .rightTrigger()
         .and(RobotModeTriggers.teleop())
         .and(RobotMode::isComp)
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)));
+
+    driver
+        .leftBumper()
+        .and(RobotModeTriggers.teleop())
+        .and(RobotMode::isComp)
+        .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)));
+
+    driver
+        .rightBumper()
+        .and(RobotModeTriggers.teleop())
+        .and(RobotMode::isComp)
+        .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)));
 
     driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
     driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
