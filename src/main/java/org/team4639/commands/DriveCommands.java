@@ -485,53 +485,41 @@ public class DriveCommands {
 
   public static Command coralStationAlignLeft(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    PIDController xController = new PIDController(24, 0, 0);
+    PIDController yController = new PIDController(24, 0, 0);
+
+    xController.setSetpoint(FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose().getX());
+    yController.setSetpoint(FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose().getY());
+
     return joystickDriveAtAngleWithTranslationVector(
         drive,
         xSupplier,
         ySupplier,
-        () -> FieldConstants.CoralStation.leftCenterFace.getRotation(),
+        FieldConstants.CoralStation.leftCenterFace::getRotation,
         () -> {
-          double speed =
-              FieldConstants.TargetPositions.CORALSTATION_LEFT
-                      .getPose()
-                      .getTranslation()
-                      .getDistance(drive.getPose().getTranslation())
-                  / 2;
-          double y =
-              speed
-                  * -(Math.sin(
-                      FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()));
-          double x =
-              speed
-                  * -(Math.cos(
-                      FieldConstants.CoralStation.leftCenterFace.getRotation().getRadians()));
-          return VecBuilder.fill(x, y);
+          return VecBuilder.fill(
+              MathUtil.clamp(xController.calculate(drive.getPose().getX()), -0.2, 0.2),
+              MathUtil.clamp(yController.calculate(drive.getPose().getY()), -0.2, 0.2));
         });
   }
 
   public static Command coralStationAlignRight(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
+    PIDController xController = new PIDController(24, 0, 0);
+    PIDController yController = new PIDController(24, 0, 0);
+
+    xController.setSetpoint(FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose().getX());
+    yController.setSetpoint(FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose().getY());
+
     return joystickDriveAtAngleWithTranslationVector(
         drive,
         xSupplier,
         ySupplier,
-        () -> FieldConstants.CoralStation.rightCenterFace.getRotation(),
+        FieldConstants.CoralStation.rightCenterFace::getRotation,
         () -> {
-          double speed =
-              FieldConstants.TargetPositions.CORALSTATION_RIGHT
-                      .getPose()
-                      .getTranslation()
-                      .getDistance(drive.getPose().getTranslation())
-                  / 2;
-          double y =
-              speed
-                  * -(Math.sin(
-                      FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians()));
-          double x =
-              speed
-                  * -(Math.cos(
-                      FieldConstants.CoralStation.rightCenterFace.getRotation().getRadians()));
-          return VecBuilder.fill(x, y);
+          return VecBuilder.fill(
+              MathUtil.clamp(xController.calculate(drive.getPose().getX()), -0.2, 0.2),
+              MathUtil.clamp(yController.calculate(drive.getPose().getY()), -0.2, 0.2));
         });
   }
 }
