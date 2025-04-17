@@ -9,7 +9,7 @@ public class ScoringConstants {
   }
 
   static class Currents {
-    public static final double CORAL_INTAKE_CURRENT = Double.POSITIVE_INFINITY;
-    public static final double ALGAE_INTAKE_CURRENT = Double.POSITIVE_INFINITY;
+    public static final double CORAL_INTAKE_CURRENT = 35;
+    public static final double ALGAE_INTAKE_CURRENT = 35;
   }
 }
