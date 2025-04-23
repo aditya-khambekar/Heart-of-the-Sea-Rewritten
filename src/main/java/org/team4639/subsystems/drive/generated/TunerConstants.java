@@ -58,7 +58,7 @@ public class TunerConstants {
   // The stator current at which the wheels start to slip;
   // This needs to be tuned to your individual robot
   private static final Current kSlipCurrent =
-      Amps.of(120.0); // @aditya-khambekar we need to fix this
+      Amps.of(120.0); 
 
   // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
   // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
@@ -71,7 +71,7 @@ public class TunerConstants {
                   // low
                   // stator current limit to help avoid brownouts without impacting performance.
                   .withStatorCurrentLimit(
-                      Amps.of(60)) // @aditya-khambekar I doubt it needs to be this high
+                      Amps.of(60))
                   .withStatorCurrentLimitEnable(true));
   private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
   // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
@@ -91,7 +91,7 @@ public class TunerConstants {
 
   private static final double kDriveGearRatio = 6.122448979591837;
   private static final double kSteerGearRatio = 21.428571428571427;
-  private static final Distance kWheelRadius = Inches.of(2);
+  private static final Distance kWheelRadius = Inches.of(1.9458); //@aditya-khambekar This was changed because Vex Grip-Locks compress a little bit
 
   private static final boolean kInvertLeftSide = false;
   private static final boolean kInvertRightSide = true;
