@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import org.team4639.constants.IDs;
+import org.team4639.elevator.ElevatorConstants;
 
 public class ElevatorIOHardware implements ElevatorIO {
   private final TalonFX leftMotor;
@@ -41,7 +42,7 @@ public class ElevatorIOHardware implements ElevatorIO {
                     .withKV(ElevatorConstants.Params.kv)
                     .withKG(ElevatorConstants.Params.kg)
                     .withGravityType(GravityTypeValue.Elevator_Static))
-            .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(45));
+            .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(ElevatorConstants.statorCurrentLimit));
 
     leftMotor.getConfigurator().apply(configuration);
     control = new MotionMagicVoltage(ElevatorConstants.Setpoints.ELEVATOR_LOWEST_PROPORTION);
