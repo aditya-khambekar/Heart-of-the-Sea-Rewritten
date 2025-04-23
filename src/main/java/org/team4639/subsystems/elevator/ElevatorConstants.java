@@ -45,7 +45,6 @@ public class ElevatorConstants {
   public static double ELEVATOR_TOLERANCE = 0.5;
 
   public static final int statorCurrentLimit = 45;
-  public static final int supplyCurrentLimit = 50;
 
   public static final UnitConvertor<Double, Double> ProportionToPosition =
       UnitConvertor.linearConvertingRange(0, 1, DOWN_POSITION, UP_POSITION);
