@@ -10,11 +10,8 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import org.team4639.constants.IDs;
-import org.team4639.subsystems.elevator.ElevatorConstants;
 
 public class ElevatorIOHardware implements ElevatorIO {
   private final TalonFX leftMotor;
@@ -58,8 +55,10 @@ public class ElevatorIOHardware implements ElevatorIO {
     inputs.encoderMeasurement = leftMotor.getPosition().getValueAsDouble();
     inputs.encoderSpeed = leftMotor.getVelocity().getValueAsDouble();
 
-    SmartDashboard.putNumber("elevator/right motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
-    SmartDashboard.putNumber("elevator/left motor temp", leftMotor.getDeviceTemp().getValueAsDouble());
+    SmartDashboard.putNumber(
+        "elevator/right motor temp", rightMotor.getDeviceTemp().getValueAsDouble());
+    SmartDashboard.putNumber(
+        "elevator/left motor temp", leftMotor.getDeviceTemp().getValueAsDouble());
   }
 
   public void setMotionMagicPosition(double setpointEncoder) {
