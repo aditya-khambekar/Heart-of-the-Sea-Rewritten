@@ -4,6 +4,8 @@ import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.spark.SparkMax;
 
 public class ScoringIOHardware implements ScoringIO {
@@ -33,6 +35,7 @@ public class ScoringIOHardware implements ScoringIO {
               && measurement.distance_mm < 20
               && measurement.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT;
     }
+    SmartDashboard.putNumber("scoring/motor temp", spark.getMotorTemperature());
   }
 
   public void runSparkMax(double speed) {
