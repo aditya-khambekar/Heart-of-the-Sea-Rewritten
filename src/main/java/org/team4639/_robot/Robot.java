@@ -124,7 +124,8 @@ public class Robot extends LoggedRobot {
 
     SmartDashboard.putBoolean("Comp Mode", RobotMode.isComp());
 
-    robotContainer.field.setRobotPose(AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose()));
+    robotContainer.field.setRobotPose(
+        AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose()));
     SmartDashboard.putData("Robot/Field", robotContainer.field);
   }
 
