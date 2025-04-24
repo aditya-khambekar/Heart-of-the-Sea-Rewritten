@@ -4,9 +4,8 @@ import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ScoringIOHardware implements ScoringIO {
   SparkMax spark;
