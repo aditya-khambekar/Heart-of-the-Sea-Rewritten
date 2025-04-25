@@ -54,4 +54,9 @@ public class AutoFactory {
     public static Command compileCoralIntakeSegment(CoralIntakeSegment segment) {
         return SuperstructureCommands.intakeCoral();
     }
+
+    //TODO: write pathfind to pose for this as well
+    public static Command compileAlgaeIntakeSegment(AlgaeIntakeSegment segment) {
+        return SuperstructureCommands.intakeAlgae();
+    }
 }
