@@ -19,24 +19,24 @@ public class ElevatorConstants {
   }
 
   public static class Setpoints {
-    @Untuned public static final double IDLE_Proportion = 0.04;
-    public static final double HP_Proportion = 0.048;
-    public static final double Processor_Proportion = 0.0513;
-    public static final double L1_Proportion = 0.15;
+    @Untuned public static final double IDLE_PROPORTION = 0.04;
+    public static final double HP_PROPORTION = 0.048;
+    public static final double PROCESSOR_PROPORTION = 0.0513;
+    public static final double L1_PROPORTION = 0.15;
 
-    public static final double L2_Proportion = 0.2893; // 0.28
-    public static final double L3_Proportion = 0.496; // 0.481
-    public static final double L4_Proportion = 0.85635;
+    public static final double L2_PROPORTION = 0.2893; // 0.28
+    public static final double L3_PROPORTION = 0.496; // 0.481
+    public static final double L4_PROPORTION = 0.85635;
 
-    public static final double L2_ALGAE_Proportion = 0.32;
-    public static final double L3_ALGAE_Proportion = 0.5054;
-    public static final double Barge_Proportion = .95;
+    public static final double L2_ALGAE_PROPORTION = 0.32;
+    public static final double L3_ALGAE_PROPORTION = 0.5054;
+    public static final double BARGE_PROPORTION = .95;
 
-    public static final double Ground_Intake_Proportion = 0.0;
-    public static final double Homing_Proportion = 0.0;
+    public static final double GROUND_INTAKE_PROPORTION = 0.0;
+    public static final double HOMING_PROPORTION = 0.0;
     public static final double ELEVATOR_LOWEST_PROPORTION = 0.0;
 
-    public static final double SCORE_READY_POSITION = 0.35;
+    public static final double SCORE_READY_PROPORTION = 0.35;
   }
 
   public static double UP_POSITION = 64;

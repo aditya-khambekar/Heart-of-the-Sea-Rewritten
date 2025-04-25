@@ -22,12 +22,12 @@ public class AutoFactory {
     // TODO: PID to pose instead of closest
     public static Command compileCoralScoringSegment(CoralScoringSegment segment){
         var elevatorSetpoint = switch(segment.level){
-            case 1 -> ElevatorConstants.Setpoints.L1_Proportion;
-            case 2 -> ElevatorConstants.Setpoints.L2_Proportion;
-            case 3 -> ElevatorConstants.Setpoints.L3_Proportion;
-            case 4 -> ElevatorConstants.Setpoints.L4_Proportion;
+            case 1 -> ElevatorConstants.Setpoints.L1_PROPORTION;
+            case 2 -> ElevatorConstants.Setpoints.L2_PROPORTION;
+            case 3 -> ElevatorConstants.Setpoints.L3_PROPORTION;
+            case 4 -> ElevatorConstants.Setpoints.L4_PROPORTION;
 
-            default -> ElevatorConstants.Setpoints.SCORE_READY_POSITION;
+            default -> ElevatorConstants.Setpoints.SCORE_READY_PROPORTION;
         };
 
         var direction = switch(segment.location){

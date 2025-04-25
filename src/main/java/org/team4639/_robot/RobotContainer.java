@@ -231,7 +231,7 @@ public class RobotContainer {
                 Subsystems.elevator
                     .runToSetpoint(
                         ElevatorConstants.ProportionToPosition.convert(
-                            ElevatorConstants.Setpoints.IDLE_Proportion))
+                            ElevatorConstants.Setpoints.IDLE_PROPORTION))
                     .withName("Default")));
 
     DriveTriggers.closeToLeftStation

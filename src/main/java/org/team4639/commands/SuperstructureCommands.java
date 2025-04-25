@@ -14,7 +14,7 @@ public class SuperstructureCommands {
             Subsystems.elevator
                 .runToSetpoint(
                     ElevatorConstants.ProportionToPosition.convert(
-                        ElevatorConstants.Setpoints.HP_Proportion))
+                        ElevatorConstants.Setpoints.HP_PROPORTION))
                 .until(Subsystems.elevator::atPosition),
             Subsystems.scoring.intakeCoral());
     return command;
@@ -33,7 +33,7 @@ public class SuperstructureCommands {
             direction == 0
                 ? DriveCommands.reefAlignLeft(Subsystems.drive)
                 : DriveCommands.reefAlignRight(Subsystems.drive),
-            Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_POSITION)),
+            Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
         Subsystems.elevator
             .runToSetpoint(scoringPositionSetpoint)
             .until(Subsystems.elevator::atPosition),
@@ -49,13 +49,13 @@ public class SuperstructureCommands {
             FieldConstants.ReefCenterPoseToAlgaeLocation.keySet().stream().toList());
     double elevatorSetpointProportion =
         FieldConstants.ReefCenterPoseToAlgaeLocation.get(nearestReefFacePose) == 0b0
-            ? ElevatorConstants.Setpoints.L2_ALGAE_Proportion
-            : ElevatorConstants.Setpoints.L3_ALGAE_Proportion;
+            ? ElevatorConstants.Setpoints.L2_ALGAE_PROPORTION
+            : ElevatorConstants.Setpoints.L3_ALGAE_PROPORTION;
 
     return Commands.sequence(
         Commands.deadline(
             DriveCommands.reefAlign(Subsystems.drive),
-            Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_POSITION)),
+            Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
         Subsystems.elevator
             .runToSetpoint(
                 ElevatorConstants.ProportionToPosition.convert(elevatorSetpointProportion))
