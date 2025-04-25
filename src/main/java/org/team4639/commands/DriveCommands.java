@@ -522,4 +522,9 @@ public class DriveCommands {
               MathUtil.clamp(yController.calculate(drive.getPose().getY()), -0.2, 0.2));
         });
   }
+
+  public static Command pathFindTo(Drive drive, Pose2d pose){
+    //TODO: this
+    return Commands.none();
+  }
 }
