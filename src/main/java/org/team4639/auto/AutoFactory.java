@@ -20,7 +20,7 @@ public class AutoFactory {
     public static record AlgaeIntakeSegment(char[] location){}
 
     // TODO: PID to pose instead of closest
-    public Command compileCoralScoringSegment(CoralScoringSegment segment){
+    public static Command compileCoralScoringSegment(CoralScoringSegment segment){
         var elevatorSetpoint = switch(segment.level){
             case 1 -> ElevatorConstants.Setpoints.L1_Proportion;
             case 2 -> ElevatorConstants.Setpoints.L2_Proportion;
@@ -48,5 +48,10 @@ public class AutoFactory {
         };
 
         return SuperstructureCommands.score(elevatorSetpoint, direction);
+    }
+
+    //TODO: pathfind to pose before doing this, probably unnecessary but
+    public static Command compileCoralIntakeSegment(CoralIntakeSegment segment) {
+        return SuperstructureCommands.intakeCoral();
     }
 }
