@@ -523,8 +523,8 @@ public class DriveCommands {
         });
   }
 
-  public static Command pathFindTo(Drive drive, Pose2d pose){
-    //TODO: this
+  public static Command pathFindTo(Drive drive, Pose2d pose) {
+    // TODO: this
     return Commands.none();
   }
 }
