@@ -63,8 +63,8 @@ import org.team4639.subsystems.vision.*;
  */
 public class RobotContainer {
   // Controller
-  private final CommandXboxController driver = OI.driver;
-  private final CommandXboxController operator = OI.operator;
+  public static final CommandXboxController driver = OI.driver;
+  public static final CommandXboxController operator = OI.operator;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
