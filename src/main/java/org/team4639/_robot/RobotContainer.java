@@ -96,7 +96,9 @@ public class RobotContainer {
                 new VisionIOLimelight(
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
-                    VisionConstants.cameraRightName, Subsystems.drive::getRotation));
+                    VisionConstants.cameraRightName, Subsystems.drive::getRotation),
+                new VisionIOLimelight(
+                    VisionConstants.cameraLeftName, Subsystems.drive::getRotation));
 
         if (dummySuperstructure) {
           Subsystems.elevator = new Elevator(new ElevatorIO() {});
@@ -137,6 +139,10 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     VisionConstants.cameraRightName,
                     VisionConstants.robotToCameraRight,
+                    () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.cameraBackName,
+                    VisionConstants.robotToCameraBack,
                     () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
 
         Subsystems.elevator =
