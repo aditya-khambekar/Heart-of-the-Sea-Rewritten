@@ -36,6 +36,7 @@ import org.team4639.commands.DriveCommands;
 import org.team4639.constants.FieldConstants;
 import org.team4639.constants.IDs;
 import org.team4639.modaltriggers.DriveTriggers;
+import org.team4639.modaltriggers.IOTriggers;
 import org.team4639.subsystems.DashboardOutputs;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
@@ -237,6 +238,7 @@ public class RobotContainer {
     DriveTriggers.closeToLeftStation
         .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
+        .and(IOTriggers.hasDriverRotationalInput.negate())
         .whileTrue(
             DriveCommands.coralStationAlignLeft(
                 Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
@@ -244,6 +246,7 @@ public class RobotContainer {
     DriveTriggers.closeToRightStation
         .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
+        .and(IOTriggers.hasDriverRotationalInput.negate())
         .whileTrue(
             DriveCommands.coralStationAlignRight(
                 Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
