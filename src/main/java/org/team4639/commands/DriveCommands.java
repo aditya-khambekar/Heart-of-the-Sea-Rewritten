@@ -62,7 +62,7 @@ public class DriveCommands {
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
     // Square magnitude for more precise control
-    linearMagnitude = linearMagnitude * linearMagnitude;
+    linearMagnitude = 2 * linearMagnitude * linearMagnitude;
 
     // Return new linear velocity
     return new Pose2d(new Translation2d(), linearDirection)
@@ -408,6 +408,17 @@ public class DriveCommands {
     return PIDto(drive, startPose, nearestReefPose);
   }
 
+  public static Command alignHeadOn(Drive drive, Pose2d destination) {
+    var drivePose = drive.getPose();
+    var dist =
+        Math.max(
+            Math.abs(destination.getX() - drivePose.getX()),
+            Math.abs(destination.getY() - drivePose.getY()));
+    Pose2d startPose = destination.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+
+    return PIDto(drive, startPose, destination);
+  }
+
   public static Command reefAlignRight(Drive drive) {
     Pose2d drivePose = drive.getPose();
 
@@ -479,11 +490,61 @@ public class DriveCommands {
                         && Math.abs(headingController.getError()) < 0.001));
   }
 
+  public static Command PIDtowithVelocityReset(
+      Drive drive, Pose2d startingPose, Pose2d destinationPose) {
+    ProfiledPIDController pidX =
+        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    ProfiledPIDController pidY =
+        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    PIDController headingController = new PIDController(16, 0, 0);
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
+    headingController.setSetpoint(destinationPose.getRotation().getRadians());
+
+    pidX.reset(startingPose.getX(), drive.getSpeeds().get(0));
+    pidX.setGoal(destinationPose.getX());
+
+    pidY.reset(startingPose.getY(), drive.getSpeeds().get(1));
+    pidY.setGoal(destinationPose.getY());
+
+    Debouncer toleranceDebouncer = new Debouncer(0.1);
+
+    // PhoenixPIDController pidX = new PhoenixPIDController(6, 0, 0);
+    // PhoenixPIDController pidY = new PhoenixPIDController(6, 0, 0);
+
+    double kp = 6;
+
+    return drive
+        .run(
+            () -> {
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      new ChassisSpeeds(
+                          pidX.calculate(drive.getPose().getX()),
+                          pidY.calculate(drive.getPose().getY()),
+                          headingController.calculate(drive.getPose().getRotation().getRadians())),
+                      drive.getPose().getRotation()));
+              drive
+                  .getField()
+                  .getObject("PID Setpoint")
+                  .setPose(
+                      new Pose2d(
+                          pidX.getSetpoint().position,
+                          pidY.getSetpoint().position,
+                          Rotation2d.fromRadians(headingController.getSetpoint())));
+            })
+        .until(
+            () ->
+                toleranceDebouncer.calculate(
+                    Math.abs(pidX.getPositionError()) < 0.01
+                        && Math.abs(pidY.getPositionError()) < 0.01
+                        && Math.abs(headingController.getError()) < 0.001));
+  }
+
   public static Command robotOrientedDrive(Drive drive, ChassisSpeeds speeds) {
     return drive.run(() -> drive.runVelocity(speeds));
   }
 
-  public static Command coralStationAlignLeft(
+  public static Command vectorCoralStationAlignLeft(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
     PIDController xController = new PIDController(24, 0, 0);
     PIDController yController = new PIDController(24, 0, 0);
@@ -492,18 +553,22 @@ public class DriveCommands {
     yController.setSetpoint(FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose().getY());
 
     return joystickDriveAtAngleWithTranslationVector(
-        drive,
-        xSupplier,
-        ySupplier,
-        FieldConstants.CoralStation.leftCenterFace::getRotation,
-        () -> {
-          return VecBuilder.fill(
-              MathUtil.clamp(xController.calculate(drive.getPose().getX()), -0.2, 0.2),
-              MathUtil.clamp(yController.calculate(drive.getPose().getY()), -0.2, 0.2));
-        });
+            drive,
+            xSupplier,
+            ySupplier,
+            FieldConstants.CoralStation.leftCenterFace::getRotation,
+            () -> {
+              return VecBuilder.fill(
+                  MathUtil.clamp(xController.calculate(drive.getPose().getX()), -0.2, 0.2),
+                  MathUtil.clamp(yController.calculate(drive.getPose().getY()), -0.2, 0.2));
+            })
+        .until(
+            () ->
+                (Math.abs(xController.getError()) < 0.01
+                    && Math.abs(yController.getError()) < 0.0));
   }
 
-  public static Command coralStationAlignRight(
+  public static Command vectorCoralStationAlignRight(
       Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier) {
     PIDController xController = new PIDController(24, 0, 0);
     PIDController yController = new PIDController(24, 0, 0);
@@ -512,15 +577,29 @@ public class DriveCommands {
     yController.setSetpoint(FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose().getY());
 
     return joystickDriveAtAngleWithTranslationVector(
-        drive,
-        xSupplier,
-        ySupplier,
-        FieldConstants.CoralStation.rightCenterFace::getRotation,
-        () -> {
-          return VecBuilder.fill(
-              MathUtil.clamp(xController.calculate(drive.getPose().getX()), -0.2, 0.2),
-              MathUtil.clamp(yController.calculate(drive.getPose().getY()), -0.2, 0.2));
-        });
+            drive,
+            xSupplier,
+            ySupplier,
+            FieldConstants.CoralStation.rightCenterFace::getRotation,
+            () -> {
+              return VecBuilder.fill(
+                  MathUtil.clamp(xController.calculate(drive.getPose().getX()), -0.2, 0.2),
+                  MathUtil.clamp(yController.calculate(drive.getPose().getY()), -0.2, 0.2));
+            })
+        .until(
+            () ->
+                (Math.abs(xController.getError()) < 0.01
+                    && Math.abs(yController.getError()) < 0.0));
+  }
+
+  public static Command coralStationAlignLeft(Drive drive) {
+    return PIDtowithVelocityReset(
+        drive, drive.getPose(), FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose());
+  }
+
+  public static Command coralStationAlignRight(Drive drive) {
+    return PIDtowithVelocityReset(
+        drive, drive.getPose(), FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose());
   }
 
   public static Command pathFindTo(Drive drive, Pose2d pose) {

@@ -1,66 +1,104 @@
 package org.team4639.auto;
 
-import edu.wpi.first.math.geometry.Pose2d;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.json.simple.parser.ParseException;
+import org.team4639._robot.Subsystems;
+import org.team4639.commands.DriveCommands;
 import org.team4639.commands.SuperstructureCommands;
+import org.team4639.constants.FieldConstants;
 import org.team4639.subsystems.elevator.ElevatorConstants;
 
 public class AutoFactory {
 
-  public static Command compileAuton() {
-
-    return Commands.none();
-  }
-
-  public static record CoralScoringSegment(char location, int level) {}
-
-  public static record AlgaeScoringSegment(Pose2d scoringPose) {}
-
-  public static record CoralIntakeSegment(char intakeStationLocation) {}
-
-  public static record AlgaeIntakeSegment(char[] location) {}
-
-  // TODO: PID to pose instead of closest
-  public static Command compileCoralScoringSegment(CoralScoringSegment segment) {
-    var elevatorSetpoint =
-        switch (segment.level) {
+  public static Command alignAndScore(FieldConstants.TargetPositions target, int level) {
+    return SuperstructureCommands.score(
+        switch (level) {
           case 1 -> ElevatorConstants.Setpoints.L1_PROPORTION;
           case 2 -> ElevatorConstants.Setpoints.L2_PROPORTION;
           case 3 -> ElevatorConstants.Setpoints.L3_PROPORTION;
           case 4 -> ElevatorConstants.Setpoints.L4_PROPORTION;
-
-          default -> ElevatorConstants.Setpoints.SCORE_READY_PROPORTION;
-        };
-
-    var direction =
-        switch (segment.location) {
-          case 'A' -> 0b0;
-          case 'B' -> 0b1;
-          case 'C' -> 0b0;
-          case 'D' -> 0b1;
-          case 'E' -> 0b0;
-          case 'F' -> 0b1;
-          case 'G' -> 0b0;
-          case 'H' -> 0b1;
-          case 'I' -> 0b0;
-          case 'J' -> 0b1;
-          case 'K' -> 0b0;
-          case 'L' -> 0b1;
-
-          default -> 0b0;
-        };
-
-    return SuperstructureCommands.score(elevatorSetpoint, direction);
+          default -> throw new IllegalStateException("Unexpected value: " + level);
+        },
+        target.getPose());
   }
 
-  // TODO: pathfind to pose before doing this, probably unnecessary but
-  public static Command compileCoralIntakeSegment(CoralIntakeSegment segment) {
-    return SuperstructureCommands.intakeCoral();
+  public static enum Locations {
+    RS,
+    RHP,
+    LHP,
+    A,
+    B,
+    C,
+    D,
+    E,
+    F,
+    G,
+    H,
+    I,
+    J,
+    K,
+    L;
   }
 
-  // TODO: write pathfind to pose for this as well
-  public static Command compileAlgaeIntakeSegment(AlgaeIntakeSegment segment) {
-    return SuperstructureCommands.intakeAlgae();
+  public static Command compileAuto(Locations... locations) {
+    List<Command> commands = new ArrayList<>();
+    for (int i = 0; i < locations.length - 1; i++) {
+      try {
+        var path = PathPlannerPath.fromChoreoTrajectory(locations[i] + "-" + locations[i + 1]);
+        commands.add(AutoBuilder.followPath(path));
+        commands.add(
+            switch (locations[i + 1]) {
+              case RHP -> DriveCommands.coralStationAlignRight(Subsystems.drive);
+              case LHP -> DriveCommands.coralStationAlignLeft(Subsystems.drive);
+              case A -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_A.getPose());
+              case B -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_B.getPose());
+              case C -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_C.getPose());
+              case D -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_D.getPose());
+              case E -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_E.getPose());
+              case F -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_F.getPose());
+              case G -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_G.getPose());
+              case H -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_H.getPose());
+              case I -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_I.getPose());
+              case J -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_J.getPose());
+              case K -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_K.getPose());
+              case L -> SuperstructureCommands.score(
+                  ElevatorConstants.Setpoints.L4_PROPORTION,
+                  FieldConstants.TargetPositions.REEF_L.getPose());
+              case RS -> throw new IllegalArgumentException("what the fuck");
+            });
+      } catch (IOException | ParseException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    return Commands.sequence(commands.toArray(new Command[0]));
   }
 }

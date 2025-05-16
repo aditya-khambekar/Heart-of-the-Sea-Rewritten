@@ -246,7 +246,7 @@ public class RobotContainer {
         .and(RobotModeTriggers.teleop())
         .and(IOTriggers.hasDriverRotationalInput.negate())
         .whileTrue(
-            DriveCommands.coralStationAlignLeft(
+            DriveCommands.vectorCoralStationAlignLeft(
                 Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
 
     DriveTriggers.closeToRightStation
@@ -254,7 +254,7 @@ public class RobotContainer {
         .and(RobotModeTriggers.teleop())
         .and(IOTriggers.hasDriverRotationalInput.negate())
         .whileTrue(
-            DriveCommands.coralStationAlignRight(
+            DriveCommands.vectorCoralStationAlignRight(
                 Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
 
     //    SuperstructureTriggers.intake

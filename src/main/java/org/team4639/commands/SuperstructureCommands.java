@@ -1,5 +1,6 @@
 package org.team4639.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -33,6 +34,19 @@ public class SuperstructureCommands {
             direction == 0
                 ? DriveCommands.reefAlignLeft(Subsystems.drive)
                 : DriveCommands.reefAlignRight(Subsystems.drive),
+            Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
+        Subsystems.elevator
+            .runToSetpoint(scoringPositionSetpoint)
+            .until(Subsystems.elevator::atPosition),
+        Commands.deadline(
+            Subsystems.scoring.intakeCoral(),
+            Subsystems.elevator.runToSetpoint(scoringPositionSetpoint)));
+  }
+
+  public static Command score(double scoringPositionSetpoint, Pose2d destinationPose) {
+    return Commands.sequence(
+        Commands.deadline(
+            DriveCommands.alignHeadOn(Subsystems.drive, destinationPose),
             Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
         Subsystems.elevator
             .runToSetpoint(scoringPositionSetpoint)
