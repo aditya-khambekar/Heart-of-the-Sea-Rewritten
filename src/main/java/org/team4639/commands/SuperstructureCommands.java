@@ -43,17 +43,24 @@ public class SuperstructureCommands {
             Subsystems.elevator.runToSetpoint(scoringPositionSetpoint)));
   }
 
+  // TODO: Uncomment scoring logic when elevator done
   public static Command score(double scoringPositionSetpoint, Pose2d destinationPose) {
-    return Commands.sequence(
-        Commands.deadline(
-            DriveCommands.alignHeadOn(Subsystems.drive, destinationPose),
-            Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
-        Subsystems.elevator
-            .runToSetpoint(scoringPositionSetpoint)
-            .until(Subsystems.elevator::atPosition),
-        Commands.deadline(
-            Subsystems.scoring.intakeCoral(),
-            Subsystems.elevator.runToSetpoint(scoringPositionSetpoint)));
+    //    return Commands.sequence(
+    //        Commands.deadline(
+    //            Subsystems.drive.defer(
+    //                () -> DriveCommands.alignHeadOn(Subsystems.drive, destinationPose)),
+    //
+    // Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
+    //        Subsystems.elevator
+    //            .runToSetpoint(scoringPositionSetpoint)
+    //            .until(Subsystems.elevator::atPosition),
+    //        Commands.deadline(
+    //            Subsystems.scoring.intakeCoral(),
+    //            Subsystems.elevator.runToSetpoint(scoringPositionSetpoint)));
+    return Subsystems.drive.defer(
+        () ->
+            DriveCommands.PIDtowithVelocityReset(
+                Subsystems.drive, Subsystems.drive.getPose(), destinationPose));
   }
 
   public static Command intakeAlgae() {

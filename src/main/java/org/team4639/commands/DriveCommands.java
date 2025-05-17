@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.team4639._robot.Subsystems;
 import org.team4639._util.PoseUtil;
 import org.team4639.constants.FieldConstants;
 import org.team4639.subsystems.drive.Drive;
@@ -416,7 +417,7 @@ public class DriveCommands {
             Math.abs(destination.getY() - drivePose.getY()));
     Pose2d startPose = destination.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
 
-    return PIDto(drive, startPose, destination);
+    return PIDtowithVelocityReset(drive, startPose, destination);
   }
 
   public static Command reefAlignRight(Drive drive) {
@@ -451,9 +452,11 @@ public class DriveCommands {
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
 
     pidX.reset(startingPose.getX());
+    // pidX.reset(drive.getPose().getX());
     pidX.setGoal(destinationPose.getX());
 
     pidY.reset(startingPose.getY());
+    // pidY.reset(drive.getPose().getY());
     pidY.setGoal(destinationPose.getY());
 
     Debouncer toleranceDebouncer = new Debouncer(0.1);
@@ -481,6 +484,14 @@ public class DriveCommands {
                           pidX.getSetpoint().position,
                           pidY.getSetpoint().position,
                           Rotation2d.fromRadians(headingController.getSetpoint())));
+              drive
+                  .getField()
+                  .getObject("PID Goal")
+                  .setPose(
+                      new Pose2d(
+                          pidX.getGoal().position,
+                          pidY.getGoal().position,
+                          Rotation2d.fromRadians(headingController.getSetpoint())));
             })
         .until(
             () ->
@@ -493,17 +504,17 @@ public class DriveCommands {
   public static Command PIDtowithVelocityReset(
       Drive drive, Pose2d startingPose, Pose2d destinationPose) {
     ProfiledPIDController pidX =
-        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(3, 3));
     ProfiledPIDController pidY =
-        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(3, 3));
     PIDController headingController = new PIDController(16, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
 
-    pidX.reset(startingPose.getX(), drive.getSpeeds().get(0));
+    pidX.reset(startingPose.getX(), drive.getSpeeds()[0]);
     pidX.setGoal(destinationPose.getX());
 
-    pidY.reset(startingPose.getY(), drive.getSpeeds().get(1));
+    pidY.reset(startingPose.getY(), drive.getSpeeds()[1]);
     pidY.setGoal(destinationPose.getY());
 
     Debouncer toleranceDebouncer = new Debouncer(0.1);
@@ -519,8 +530,8 @@ public class DriveCommands {
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       new ChassisSpeeds(
-                          pidX.calculate(drive.getPose().getX()),
-                          pidY.calculate(drive.getPose().getY()),
+                          pidX.getSetpoint().velocity + pidX.calculate(drive.getPose().getX()),
+                          pidY.getSetpoint().velocity + pidY.calculate(drive.getPose().getY()),
                           headingController.calculate(drive.getPose().getRotation().getRadians())),
                       drive.getPose().getRotation()));
               drive
@@ -593,13 +604,21 @@ public class DriveCommands {
   }
 
   public static Command coralStationAlignLeft(Drive drive) {
-    return PIDtowithVelocityReset(
-        drive, drive.getPose(), FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose());
+    return Subsystems.drive.defer(
+        () ->
+            PIDtowithVelocityReset(
+                drive,
+                drive.getPose(),
+                FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose()));
   }
 
   public static Command coralStationAlignRight(Drive drive) {
-    return PIDtowithVelocityReset(
-        drive, drive.getPose(), FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose());
+    return Subsystems.drive.defer(
+        () ->
+            PIDtowithVelocityReset(
+                drive,
+                drive.getPose(),
+                FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose()));
   }
 
   public static Command pathFindTo(Drive drive, Pose2d pose) {

@@ -2,6 +2,7 @@ package org.team4639.auto;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.io.IOException;
@@ -16,20 +17,9 @@ import org.team4639.subsystems.elevator.ElevatorConstants;
 
 public class AutoFactory {
 
-  public static Command alignAndScore(FieldConstants.TargetPositions target, int level) {
-    return SuperstructureCommands.score(
-        switch (level) {
-          case 1 -> ElevatorConstants.Setpoints.L1_PROPORTION;
-          case 2 -> ElevatorConstants.Setpoints.L2_PROPORTION;
-          case 3 -> ElevatorConstants.Setpoints.L3_PROPORTION;
-          case 4 -> ElevatorConstants.Setpoints.L4_PROPORTION;
-          default -> throw new IllegalStateException("Unexpected value: " + level);
-        },
-        target.getPose());
-  }
-
   public static enum Locations {
     RS,
+    LS,
     RHP,
     LHP,
     A,
@@ -48,9 +38,17 @@ public class AutoFactory {
 
   public static Command compileAuto(Locations... locations) {
     List<Command> commands = new ArrayList<>();
+    List<PathPlannerPath> paths = new ArrayList<>();
     for (int i = 0; i < locations.length - 1; i++) {
       try {
         var path = PathPlannerPath.fromChoreoTrajectory(locations[i] + "-" + locations[i + 1]);
+        paths.add(path);
+        if (i == 0)
+          commands.add(
+              Commands.runOnce(
+                  () ->
+                      Subsystems.drive.setPose(
+                          path.getStartingHolonomicPose().orElse(new Pose2d()))));
         commands.add(AutoBuilder.followPath(path));
         commands.add(
             switch (locations[i + 1]) {
@@ -92,13 +90,68 @@ public class AutoFactory {
               case L -> SuperstructureCommands.score(
                   ElevatorConstants.Setpoints.L4_PROPORTION,
                   FieldConstants.TargetPositions.REEF_L.getPose());
-              case RS -> throw new IllegalArgumentException("what the fuck");
+              case RS, LS -> throw new IllegalArgumentException("what the fuck");
             });
       } catch (IOException | ParseException e) {
+        System.err.println(locations[i] + "-" + locations[i + 1]);
         throw new RuntimeException(e);
       }
     }
+    //    commands.add(
+    //        0,
+    //        Commands.runOnce(
+    //            () -> {
+    //              for (PathPlannerPath path : paths) {
+    //                Subsystems.drive
+    //                    .getField()
+    //                    .getObject(path.toString())
+    //                    .setPoses(path.getPathPoses());
+    //              }
+    //            }));
+       return Commands.sequence(commands.toArray(new Command[0]));
+  }
 
-    return Commands.sequence(commands.toArray(new Command[0]));
+  public static Command RS_F_E_D_C() {
+    return compileAuto(
+        Locations.RS,
+        Locations.F,
+        Locations.RHP,
+        Locations.E,
+        Locations.RHP,
+        Locations.D,
+        Locations.RHP,
+        Locations.C);
+  }
+
+  public static Command RS_F_E_D() {
+    return compileAuto(
+        Locations.RS, Locations.F, Locations.RHP, Locations.E, Locations.RHP, Locations.D);
+  }
+
+  public static Command RS_E_D_C() {
+    return compileAuto(
+        Locations.RS, Locations.E, Locations.RHP, Locations.D, Locations.RHP, Locations.C);
+  }
+
+  public static Command LS_I_J_K_L() {
+    return compileAuto(
+        Locations.LS,
+        Locations.I,
+        Locations.LHP,
+        Locations.J,
+        Locations.LHP,
+        Locations.K,
+        Locations.LHP,
+        Locations.L);
+  }
+
+  public static Command LS_I_J_K() {
+    return compileAuto(
+        Locations.LS, Locations.I, Locations.LHP, Locations.J, Locations.LHP, Locations.K);
+  }
+
+  public static Command LS_J_K_L() {
+    return compileAuto(
+        Locations.LS, Locations.J, Locations.LHP, Locations.K, Locations.LHP, Locations.L);
   }
 }

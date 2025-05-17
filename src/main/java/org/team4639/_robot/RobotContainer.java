@@ -32,6 +32,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
 import org.team4639._lib.oi.OI;
 import org.team4639._util.AllianceFlipUtil;
+import org.team4639.auto.AutoFactory;
 import org.team4639.commands.DriveCommands;
 import org.team4639.constants.FieldConstants;
 import org.team4639.constants.IDs;
@@ -183,6 +184,12 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
+    autoChooser.addOption("RS-F-E-D-C", AutoFactory.RS_F_E_D_C());
+    autoChooser.addOption("RS-F-E-D", AutoFactory.RS_F_E_D());
+    autoChooser.addOption("RS-E-D-C", AutoFactory.RS_E_D_C());
+    autoChooser.addOption("LS-I-J-K-L", AutoFactory.LS_I_J_K_L());
+    autoChooser.addOption("LS-I-J-K", AutoFactory.LS_I_J_K());
+    autoChooser.addOption("LS-J-K-L", AutoFactory.LS_J_K_L());
     autoChooser.addOption(
         "Drive Wheel Radius Characterization",
         DriveCommands.wheelRadiusCharacterization(Subsystems.drive));
