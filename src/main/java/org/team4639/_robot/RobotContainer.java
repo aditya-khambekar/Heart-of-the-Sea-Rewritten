@@ -79,6 +79,7 @@ public class RobotContainer {
     FieldConstants.init();
     // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
     double x = FieldConstants.fieldLength;
+    var y = IOTriggers.hasDriverJoystickInput;
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
