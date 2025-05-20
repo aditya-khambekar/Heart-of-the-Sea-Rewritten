@@ -150,7 +150,16 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    //    var listPoses = robotContainer.field.getObject("Auto Poses").getPoses();
+    //    listPoses.add(AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose()));
+    //    robotContainer.field.getObject("Auto Poses").setPoses(listPoses);
+  }
+
+  @Override
+  public void autonomousExit() {
+    //    robotContainer.field.getObject("Auto Poses").setPoses();
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override

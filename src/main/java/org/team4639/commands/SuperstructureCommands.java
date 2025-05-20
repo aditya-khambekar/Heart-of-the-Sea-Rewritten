@@ -87,4 +87,35 @@ public class SuperstructureCommands {
                 ElevatorConstants.ProportionToPosition.convert(elevatorSetpointProportion)),
             DriveCommands.robotOrientedDrive(Subsystems.drive, new ChassisSpeeds(0.1, 0.0, 0.0))));
   }
+
+  public static Command intakeAlgae(Pose2d targetPose) {
+    //    var nearestReefFacePose =
+    //        targetPose.nearest(
+    //            FieldConstants.ReefCenterPoseToAlgaeLocation.keySet().stream().toList());
+    //    double elevatorSetpointProportion =
+    //        FieldConstants.ReefCenterPoseToAlgaeLocation.get(nearestReefFacePose) == 0b0
+    //            ? ElevatorConstants.Setpoints.L2_ALGAE_PROPORTION
+    //            : ElevatorConstants.Setpoints.L3_ALGAE_PROPORTION;
+    //
+    //            return Commands.sequence(
+    //        Commands.deadline(
+    //            DriveCommands.reefAlign(Subsystems.drive),
+    //
+    // Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
+    //        Subsystems.elevator
+    //            .runToSetpoint(
+    //                ElevatorConstants.ProportionToPosition.convert(elevatorSetpointProportion))
+    //            .until(Subsystems.elevator::atPosition),
+    //        Commands.deadline(
+    //            Subsystems.scoring.intakeAlgae(),
+    //            Subsystems.elevator.runToSetpoint(
+    //                ElevatorConstants.ProportionToPosition.convert(elevatorSetpointProportion)),
+    //            DriveCommands.robotOrientedDrive(Subsystems.drive, new ChassisSpeeds(0.1, 0.0,
+    // 0.0))));
+
+    return Subsystems.drive.defer(
+        () ->
+            DriveCommands.PIDtowithVelocityReset(
+                Subsystems.drive, Subsystems.drive.getPose(), targetPose));
+  }
 }

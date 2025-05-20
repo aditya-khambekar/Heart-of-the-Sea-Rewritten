@@ -184,6 +184,8 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
+    autoChooser.addOption(
+        "MS_G_ALGH_ALGSC1_ALIJ_ALGSC2", AutoFactory.MS_G_ALGH_ALGSC1_ALIJ_ALGSC2());
     autoChooser.addOption("RS-F-E-D-C", AutoFactory.RS_F_E_D_C());
     autoChooser.addOption("RS-F-E-D", AutoFactory.RS_F_E_D());
     autoChooser.addOption("RS-E-D-C", AutoFactory.RS_E_D_C());

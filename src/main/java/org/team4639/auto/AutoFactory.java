@@ -3,6 +3,8 @@ package org.team4639.auto;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.io.IOException;
@@ -10,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.parser.ParseException;
 import org.team4639._robot.Subsystems;
+import org.team4639.auto.AutoState.eAutoState;
 import org.team4639.commands.DriveCommands;
 import org.team4639.commands.SuperstructureCommands;
 import org.team4639.constants.FieldConstants;
@@ -17,9 +20,10 @@ import org.team4639.subsystems.elevator.ElevatorConstants;
 
 public class AutoFactory {
 
-  public static enum Locations {
+  public enum Locations {
     RS,
     LS,
+    MS,
     RHP,
     LHP,
     A,
@@ -33,7 +37,12 @@ public class AutoFactory {
     I,
     J,
     K,
-    L;
+    L,
+    ALGH,
+    ALIJ,
+    ALGSC1,
+    ALGSC2,
+    ALGSC3;
   }
 
   public static Command compileAuto(Locations... locations) {
@@ -49,7 +58,9 @@ public class AutoFactory {
                   () ->
                       Subsystems.drive.setPose(
                           path.getStartingHolonomicPose().orElse(new Pose2d()))));
+        commands.add(AutoState.setState(eAutoState.PATH));
         commands.add(AutoBuilder.followPath(path));
+        commands.add(AutoState.setState(eAutoState.ALIGN));
         commands.add(
             switch (locations[i + 1]) {
               case RHP -> DriveCommands.coralStationAlignRight(Subsystems.drive);
@@ -90,25 +101,41 @@ public class AutoFactory {
               case L -> SuperstructureCommands.score(
                   ElevatorConstants.Setpoints.L4_PROPORTION,
                   FieldConstants.TargetPositions.REEF_L.getPose());
-              case RS, LS -> throw new IllegalArgumentException("what the fuck");
+              case ALGH -> SuperstructureCommands.intakeAlgae(
+                  FieldConstants.TargetPositions.REEF_GH
+                      .getPose()
+                      .transformBy(new Transform2d(0.2, 0, Rotation2d.kZero)));
+              case ALIJ -> SuperstructureCommands.intakeAlgae(
+                  FieldConstants.TargetPositions.REEF_IJ
+                      .getPose()
+                      .transformBy(new Transform2d(0.2, 0, Rotation2d.kZero)));
+              case ALGSC1 -> Subsystems.drive.defer(
+                  () ->
+                      DriveCommands.PIDtowithVelocityReset(
+                          Subsystems.drive,
+                          Subsystems.drive.getPose(),
+                          FieldConstants.TargetPositions.BARGE_FARCAGE.getPose()));
+              case ALGSC2 -> Subsystems.drive.defer(
+                  () ->
+                      DriveCommands.PIDtowithVelocityReset(
+                          Subsystems.drive,
+                          Subsystems.drive.getPose(),
+                          FieldConstants.TargetPositions.BARGE_MIDDLECAGE.getPose()));
+              case ALGSC3 -> Subsystems.drive.defer(
+                  () ->
+                      DriveCommands.PIDtowithVelocityReset(
+                          Subsystems.drive,
+                          Subsystems.drive.getPose(),
+                          FieldConstants.TargetPositions.BARGE_CLOSECAGE.getPose()));
+              case RS, LS, MS -> throw new IllegalArgumentException("what the fuck");
             });
       } catch (IOException | ParseException e) {
         System.err.println(locations[i] + "-" + locations[i + 1]);
         throw new RuntimeException(e);
       }
     }
-    //    commands.add(
-    //        0,
-    //        Commands.runOnce(
-    //            () -> {
-    //              for (PathPlannerPath path : paths) {
-    //                Subsystems.drive
-    //                    .getField()
-    //                    .getObject(path.toString())
-    //                    .setPoses(path.getPathPoses());
-    //              }
-    //            }));
-       return Commands.sequence(commands.toArray(new Command[0]));
+    commands.add(AutoState.setState(eAutoState.NOT_IN_AUTO));
+    return Commands.sequence(commands.toArray(new Command[0]));
   }
 
   public static Command RS_F_E_D_C() {
@@ -153,5 +180,15 @@ public class AutoFactory {
   public static Command LS_J_K_L() {
     return compileAuto(
         Locations.LS, Locations.J, Locations.LHP, Locations.K, Locations.LHP, Locations.L);
+  }
+
+  public static Command MS_G_ALGH_ALGSC1_ALIJ_ALGSC2() {
+    return compileAuto(
+        Locations.MS,
+        Locations.G,
+        Locations.ALGH,
+        Locations.ALGSC1,
+        Locations.ALIJ,
+        Locations.ALGSC2);
   }
 }
