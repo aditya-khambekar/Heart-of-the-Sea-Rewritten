@@ -191,4 +191,15 @@ public class AutoFactory {
         Locations.ALIJ,
         Locations.ALGSC2);
   }
+
+  public static Command TEST_1MTR() {
+    try {
+      var path = PathPlannerPath.fromChoreoTrajectory("TEST-1MTR");
+      return Commands.runOnce(
+              () -> Subsystems.drive.setPose(path.getStartingHolonomicPose().orElse(new Pose2d())))
+          .andThen(AutoBuilder.followPath(path));
+    } catch (IOException | ParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

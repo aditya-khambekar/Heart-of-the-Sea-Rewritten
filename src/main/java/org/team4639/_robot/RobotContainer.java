@@ -38,6 +38,7 @@ import org.team4639.constants.FieldConstants;
 import org.team4639.constants.IDs;
 import org.team4639.modaltriggers.DriveTriggers;
 import org.team4639.modaltriggers.IOTriggers;
+import org.team4639.modaltriggers.VisionTriggers;
 import org.team4639.subsystems.DashboardOutputs;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.GyroIO;
@@ -184,6 +185,7 @@ public class RobotContainer {
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
+    autoChooser.addOption("TEST_1MTR", AutoFactory.TEST_1MTR());
     autoChooser.addOption(
         "MS_G_ALGH_ALGSC1_ALIJ_ALGSC2", AutoFactory.MS_G_ALGH_ALGSC1_ALIJ_ALGSC2());
     autoChooser.addOption("RS-F-E-D-C", AutoFactory.RS_F_E_D_C());
@@ -254,6 +256,7 @@ public class RobotContainer {
     DriveTriggers.closeToLeftStation
         .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
+        .and(VisionTriggers.visionIsActive())
         .and(IOTriggers.hasDriverRotationalInput.negate())
         .whileTrue(
             DriveCommands.vectorCoralStationAlignLeft(
@@ -262,6 +265,7 @@ public class RobotContainer {
     DriveTriggers.closeToRightStation
         .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
+        .and(VisionTriggers.visionIsActive())
         .and(IOTriggers.hasDriverRotationalInput.negate())
         .whileTrue(
             DriveCommands.vectorCoralStationAlignRight(
@@ -288,18 +292,21 @@ public class RobotContainer {
         .rightTrigger()
         .and(RobotModeTriggers.teleop())
         .and(RobotMode::isComp)
+        .and(VisionTriggers.visionIsActive())
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)));
 
     driver
         .leftBumper()
         .and(RobotModeTriggers.teleop())
         .and(RobotMode::isComp)
+        .and(VisionTriggers.visionIsActive())
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)));
 
     driver
         .rightBumper()
         .and(RobotModeTriggers.teleop())
         .and(RobotMode::isComp)
+        .and(VisionTriggers.visionIsActive())
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)));
 
     driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
