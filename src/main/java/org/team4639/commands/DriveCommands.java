@@ -377,13 +377,15 @@ public class DriveCommands {
                 FieldConstants.TargetPositions.REEF_IJ.getPose(),
                 FieldConstants.TargetPositions.REEF_KL.getPose()));
 
-    var dist =
-        Math.max(
-            Math.abs(nearestReefPose.getX() - drivePose.getX()),
-            Math.abs(nearestReefPose.getY() - drivePose.getY()));
-    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+//    var dist =
+//        Math.max(
+//            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+//            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+//    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+//
+//    return PIDto(drive, startPose, nearestReefPose);
 
-    return PIDto(drive, startPose, nearestReefPose);
+      return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
   }
 
   public static Command reefAlignLeft(Drive drive) {
@@ -400,13 +402,15 @@ public class DriveCommands {
                     FieldConstants.TargetPositions.REEF_IJ.getPose(),
                     FieldConstants.TargetPositions.REEF_KL.getPose())));
 
-    var dist =
-        Math.max(
-            Math.abs(nearestReefPose.getX() - drivePose.getX()),
-            Math.abs(nearestReefPose.getY() - drivePose.getY()));
-    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+//    var dist =
+//        Math.max(
+//            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+//            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+//    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+//
+//    return PIDto(drive, startPose, nearestReefPose);
 
-    return PIDto(drive, startPose, nearestReefPose);
+      return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
   }
 
   public static Command alignHeadOn(Drive drive, Pose2d destination) {
@@ -434,12 +438,14 @@ public class DriveCommands {
                     FieldConstants.TargetPositions.REEF_IJ.getPose(),
                     FieldConstants.TargetPositions.REEF_KL.getPose())));
 
-    var dist =
-        Math.max(
-            Math.abs(nearestReefPose.getX() - drivePose.getX()),
-            Math.abs(nearestReefPose.getY() - drivePose.getY()));
-    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
-    return PIDto(drive, startPose, nearestReefPose);
+//    var dist =
+//        Math.max(
+//            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+//            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+//    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
+//    return PIDto(drive, startPose, nearestReefPose);
+
+      return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
   }
 
   public static Command PIDto(Drive drive, Pose2d startingPose, Pose2d destinationPose) {
