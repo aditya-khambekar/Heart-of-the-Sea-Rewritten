@@ -4,9 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
 import org.team4639._lib.led.pattern.LEDPattern;
-import org.team4639._lib.subsystem.Updatable;
 
-public abstract class LEDStrip extends SubsystemBase implements Updatable {
+public abstract class LEDStrip extends SubsystemBase{
   public abstract void setPattern(LEDPattern pattern);
 
   public abstract void doResetTime();
