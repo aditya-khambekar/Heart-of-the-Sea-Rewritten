@@ -1,4 +1,4 @@
-package org.team4639._lib;
+package org.team4639._lib.unit;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.DistanceUnit;
@@ -6,29 +6,29 @@ import edu.wpi.first.units.measure.Distance;
 import java.util.function.Function;
 
 @SuppressWarnings("unused")
-public interface UnitConvertor<A, B> {
+public interface UnitConverter<A, B> {
   /** Performs the forward unit conversion */
   B convert(A amountA);
 
   /** Performs the inverse unit conversion */
   A convertBackwards(B amountB);
 
-  /** Equivalent to {@link UnitConvertor#compose UnitConvertor.compose(this, next)}. */
-  default <C> UnitConvertor<A, C> then(UnitConvertor<B, C> next) {
+  /** Equivalent to {@link UnitConverter#compose UnitConvertor.compose(this, next)}. */
+  default <C> UnitConverter<A, C> then(UnitConverter<B, C> next) {
     return compose(this, next);
   }
 
-  /** Equivalent to {@link UnitConvertor#invert UnitConvertor.invert(this)}. */
-  default UnitConvertor<B, A> inverted() {
+  /** Equivalent to {@link UnitConverter#invert UnitConvertor.invert(this)}. */
+  default UnitConverter<B, A> inverted() {
     return invert(this);
   }
 
   /**
-   * Returns the inverse of a unit convertor, swapping {@link UnitConvertor#convert} and {@link
-   * UnitConvertor#convertBackwards}
+   * Returns the inverse of a unit convertor, swapping {@link UnitConverter#convert} and {@link
+   * UnitConverter#convertBackwards}
    */
-  static <A, B> UnitConvertor<B, A> invert(UnitConvertor<A, B> convertor) {
-    return new UnitConvertor<>() {
+  static <A, B> UnitConverter<B, A> invert(UnitConverter<A, B> convertor) {
+    return new UnitConverter<>() {
       @Override
       public B convertBackwards(A amountB) {
         return convertor.convert(amountB);
@@ -42,9 +42,9 @@ public interface UnitConvertor<A, B> {
   }
 
   /** Composes unit convertors. */
-  static <A, B, C> UnitConvertor<A, C> compose(
-      UnitConvertor<A, B> convertor1, UnitConvertor<B, C> convertor2) {
-    return new UnitConvertor<>() {
+  static <A, B, C> UnitConverter<A, C> compose(
+      UnitConverter<A, B> convertor1, UnitConverter<B, C> convertor2) {
+    return new UnitConverter<>() {
       @Override
       public C convert(A amountA) {
         return convertor2.convert(convertor1.convert(amountA));
@@ -58,21 +58,21 @@ public interface UnitConvertor<A, B> {
   }
 
   /** Creates a unit converter between units that have a linear relationship */
-  static UnitConvertor<Double, Double> linear(double factor) {
+  static UnitConverter<Double, Double> linear(double factor) {
     return linear(factor, 0, false);
   }
 
   /**
    * Creates a unit converter between units that have a linear relationship, with an offset
    *
-   * @param applyOffsetFirst If true, {@link UnitConvertor#convert convert(x)} returns (x + offset)
+   * @param applyOffsetFirst If true, {@link UnitConverter#convert convert(x)} returns (x + offset)
    *     * factor, otherwise, it returns (x * factor) + offset
    */
-  static UnitConvertor<Double, Double> linear(
+  static UnitConverter<Double, Double> linear(
       double factor, double offset, boolean applyOffsetFirst) {
     double actualOffset = applyOffsetFirst ? offset * factor : offset;
 
-    return new UnitConvertor<>() {
+    return new UnitConverter<>() {
       @Override
       public Double convert(Double amountA) {
         return amountA * factor + actualOffset;
@@ -86,14 +86,14 @@ public interface UnitConvertor<A, B> {
   }
 
   /** Creates a unit convertor that linearly scales a range (minA, maxA) to a range (minB, maxB). */
-  static UnitConvertor<Double, Double> linearConvertingRange(
+  static UnitConverter<Double, Double> linearConvertingRange(
       double minA, double maxA, double minB, double maxB) {
     double factor = (maxB - minB) / (maxA - minA);
     return linear(factor, minB - factor * minA, false);
   }
 
-  static <A, B> UnitConvertor<A, B> create(Function<A, B> forwards, Function<B, A> backwards) {
-    return new UnitConvertor<>() {
+  static <A, B> UnitConverter<A, B> create(Function<A, B> forwards, Function<B, A> backwards) {
+    return new UnitConverter<>() {
       @Override
       public B convert(A amountA) {
         return forwards.apply(amountA);
@@ -106,11 +106,11 @@ public interface UnitConvertor<A, B> {
     };
   }
 
-  static UnitConvertor<Double, Distance> toDistance(DistanceUnit unit) {
+  static UnitConverter<Double, Distance> toDistance(DistanceUnit unit) {
     return create(unit::of, distance -> distance.in(unit));
   }
 
-  static UnitConvertor<Double, Rotation2d> radiansToRotation2d() {
+  static UnitConverter<Double, Rotation2d> radiansToRotation2d() {
     return create(Rotation2d::fromRadians, Rotation2d::getRadians);
   }
 }

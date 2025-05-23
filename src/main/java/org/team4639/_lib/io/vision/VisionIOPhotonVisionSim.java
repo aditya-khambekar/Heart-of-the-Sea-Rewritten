@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package org.team4639.subsystems.vision;
+package org.team4639._lib.io.vision;
 
 import static org.team4639.subsystems.vision.VisionConstants.aprilTagLayout;
 

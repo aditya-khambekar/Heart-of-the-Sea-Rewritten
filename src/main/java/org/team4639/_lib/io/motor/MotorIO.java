@@ -1,4 +1,4 @@
-package org.team4639._lib.io;
+package org.team4639._lib.io.motor;
 
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.AngularVelocityUnit;

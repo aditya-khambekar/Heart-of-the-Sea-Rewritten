@@ -1,6 +1,6 @@
 package org.team4639._lib.oi;
 
 public final class OI {
-  public static final RSXboxController driver = new RSXboxController(0);
-  public static final RSXboxController operator = new RSXboxController(1);
+  public static final DeadbandXboxController driver = new DeadbandXboxController(0);
+  public static final DeadbandXboxController operator = new DeadbandXboxController(1);
 }

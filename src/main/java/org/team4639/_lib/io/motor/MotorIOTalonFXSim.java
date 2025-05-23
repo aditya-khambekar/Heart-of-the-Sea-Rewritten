@@ -1,4 +1,4 @@
-package org.team4639._lib.io;
+package org.team4639._lib.io.motor;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;

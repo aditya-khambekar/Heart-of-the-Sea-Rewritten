@@ -1,4 +1,4 @@
-package org.team4639._lib.io;
+package org.team4639._lib.io.motor;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -22,6 +22,8 @@ import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.team4639._lib.error.Errors;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -209,10 +211,13 @@ public class MotorIOTalonFX extends MotorIO {
     main = new TalonFX(config.mainID, config.mainBus);
     setMainConfig(config.mainConfig);
 
+    Errors.addCheck(() -> main.isConnected() && main.isAlive(), "TalonFX "+config.mainID+" disconnected");
     followers = new TalonFX[config.followerIDs.length];
     for (int i = 0; i < config.followerIDs.length; i++) {
       followers[i] = new TalonFX(config.followerIDs[i], config.followerBuses[i]);
       followers[i].setControl(new Follower(config.mainID, config.followerOpposeMain[i]));
+      int _i = i;
+      Errors.addCheck(() -> followers[_i].isConnected() && followers[_i].isAlive(), "TalonFX "+config.followerIDs[i]+" disconnected");
     }
 
     setFollowerConfig(followerConfig);

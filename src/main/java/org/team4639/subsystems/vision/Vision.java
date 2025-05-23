@@ -28,7 +28,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
-import org.team4639.subsystems.vision.VisionIO.PoseObservationType;
+import org.team4639._lib.io.vision.VisionIO;
+import org.team4639._lib.io.vision.VisionIO.PoseObservationType;
+import org.team4639._lib.io.vision.VisionIOInputsAutoLogged;
 
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;

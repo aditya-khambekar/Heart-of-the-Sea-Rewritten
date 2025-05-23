@@ -23,6 +23,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import org.littletonrobotics.junction.Logger;
+import org.team4639._lib.io.swerve.ModuleIO;
+import org.team4639._lib.io.swerve.ModuleIOInputsAutoLogged;
 
 public class Module {
   private final ModuleIO io;

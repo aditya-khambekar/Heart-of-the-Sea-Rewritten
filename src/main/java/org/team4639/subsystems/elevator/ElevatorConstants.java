@@ -1,7 +1,7 @@
 package org.team4639.subsystems.elevator;
 
-import org.team4639._lib.UnitConvertor;
 import org.team4639._lib.annotation.Untuned;
+import org.team4639._lib.unit.UnitConverter;
 
 public class ElevatorConstants {
   static class Params {
@@ -46,6 +46,6 @@ public class ElevatorConstants {
 
   public static final int statorCurrentLimit = 45;
 
-  public static final UnitConvertor<Double, Double> ProportionToPosition =
-      UnitConvertor.linearConvertingRange(0, 1, DOWN_POSITION, UP_POSITION);
+  public static final UnitConverter<Double, Double> ProportionToPosition =
+      UnitConverter.linearConvertingRange(0, 1, DOWN_POSITION, UP_POSITION);
 }

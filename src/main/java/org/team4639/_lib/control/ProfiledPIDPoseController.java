@@ -10,7 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import java.util.function.Supplier;
-import org.team4639._lib.Array;
+import org.team4639._lib.util.ArraysUtil;
 
 public class ProfiledPIDPoseController implements Sendable {
   private ProfiledPIDController xController;
@@ -59,7 +59,9 @@ public class ProfiledPIDPoseController implements Sendable {
   public void initSendable(SendableBuilder builder) {
     builder.addDoubleArrayProperty(
         "Translation PIDs",
-        () -> Array.createDoubleArray(xController.getP(), xController.getI(), xController.getD()),
+        () ->
+            ArraysUtil.createDoubleArray(
+                xController.getP(), xController.getI(), xController.getD()),
         x -> {
           xController.setPID(x[0], x[1], x[2]);
           yController.setPID(x[0], x[1], x[2]);
@@ -68,7 +70,7 @@ public class ProfiledPIDPoseController implements Sendable {
     builder.addDoubleArrayProperty(
         "Translation Constraints",
         () ->
-            Array.createDoubleArray(
+            ArraysUtil.createDoubleArray(
                 xController.getConstraints().maxVelocity,
                 xController.getConstraints().maxAcceleration),
         x -> {
@@ -79,7 +81,7 @@ public class ProfiledPIDPoseController implements Sendable {
     builder.addDoubleArrayProperty(
         "Heading PIDs",
         () ->
-            Array.createDoubleArray(
+            ArraysUtil.createDoubleArray(
                 headingController.getP(), headingController.getI(), headingController.getD()),
         x -> {
           headingController.setPID(x[0], x[1], x[2]);

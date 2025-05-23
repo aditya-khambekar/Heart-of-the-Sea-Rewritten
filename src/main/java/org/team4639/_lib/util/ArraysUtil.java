@@ -1,6 +1,6 @@
-package org.team4639._lib;
+package org.team4639._lib.util;
 
-public class Array {
+public class ArraysUtil {
   @SafeVarargs
   public static <T> T[] create(T... args) {
     return args;

@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package org.team4639.subsystems.drive;
+package org.team4639._lib.io.swerve;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
@@ -23,6 +23,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import java.util.Queue;
+import org.team4639.subsystems.drive.Drive;
+import org.team4639.subsystems.drive.PhoenixOdometryThread;
 import org.team4639.subsystems.drive.generated.TunerConstants;
 
 /** IO implementation for Pigeon 2. */

@@ -11,7 +11,7 @@ import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import org.team4639._util.Util;
+import org.team4639._lib.util.Util;
 
 /** Class for simulating a linear system powerd by one or more motors like an elevator. */
 public class LinearSim extends MechanismSim {

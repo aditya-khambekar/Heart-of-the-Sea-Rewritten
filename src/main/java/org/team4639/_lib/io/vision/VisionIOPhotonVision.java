@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package org.team4639.subsystems.vision;
+package org.team4639._lib.io.vision;
 
 import static org.team4639.subsystems.vision.VisionConstants.*;
 
@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.photonvision.PhotonCamera;
-import org.team4639._util.AllianceFlipUtil;
+import org.team4639._lib.util.AllianceFlipUtil;
 
 /** IO implementation for real PhotonVision hardware. */
 public class VisionIOPhotonVision implements VisionIO {

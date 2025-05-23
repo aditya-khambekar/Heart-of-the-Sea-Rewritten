@@ -53,6 +53,9 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.team4639.Constants;
 import org.team4639.Constants.Mode;
+import org.team4639._lib.io.swerve.GyroIO;
+import org.team4639._lib.io.swerve.GyroIOInputsAutoLogged;
+import org.team4639._lib.io.swerve.ModuleIO;
 import org.team4639._util.LocalADStarAK;
 import org.team4639.subsystems.drive.generated.TunerConstants;
 import org.team4639.subsystems.vision.Vision;
@@ -60,7 +63,7 @@ import org.team4639.subsystems.vision.VisionPoses;
 
 public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   // TunerConstants doesn't include these org.team4639.constants, so they are declared locally
-  static final double ODOMETRY_FREQUENCY =
+  public static final double ODOMETRY_FREQUENCY =
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
       Math.max(
