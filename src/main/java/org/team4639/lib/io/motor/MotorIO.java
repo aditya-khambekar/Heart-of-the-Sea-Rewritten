@@ -15,14 +15,16 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import org.littletonrobotics.junction.AutoLog;
+
 import java.util.function.UnaryOperator;
 
 /** Abstract class used to control a main motor and any number of followers for a mechanism. */
 public abstract class MotorIO implements Sendable {
   public final AngleUnit unitType;
   public final TimeUnit time;
-  protected final Inputs inputs;
-  protected final Inputs[] followerInputs;
+  protected final MotorIOInputs inputs;
+  protected final MotorIOInputs[] followerInputs;
   private Setpoint setpoint = Setpoint.withNeutralSetpoint();
   private boolean enabled = true;
 
@@ -160,12 +162,12 @@ public abstract class MotorIO implements Sendable {
   protected MotorIO(AngleUnit unit, TimeUnit time, int numFollowers) {
     this.unitType = unit;
     this.time = time;
-    inputs = new Inputs();
+    inputs = new MotorIOInputs();
 
-    followerInputs = new Inputs[numFollowers];
+    followerInputs = new MotorIOInputs[numFollowers];
 
     for (int i = 0; i < numFollowers; i++) {
-      followerInputs[i] = new Inputs();
+      followerInputs[i] = new MotorIOInputs();
     }
   }
 
@@ -324,7 +326,8 @@ public abstract class MotorIO implements Sendable {
    * Class to store readings from a motor. Readings should be stored relative to the mechanism the
    * motor is controlling.
    */
-  public class Inputs implements Sendable {
+  @AutoLog
+  public class MotorIOInputs implements Sendable {
     public AngularVelocity velocity = BaseUnits.AngleUnit.of(0.0).per(Units.Second);
     public Angle position = BaseUnits.AngleUnit.of(0.0);
     public Current statorCurrent = BaseUnits.CurrentUnit.of(0.0);

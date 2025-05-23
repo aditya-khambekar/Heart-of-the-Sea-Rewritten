@@ -46,7 +46,7 @@ public class MotorIOTalonFXSim extends MotorIOTalonFX {
   }
 
   @Override
-  protected void updateMotorInputs(Inputs inputsToUpdate, TalonFX motor) {
+  protected void updateMotorInputs(MotorIOInputs inputsToUpdate, TalonFX motor) {
     inputsToUpdate.position = sim.getPosition();
     inputsToUpdate.velocity = sim.getVelocity();
     inputsToUpdate.statorCurrent = sim.getStatorCurrent();

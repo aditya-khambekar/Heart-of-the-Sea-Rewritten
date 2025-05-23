@@ -66,7 +66,7 @@ public class MotorIOTalonFX extends MotorIO {
    * @param inputsToUpdate Inputs to update from reading.
    * @param motor Motor to read from.
    */
-  protected void updateMotorInputs(Inputs inputsToUpdate, TalonFX motor) {
+  protected void updateMotorInputs(MotorIOInputs inputsToUpdate, TalonFX motor) {
     inputsToUpdate.position = motor.getPosition().getValue();
     inputsToUpdate.velocity = motor.getVelocity().getValue();
     inputsToUpdate.statorCurrent = motor.getStatorCurrent().getValue();
