@@ -23,12 +23,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.photonvision.PhotonCamera;
+import org.team4639._lib.error.Errors;
 import org.team4639._lib.util.AllianceFlipUtil;
 
 /** IO implementation for real PhotonVision hardware. */
 public class VisionIOPhotonVision implements VisionIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
+  private boolean connected = true;
 
   /**
    * Creates a new VisionIOPhotonVision.
@@ -39,11 +41,12 @@ public class VisionIOPhotonVision implements VisionIO {
   public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
     camera = new PhotonCamera(name);
     this.robotToCamera = robotToCamera;
+    Errors.addCheck(() -> this.connected, "PhotonCam " + name + " disconnected");
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
-    inputs.connected = camera.isConnected();
+    inputs.connected = this.connected = camera.isConnected();
 
     // Read new camera observations
     Set<Short> tagIds = new HashSet<>();

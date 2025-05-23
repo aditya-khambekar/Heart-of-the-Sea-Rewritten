@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.team4639._lib.error.Errors;
 import org.team4639._lib.util.DriverStationUtil;
 
 /** IO implementation for real Limelight hardware. */
@@ -41,6 +42,8 @@ public class VisionIOLimelight implements VisionIO {
   private final DoubleArraySubscriber megatag1SubscriberRed;
   private final DoubleArraySubscriber megatag2SubscriberBlue;
   private final DoubleArraySubscriber megatag2SubscriberRed;
+
+  private boolean connected = true;
 
   /**
    * Creates a new VisionIOLimelight.
@@ -62,13 +65,16 @@ public class VisionIOLimelight implements VisionIO {
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
     megatag2SubscriberRed =
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+
+    Errors.addCheck(() -> this.connected, "Limelight " + name + " disconnected");
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     // Update connection status based on whether an update has been seen in the last 250ms
     inputs.connected =
-        ((RobotController.getFPGATime() - latencySubscriber.getLastChange()) / 1000) < 250;
+        this.connected =
+            ((RobotController.getFPGATime() - latencySubscriber.getLastChange()) / 1000) < 250;
 
     // Update target observation
     inputs.latestTargetObservation =

@@ -42,7 +42,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Queue;
-
 import org.team4639._lib.error.Errors;
 import org.team4639.subsystems.drive.Drive;
 import org.team4639.subsystems.drive.PhoenixOdometryThread;
@@ -107,9 +106,13 @@ public class ModuleIOTalonFX implements ModuleIO {
     turnTalon = new TalonFX(constants.SteerMotorId, TunerConstants.DrivetrainConstants.CANBusName);
     cancoder = new CANcoder(constants.EncoderId, TunerConstants.DrivetrainConstants.CANBusName);
 
-    Errors.addCheck(() -> driveTalon.isConnected() && driveTalon.isAlive(), "TalonFX "+constants.DriveMotorId+" disconnected");
-    Errors.addCheck(() -> turnTalon.isConnected() && turnTalon.isAlive(), "TalonFX "+constants.SteerMotorId+" disconnected");
-    Errors.addCheck(cancoder::isConnected, "CANCoder "+constants.EncoderId+" disconnected");
+    Errors.addCheck(
+        () -> driveTalon.isConnected() && driveTalon.isAlive(),
+        "TalonFX " + constants.DriveMotorId + " disconnected");
+    Errors.addCheck(
+        () -> turnTalon.isConnected() && turnTalon.isAlive(),
+        "TalonFX " + constants.SteerMotorId + " disconnected");
+    Errors.addCheck(cancoder::isConnected, "CANCoder " + constants.EncoderId + " disconnected");
 
     // Configure drive motor
     var driveConfig = constants.DriveMotorInitialConfigs;
