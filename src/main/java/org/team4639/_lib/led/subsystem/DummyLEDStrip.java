@@ -3,9 +3,8 @@ package org.team4639._lib.led.subsystem;
 import java.util.Objects;
 import org.team4639._lib.annotation.PackagePrivate;
 import org.team4639._lib.led.pattern.LEDPattern;
-import org.team4639._lib.subsystem.Updatable;
 
-public class DummyLEDStrip extends LEDStrip implements Updatable {
+public class DummyLEDStrip extends LEDStrip {
 
   private static volatile LEDStrip instance;
 

@@ -1,14 +1,12 @@
 package org.team4639.modaltriggers;
 
-import org.team4639._robot.Subsystems;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team4639.subsystems.vision.VisionUpdates;
 
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 public class VisionTriggers {
-    private static Trigger visionIsActive = new Trigger(VisionUpdates.getInstance()::isVisionActive);
+  private static Trigger visionIsActive = new Trigger(VisionUpdates.getInstance()::isVisionActive);
 
-    public static Trigger visionIsActive() {
-        return visionIsActive;
-    }
+  public static Trigger visionIsActive() {
+    return visionIsActive;
+  }
 }

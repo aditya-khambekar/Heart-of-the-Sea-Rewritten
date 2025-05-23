@@ -8,9 +8,8 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import java.util.Objects;
 import org.team4639._lib.annotation.PackagePrivate;
 import org.team4639._lib.led.pattern.LEDPattern;
-import org.team4639._lib.subsystem.Updatable;
 
-public class PhysicalLEDStrip extends LEDStrip implements Updatable {
+public class PhysicalLEDStrip extends LEDStrip {
   private final AddressableLED led;
   private final AddressableLEDBuffer buffer;
   private final int length;

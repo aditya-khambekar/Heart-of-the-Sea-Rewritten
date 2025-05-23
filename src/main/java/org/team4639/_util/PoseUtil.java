@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 
 public class PoseUtil {
   static double reefLeftDistance = 0.2;
-  static double reefRightDistance = 0.2;
+  static double reefRightDistance = 0.18;
 
   public static Pose2d ReefRelativeRightOf(Pose2d pose) {
     return pose.transformBy(new Transform2d(0, -reefRightDistance, Rotation2d.kZero));

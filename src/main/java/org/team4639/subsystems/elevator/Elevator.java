@@ -7,14 +7,14 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
-import org.team4639._lib.subsystem.RSSubsystem;
 import org.team4639.subsystems.elevator.ElevatorIO.ElevatorIOInputs;
 
-public class Elevator extends RSSubsystem implements Sendable {
+public class Elevator extends SubsystemBase implements Sendable {
   public double setpointEncoderValue;
 
   private ElevatorIOInputs inputs;
