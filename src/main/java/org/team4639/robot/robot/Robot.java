@@ -25,9 +25,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.team4639.BuildConstants;
 import org.team4639.lib.error.Errors;
 import org.team4639.lib.util.AllianceFlipUtil;
-import org.team4639.robot.BuildConstants;
 import org.team4639.robot.Constants;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 
