@@ -377,15 +377,16 @@ public class DriveCommands {
                 FieldConstants.TargetPositions.REEF_IJ.getPose(),
                 FieldConstants.TargetPositions.REEF_KL.getPose()));
 
-//    var dist =
-//        Math.max(
-//            Math.abs(nearestReefPose.getX() - drivePose.getX()),
-//            Math.abs(nearestReefPose.getY() - drivePose.getY()));
-//    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
-//
-//    return PIDto(drive, startPose, nearestReefPose);
+    //    var dist =
+    //        Math.max(
+    //            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+    //            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+    //    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0,
+    // Rotation2d.kZero));
+    //
+    //    return PIDto(drive, startPose, nearestReefPose);
 
-      return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
+    return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
   }
 
   public static Command reefAlignLeft(Drive drive) {
@@ -402,15 +403,16 @@ public class DriveCommands {
                     FieldConstants.TargetPositions.REEF_IJ.getPose(),
                     FieldConstants.TargetPositions.REEF_KL.getPose())));
 
-//    var dist =
-//        Math.max(
-//            Math.abs(nearestReefPose.getX() - drivePose.getX()),
-//            Math.abs(nearestReefPose.getY() - drivePose.getY()));
-//    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
-//
-//    return PIDto(drive, startPose, nearestReefPose);
+    //    var dist =
+    //        Math.max(
+    //            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+    //            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+    //    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0,
+    // Rotation2d.kZero));
+    //
+    //    return PIDto(drive, startPose, nearestReefPose);
 
-      return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
+    return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
   }
 
   public static Command alignHeadOn(Drive drive, Pose2d destination) {
@@ -438,14 +440,15 @@ public class DriveCommands {
                     FieldConstants.TargetPositions.REEF_IJ.getPose(),
                     FieldConstants.TargetPositions.REEF_KL.getPose())));
 
-//    var dist =
-//        Math.max(
-//            Math.abs(nearestReefPose.getX() - drivePose.getX()),
-//            Math.abs(nearestReefPose.getY() - drivePose.getY()));
-//    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
-//    return PIDto(drive, startPose, nearestReefPose);
+    //    var dist =
+    //        Math.max(
+    //            Math.abs(nearestReefPose.getX() - drivePose.getX()),
+    //            Math.abs(nearestReefPose.getY() - drivePose.getY()));
+    //    Pose2d startPose = nearestReefPose.transformBy(new Transform2d(-dist, 0,
+    // Rotation2d.kZero));
+    //    return PIDto(drive, startPose, nearestReefPose);
 
-      return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
+    return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
   }
 
   public static Command PIDto(Drive drive, Pose2d startingPose, Pose2d destinationPose) {
@@ -510,9 +513,9 @@ public class DriveCommands {
   public static Command PIDtowithVelocityReset(
       Drive drive, Pose2d startingPose, Pose2d destinationPose) {
     ProfiledPIDController pidX =
-        new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
     ProfiledPIDController pidY =
-        new ProfiledPIDController(12, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
     PIDController headingController = new PIDController(16, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
@@ -552,9 +555,9 @@ public class DriveCommands {
         .until(
             () ->
                 toleranceDebouncer.calculate(
-                    Math.abs(pidX.getPositionError()) < 0.01
-                        && Math.abs(pidY.getPositionError()) < 0.01
-                        && Math.abs(headingController.getError()) < 0.001));
+                    Math.abs(pidX.getPositionError()) < 0.03
+                        && Math.abs(pidY.getPositionError()) < 0.03
+                        && Math.abs(headingController.getError()) < 0.005));
   }
 
   public static Command robotOrientedDrive(Drive drive, ChassisSpeeds speeds) {

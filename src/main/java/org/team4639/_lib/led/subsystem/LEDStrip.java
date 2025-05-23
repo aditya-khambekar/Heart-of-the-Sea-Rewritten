@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.Supplier;
 import org.team4639._lib.led.pattern.LEDPattern;
 
-public abstract class LEDStrip extends SubsystemBase{
+public abstract class LEDStrip extends SubsystemBase {
   public abstract void setPattern(LEDPattern pattern);
 
   public abstract void doResetTime();

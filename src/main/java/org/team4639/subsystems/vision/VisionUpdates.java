@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -30,7 +29,7 @@ public class VisionUpdates implements Vision.VisionConsumer {
         c ->
             c.accept(
                 cameraIndex, visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs));
-                lastVisionUpdate = Timer.getFPGATimestamp();
+    lastVisionUpdate = Timer.getFPGATimestamp();
   }
 
   public static void addConsumer(Vision.VisionConsumer consumer) {

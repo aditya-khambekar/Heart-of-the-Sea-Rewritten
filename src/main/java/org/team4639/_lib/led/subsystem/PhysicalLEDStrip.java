@@ -9,7 +9,7 @@ import java.util.Objects;
 import org.team4639._lib.annotation.PackagePrivate;
 import org.team4639._lib.led.pattern.LEDPattern;
 
-public class PhysicalLEDStrip extends LEDStrip{
+public class PhysicalLEDStrip extends LEDStrip {
   private final AddressableLED led;
   private final AddressableLEDBuffer buffer;
   private final int length;

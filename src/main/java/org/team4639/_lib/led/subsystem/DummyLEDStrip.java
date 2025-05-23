@@ -4,7 +4,7 @@ import java.util.Objects;
 import org.team4639._lib.annotation.PackagePrivate;
 import org.team4639._lib.led.pattern.LEDPattern;
 
-public class DummyLEDStrip extends LEDStrip{
+public class DummyLEDStrip extends LEDStrip {
 
   private static volatile LEDStrip instance;
 

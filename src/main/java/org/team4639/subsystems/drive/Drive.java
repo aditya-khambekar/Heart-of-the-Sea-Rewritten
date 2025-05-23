@@ -72,16 +72,17 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
               Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
   // PathPlanner config org.team4639.constants
-  private static final double ROBOT_MASS_KG = 114.9;
+  private static final double ROBOT_MASS_KG = 136;
   private static final double ROBOT_MOI = 3.97;
-  private static final double WHEEL_COF = 1.5;
+  private static final double WHEEL_COF = 1.9;
   private static final RobotConfig PP_CONFIG =
       new RobotConfig(
           ROBOT_MASS_KG,
           ROBOT_MOI,
           new ModuleConfig(
               TunerConstants.FrontLeft.WheelRadius,
-              TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
+              11.0,
+              // TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
               WHEEL_COF,
               DCMotor.getKrakenX60Foc(1)
                   .withReduction(TunerConstants.FrontLeft.DriveMotorGearRatio),
@@ -137,7 +138,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(9.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         PP_CONFIG,
         () -> false,
         this);
