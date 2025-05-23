@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.Constants;
+import org.team4639._lib.error.Errors;
 import org.team4639._lib.io.swerve.GyroIO;
 import org.team4639._lib.io.swerve.GyroIOPigeon2;
 import org.team4639._lib.io.swerve.ModuleIO;
@@ -85,6 +86,8 @@ public class RobotContainer {
     // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
     double x = FieldConstants.fieldLength;
     var y = IOTriggers.hasDriverJoystickInput;
+    Errors.addCheck(OI.driver::isConnected, "Driver Controller disconnected");
+    Errors.addCheck(OI.operator::isConnected, "Operator Controller disconnected");
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
