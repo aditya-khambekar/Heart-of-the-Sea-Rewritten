@@ -13,12 +13,7 @@
 
 package org.team4639.robot.robot;
 
-import au.grapplerobotics.LaserCan;
-import au.grapplerobotics.simulation.MockLaserCan;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -44,22 +39,12 @@ import org.team4639.robot.Constants;
 import org.team4639.robot.auto.AutoFactory;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.constants.FieldConstants;
-import org.team4639.robot.constants.IDs;
 import org.team4639.robot.modaltriggers.DriveTriggers;
 import org.team4639.robot.modaltriggers.IOTriggers;
 import org.team4639.robot.modaltriggers.VisionTriggers;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
-import org.team4639.robot.subsystems.elevator.Elevator;
-import org.team4639.robot.subsystems.elevator.ElevatorConstants;
-import org.team4639.robot.subsystems.elevator.ElevatorIO;
-import org.team4639.robot.subsystems.elevator.ElevatorIOHardware;
-import org.team4639.robot.subsystems.elevator.ElevatorIOSim;
-import org.team4639.robot.subsystems.scoring.Scoring;
-import org.team4639.robot.subsystems.scoring.ScoringIO;
-import org.team4639.robot.subsystems.scoring.ScoringIOHardware;
-import org.team4639.robot.subsystems.scoring.ScoringIOSim;
 import org.team4639.robot.subsystems.vision.*;
 
 /**
@@ -108,21 +93,6 @@ public class RobotContainer {
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation));
-
-        if (dummySuperstructure) {
-          Subsystems.elevator = new Elevator(new ElevatorIO() {});
-          Subsystems.scoring = new Scoring(new ScoringIO() {});
-        } else {
-          Subsystems.elevator =
-              new Elevator(
-                  new ElevatorIOHardware(
-                      new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
-          Subsystems.scoring =
-              new Scoring(
-                  new ScoringIOHardware(
-                      new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless),
-                      new LaserCan(IDs.INTAKE_LASERCAN_ID)));
-        }
         break;
 
       case SIM:
@@ -154,15 +124,6 @@ public class RobotContainer {
                     VisionConstants.robotToCameraBack,
                     () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
 
-        Subsystems.elevator =
-            new Elevator(
-                new ElevatorIOSim(new TalonFX(IDs.ELEVATOR_LEFT), new TalonFX(IDs.ELEVATOR_RIGHT)));
-        Subsystems.scoring =
-            new Scoring(
-                new ScoringIOSim(
-                    new SparkMax(IDs.SCORING_MOTOR, SparkLowLevel.MotorType.kBrushless),
-                    new MockLaserCan()));
-        Subsystems.dashboardOutputs = new DashboardOutputs();
         break;
 
       default:
@@ -177,9 +138,6 @@ public class RobotContainer {
 
         Subsystems.vision =
             new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
-
-        Subsystems.elevator = new Elevator(new ElevatorIO() {});
-        Subsystems.scoring = new Scoring(new ScoringIO() {});
         Subsystems.dashboardOutputs = new DashboardOutputs();
         break;
     }
@@ -250,14 +208,14 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
 
-    Subsystems.elevator.setDefaultCommand(
-        Subsystems.elevator.defer(
-            () ->
-                Subsystems.elevator
-                    .runToSetpoint(
-                        ElevatorConstants.ProportionToPosition.convert(
-                            ElevatorConstants.Setpoints.IDLE_PROPORTION))
-                    .withName("Default")));
+    //    Subsystems.elevator.setDefaultCommand(
+    //        Subsystems.elevator.defer(
+    //            () ->
+    //                Subsystems.elevator
+    //                    .runToSetpoint(
+    //                        ElevatorConstants.ProportionToPosition.convert(
+    //                            ElevatorConstants.Setpoints.IDLE_PROPORTION))
+    //                    .withName("Default")));
 
     DriveTriggers.closeToLeftStation
         .and(RobotMode::isComp)
@@ -315,11 +273,12 @@ public class RobotContainer {
         .and(VisionTriggers.visionIsActive())
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)));
 
-    driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
-    driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
-
-    driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
-    driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
+    //    driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
+    //
+    // driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
+    //
+    //    driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
+    //    driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
   }
 
   /**

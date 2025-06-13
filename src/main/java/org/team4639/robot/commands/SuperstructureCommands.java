@@ -4,19 +4,19 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import org.team4639.robot.robot.Subsystems;
-import org.team4639.robot.subsystems.elevator.ElevatorConstants;
 
 public class SuperstructureCommands {
   public static Command intakeCoral() {
-    var command =
-        Commands.sequence(
-            Subsystems.elevator
-                .runToSetpoint(
-                    ElevatorConstants.ProportionToPosition.convert(
-                        ElevatorConstants.Setpoints.HP_PROPORTION))
-                .until(Subsystems.elevator::atPosition),
-            Subsystems.scoring.intakeCoral());
-    return command;
+    return Commands.none();
+    //    var command =
+    //        Commands.sequence(
+    //            Subsystems.elevator
+    //                .runToSetpoint(
+    //                    ElevatorConstants.ProportionToPosition.convert(
+    //                        ElevatorConstants.Setpoints.HP_PROPORTION))
+    //                .until(Subsystems.elevator::atPosition),
+    //            Subsystems.scoring.intakeCoral());
+    //    return command;
   }
 
   /**
@@ -27,18 +27,20 @@ public class SuperstructureCommands {
    * @return A command which auto-aligns and scores coral.
    */
   public static Command score(double scoringPositionSetpoint, int direction) {
-    return Commands.sequence(
-        Commands.deadline(
-            direction == 0
-                ? DriveCommands.reefAlignLeft(Subsystems.drive)
-                : DriveCommands.reefAlignRight(Subsystems.drive),
-            Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
-        Subsystems.elevator
-            .runToSetpoint(scoringPositionSetpoint)
-            .until(Subsystems.elevator::atPosition),
-        Commands.deadline(
-            Subsystems.scoring.intakeCoral(),
-            Subsystems.elevator.runToSetpoint(scoringPositionSetpoint)));
+    return Commands.none();
+    //    return Commands.sequence(
+    //        Commands.deadline(
+    //            direction == 0
+    //                ? DriveCommands.reefAlignLeft(Subsystems.drive)
+    //                : DriveCommands.reefAlignRight(Subsystems.drive),
+    //
+    // Subsystems.elevator.runToSetpoint(ElevatorConstants.Setpoints.SCORE_READY_PROPORTION)),
+    //        Subsystems.elevator
+    //            .runToSetpoint(scoringPositionSetpoint)
+    //            .until(Subsystems.elevator::atPosition),
+    //        Commands.deadline(
+    //            Subsystems.scoring.intakeCoral(),
+    //            Subsystems.elevator.runToSetpoint(scoringPositionSetpoint)));
   }
 
   // TODO: Uncomment scoring logic when elevator done
