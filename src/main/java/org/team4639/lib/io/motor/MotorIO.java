@@ -15,8 +15,6 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import org.littletonrobotics.junction.AutoLog;
-
 import java.util.function.UnaryOperator;
 
 /** Abstract class used to control a main motor and any number of followers for a mechanism. */
@@ -326,7 +324,6 @@ public abstract class MotorIO implements Sendable {
    * Class to store readings from a motor. Readings should be stored relative to the mechanism the
    * motor is controlling.
    */
-  @AutoLog
   public class MotorIOInputs implements Sendable {
     public AngularVelocity velocity = BaseUnits.AngleUnit.of(0.0).per(Units.Second);
     public Angle position = BaseUnits.AngleUnit.of(0.0);
