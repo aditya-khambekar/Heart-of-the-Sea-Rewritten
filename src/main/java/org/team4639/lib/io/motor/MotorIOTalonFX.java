@@ -2,15 +2,7 @@ package org.team4639.lib.io.motor;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.ControlRequest;
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
-import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.AngleUnit;
@@ -252,7 +244,7 @@ public class MotorIOTalonFX extends MotorIO {
     }
 
     public ControlRequest getMotionMagicRequest(Angle mechanismPosition) {
-      return new MotionMagicExpoVoltage(mechanismPosition).withSlot(0).withEnableFOC(true);
+      return new MotionMagicVoltage(mechanismPosition.in(Units.Rotations)).withSlot(0);
     }
 
     public ControlRequest getVelocityRequest(AngularVelocity mechanismVelocity) {

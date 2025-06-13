@@ -38,8 +38,9 @@ public class TunableNumber implements Sendable, DoubleSupplier2, Supplier<Double
     sendableConsumer = sendableConsumer.andThen(consumer);
   }
 
-  public void withDefaultValue(double defaultValue) {
-    if (this.get() == null) this.value = defaultValue;
+  public TunableNumber withDefaultValue(double defaultValue) {
+    if (this.get() == null || this.get() == 0) this.value = defaultValue;
+    return this;
   }
 
   /**
@@ -47,8 +48,9 @@ public class TunableNumber implements Sendable, DoubleSupplier2, Supplier<Double
    *
    * @param name
    */
-  public void send(String name) {
+  public TunableNumber send(String name) {
     SmartDashboard.putData(name, this);
+    return this;
   }
 
   /**

@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
+import org.team4639.lib.tunable.*;
 import org.team4639.lib.unit.UnitConverter;
 
 public class ElevatorConstants {
@@ -43,4 +44,23 @@ public class ElevatorConstants {
               UnitConverter.create(
                   d -> Dimensionless.ofBaseUnits(d, Value.getBaseUnit()),
                   Dimensionless::baseUnitMagnitude));
+
+  public static TunableNumber elevatorKp =
+      new TunableNumber().withDefaultValue(3.596).send("Scoring PIDs/Elevator kI");
+  public static TunableNumber elevatorKi =
+      new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator kI");
+  public static TunableNumber elevatorKd =
+      new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator kD");
+  public static TunableNumber elevatorVelocity =
+      new TunableNumber().withDefaultValue(300.0).send("Scoring PIDs/Elevator Velocity");
+  public static TunableNumber elevatorAcceleration =
+      new TunableNumber().withDefaultValue(190).send("Scoring PIDs/Elevator Acceleration");
+  public static TunableNumber elevatorKs =
+      new TunableNumber().withDefaultValue(0.27919).send("Scoring PIDs/Elevator Ks");
+  public static TunableNumber elevatorKg =
+      new TunableNumber().withDefaultValue(2).send("Scoring PIDs/Elevator Kg");
+  public static TunableNumber elevatorKv =
+      new TunableNumber().withDefaultValue(0.11358).send("Scoring PIDs/Elevator Kv");
+  public static TunableNumber elevatorKa =
+      new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator Ka");
 }

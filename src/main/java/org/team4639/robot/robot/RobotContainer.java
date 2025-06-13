@@ -14,6 +14,10 @@
 package org.team4639.robot.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -39,12 +43,17 @@ import org.team4639.robot.Constants;
 import org.team4639.robot.auto.AutoFactory;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.constants.FieldConstants;
+import org.team4639.robot.constants.IDs;
 import org.team4639.robot.modaltriggers.DriveTriggers;
 import org.team4639.robot.modaltriggers.IOTriggers;
 import org.team4639.robot.modaltriggers.VisionTriggers;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
+import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
+import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIO;
+import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFX;
+import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFXSim;
 import org.team4639.robot.subsystems.vision.*;
 
 /**
@@ -93,6 +102,9 @@ public class RobotContainer {
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation));
+
+        Subsystems.elevator =
+            new ElevatorSubsystem(new ElevatorIOTalonFX(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
         break;
 
       case SIM:
@@ -124,6 +136,9 @@ public class RobotContainer {
                     VisionConstants.robotToCameraBack,
                     () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
 
+        Subsystems.elevator =
+            new ElevatorSubsystem(new ElevatorIOTalonFXSim(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
+
         break;
 
       default:
@@ -139,6 +154,34 @@ public class RobotContainer {
         Subsystems.vision =
             new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
         Subsystems.dashboardOutputs = new DashboardOutputs();
+        Subsystems.elevator =
+            new ElevatorSubsystem(
+                new ElevatorIO() {
+
+                  @Override
+                  public void setNeutralSetpoint() {}
+
+                  @Override
+                  public void setCoastSetpoint() {}
+
+                  @Override
+                  public void setVoltageSetpoint(Voltage voltage) {}
+
+                  @Override
+                  public void setDutyCycleSetpoint(Dimensionless percent) {}
+
+                  @Override
+                  public void setMotionMagicSetpoint(Angle mechanismPosition) {}
+
+                  @Override
+                  public void setVelocitySetpoint(AngularVelocity mechanismVelocity) {}
+
+                  @Override
+                  public void setPositionSetpoint(Angle mechanismPosition) {}
+
+                  @Override
+                  public void updateInputs(ElevatorIOInputs inputs) {}
+                });
         break;
     }
 

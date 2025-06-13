@@ -1,10 +1,18 @@
 package org.team4639.robot.subsystems.superstructure.elevator.io;
 
+import static org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants.*;
+
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
@@ -20,7 +28,32 @@ public class ElevatorIOTalonFX extends ElevatorIO {
     leftTalon = new TalonFX(leftMotorID);
     rightTalon = new TalonFX(rightMotorID);
 
-    rightTalon.setControl(new Follower(leftMotorID, true));
+    TalonFXConfiguration configuration =
+        new TalonFXConfiguration()
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(elevatorAcceleration.get())
+                    .withMotionMagicCruiseVelocity(elevatorVelocity.get()))
+            .withSlot0(
+                new Slot0Configs()
+                    .withKP(elevatorKp.get() / 2.)
+                    .withKI(elevatorKi.get())
+                    .withKD(elevatorKd.get())
+                    .withKA(elevatorKa.get())
+                    .withKS(elevatorKs.get())
+                    .withKV(elevatorKv.get())
+                    .withKG(elevatorKg.get())
+                    .withGravityType(GravityTypeValue.Elevator_Static))
+            .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(30));
+
+    leftTalon.getConfigurator().apply(configuration);
+    rightTalon.getConfigurator().apply(configuration);
+
+    leftTalon.setNeutralMode(NeutralModeValue.Brake);
+    rightTalon.setNeutralMode(NeutralModeValue.Brake);
+
+    // set left motor to follow right motor
+    leftTalon.setControl(new Follower(rightMotorID, true));
     requestGetter = new MotorIOTalonFX.ControlRequestGetter();
   }
 
@@ -37,7 +70,7 @@ public class ElevatorIOTalonFX extends ElevatorIO {
   }
 
   private void setControl(ControlRequest request) {
-    leftTalon.setControl(request);
+    rightTalon.setControl(request);
   }
 
   @Override

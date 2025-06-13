@@ -1,9 +1,12 @@
 package org.team4639.robot.subsystems.superstructure.elevator.io;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.*;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import java.util.Optional;
 import org.littletonrobotics.junction.AutoLog;
 
 public abstract class ElevatorIO {
@@ -35,21 +38,43 @@ public abstract class ElevatorIO {
     @Override
     public void initSendable(SendableBuilder sendableBuilder) {
       sendableBuilder.addDoubleProperty(
-          "Left Motor Rotations", () -> leftMotorPosition.in(Units.Rotations), null);
+          "Left Motor Rotations",
+          () -> Optional.ofNullable(leftMotorPosition).orElse(Rotations.zero()).in(Rotations),
+          null);
       sendableBuilder.addDoubleProperty(
-          "Right Motor Rotations", () -> rightMotorPosition.in(Units.Rotations), null);
+          "Right Motor Rotations",
+          () -> Optional.ofNullable(rightMotorPosition).orElse(Rotations.zero()).in(Rotations),
+          null);
       sendableBuilder.addDoubleProperty(
-          "Left Motor Speed Rad/s", () -> leftMotorSpeed.in(Units.RadiansPerSecond), null);
+          "Left Motor Speed Rad/s",
+          () ->
+              Optional.ofNullable(leftMotorSpeed)
+                  .orElse(RadiansPerSecond.zero())
+                  .in(Units.RadiansPerSecond),
+          null);
       sendableBuilder.addDoubleProperty(
-          "Right Motor Speed Rad/s", () -> rightMotorSpeed.in(Units.RadiansPerSecond), null);
+          "Right Motor Speed Rad/s",
+          () ->
+              Optional.ofNullable(rightMotorSpeed)
+                  .orElse(RadiansPerSecond.zero())
+                  .in(Units.RadiansPerSecond),
+          null);
       sendableBuilder.addDoubleProperty(
-          "Left Motor Celsius", () -> leftMotorTemperature.in(Units.Celsius), null);
+          "Left Motor Celsius",
+          () -> Optional.ofNullable(leftMotorTemperature).orElse(Celsius.zero()).in(Celsius),
+          null);
       sendableBuilder.addDoubleProperty(
-          "Right Motor Celsius", () -> rightMotorTemperature.in(Units.Celsius), null);
+          "Right Motor Celsius",
+          () -> Optional.ofNullable(rightMotorTemperature).orElse(Celsius.zero()).in(Celsius),
+          null);
       sendableBuilder.addDoubleProperty(
-          "Left Motor Torque Current", () -> leftMotorTorqueCurrent.in(Units.Amp), null);
+          "Left Motor Torque Current",
+          () -> Optional.ofNullable(leftMotorTorqueCurrent).orElse(Amps.zero()).in(Units.Amp),
+          null);
       sendableBuilder.addDoubleProperty(
-          "Right Motor Torque", () -> rightMotorTorqueCurrent.in(Units.Amp), null);
+          "Right Motor Torque Current",
+          () -> Optional.ofNullable(rightMotorTorqueCurrent).orElse(Amps.zero()).in(Units.Amp),
+          null);
     }
   }
 
