@@ -25,8 +25,8 @@ public class ElevatorIOTalonFX extends ElevatorIO {
   MotorIOTalonFX.ControlRequestGetter requestGetter;
 
   public ElevatorIOTalonFX(int leftMotorID, int rightMotorID) {
-    leftTalon = new TalonFX(leftMotorID);
-    rightTalon = new TalonFX(rightMotorID);
+    leftTalon = new TalonFX(leftMotorID, "MainCANivore");
+    rightTalon = new TalonFX(rightMotorID, "MainCANivore");
 
     TalonFXConfiguration configuration =
         new TalonFXConfiguration()

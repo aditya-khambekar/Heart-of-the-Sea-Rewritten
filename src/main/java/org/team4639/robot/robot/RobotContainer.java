@@ -13,7 +13,10 @@
 
 package org.team4639.robot.robot;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import edu.wpi.first.units.DimensionlessUnit.*;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
@@ -315,6 +318,31 @@ public class RobotContainer {
         .and(RobotMode::isComp)
         .and(VisionTriggers.visionIsActive())
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)));
+
+    driver
+        .a()
+        .whileTrue(
+            Subsystems.elevator.runEnd(
+                () -> Subsystems.elevator.elevatorUp(), () -> Subsystems.elevator.elevatorStop()));
+    driver
+        .b()
+        .whileTrue(
+            Subsystems.elevator.runEnd(
+                () -> Subsystems.elevator.elevatorDown(),
+                () -> Subsystems.elevator.elevatorStop()));
+
+    driver
+        .x()
+        .whileTrue(
+            Subsystems.elevator.runEnd(
+                () -> Subsystems.elevator.setPercentage(Percent.of(10)),
+                Subsystems.elevator::elevatorStop));
+    driver
+        .y()
+        .whileTrue(
+            Subsystems.elevator.runEnd(
+                () -> Subsystems.elevator.setPercentage(Percent.of(40)),
+                Subsystems.elevator::elevatorStop));
 
     //    driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
     //
