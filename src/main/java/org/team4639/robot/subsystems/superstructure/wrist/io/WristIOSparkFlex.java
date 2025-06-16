@@ -1,5 +1,7 @@
 package org.team4639.robot.subsystems.superstructure.wrist.io;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -22,11 +24,22 @@ public class WristIOSparkFlex extends WristIO {
   }
 
   @Override
-  public void updateInputs(WristIOInputs inputs) {}
+  public void updateInputs(WristIOInputs inputs) {
+    inputs.motorCurrent = Amps.of(sparkFlex.getOutputCurrent());
+    inputs.motorPosition = Rotations.of(sparkFlex.getAbsoluteEncoder().getPosition());
+    inputs.motorTemperature = Celsius.of(sparkFlex.getMotorTemperature());
+    inputs.motorVelocity =
+        RotationsPerSecond.of(sparkFlex.getAbsoluteEncoder().getVelocity() / 60.);
+  }
 
   @Override
-  public void setDutyCycleOutput(Dimensionless percent) {}
+  public void setDutyCycleOutput(Dimensionless percent) {
+    sparkFlex.set(percent.in(Value));
+  }
 
   @Override
-  public void setPosition(Angle position) {}
+  public void setPosition(Angle position) {
+    wristPIDController.setGoal(position.in(Rotations));
+    sparkFlex.set(wristPIDController.calculate(sparkFlex.getAbsoluteEncoder().getPosition()));
+  }
 }

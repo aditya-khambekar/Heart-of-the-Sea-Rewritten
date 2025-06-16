@@ -18,32 +18,47 @@ public class ElevatorConstants {
   public static final Dimensionless PROPORTION_MAX = Percent.of(100);
   public static final Dimensionless PROPORTION_MIN = Percent.of(0);
 
-  public static final UnitConverter<Distance, Angle> heightToRotations =
+  private static final UnitConverter<Double, Angle> DoubleToRotations =
       UnitConverter.create(
-              Distance::baseUnitMagnitude, d -> Distance.ofBaseUnits(d, Meter.one().baseUnit()))
+          d -> Angle.ofBaseUnits(d, Rotations.getBaseUnit()), Angle::baseUnitMagnitude);
+
+  private static final UnitConverter<Distance, Double> heightToDouble =
+      UnitConverter.create(
+          Distance::baseUnitMagnitude, d -> Distance.ofBaseUnits(d, Meter.one().baseUnit()));
+
+  private static final UnitConverter<Double, Dimensionless> DoubleToPercentage =
+      UnitConverter.create(
+          d -> Dimensionless.ofBaseUnits(d, Value.getBaseUnit()), Dimensionless::baseUnitMagnitude);
+
+  public static final UnitConverter<Distance, Angle> heightToRotations =
+      heightToDouble
           .then(
               UnitConverter.linearConvertingRange(
                   HEIGHT_MIN.baseUnitMagnitude(),
                   HEIGHT_MAX.baseUnitMagnitude(),
                   MOTOR_MIN.baseUnitMagnitude(),
                   MOTOR_MAX.baseUnitMagnitude()))
-          .then(
-              UnitConverter.create(
-                  d -> Angle.ofBaseUnits(d, Rotations.getBaseUnit()), Angle::baseUnitMagnitude));
+          .then(DoubleToRotations);
 
   public static final UnitConverter<Distance, Dimensionless> heightToPercentage =
-      UnitConverter.create(
-              Distance::baseUnitMagnitude, d -> Distance.ofBaseUnits(d, Meter.one().baseUnit()))
+      heightToDouble
           .then(
               UnitConverter.linearConvertingRange(
                   HEIGHT_MIN.baseUnitMagnitude(),
                   HEIGHT_MAX.baseUnitMagnitude(),
                   PROPORTION_MIN.baseUnitMagnitude(),
                   PROPORTION_MAX.baseUnitMagnitude()))
+          .then(DoubleToPercentage);
+
+  public static final UnitConverter<Angle, Dimensionless> rotationsToPercentage =
+      DoubleToRotations.inverted()
           .then(
-              UnitConverter.create(
-                  d -> Dimensionless.ofBaseUnits(d, Value.getBaseUnit()),
-                  Dimensionless::baseUnitMagnitude));
+              UnitConverter.linearConvertingRange(
+                  MOTOR_MIN.baseUnitMagnitude(),
+                  MOTOR_MAX.baseUnitMagnitude(),
+                  PROPORTION_MIN.baseUnitMagnitude(),
+                  PROPORTION_MAX.baseUnitMagnitude()))
+          .then(DoubleToPercentage);
 
   public static TunableNumber elevatorKp =
       new TunableNumber().withDefaultValue(3.596).send("Scoring PIDs/Elevator kI");
@@ -63,4 +78,6 @@ public class ElevatorConstants {
       new TunableNumber().withDefaultValue(0.11358).send("Scoring PIDs/Elevator Kv");
   public static TunableNumber elevatorKa =
       new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator Ka");
+
+  public static final Dimensionless elevatorTolerance = heightToPercentage.convert(Inches.of(0.5));
 }

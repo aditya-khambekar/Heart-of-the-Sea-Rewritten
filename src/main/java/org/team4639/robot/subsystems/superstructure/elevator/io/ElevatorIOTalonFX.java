@@ -59,14 +59,14 @@ public class ElevatorIOTalonFX extends ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    inputs.leftMotorPosition = leftTalon.getPosition().getValue();
-    inputs.rightMotorPosition = rightTalon.getPosition().getValue();
-    inputs.leftMotorSpeed = leftTalon.getVelocity().getValue();
-    inputs.rightMotorSpeed = rightTalon.getVelocity().getValue();
-    inputs.leftMotorTemperature = leftTalon.getDeviceTemp().getValue();
-    inputs.rightMotorTemperature = rightTalon.getDeviceTemp().getValue();
-    inputs.leftMotorTorqueCurrent = leftTalon.getTorqueCurrent().getValue();
-    inputs.rightMotorTorqueCurrent = rightTalon.getTorqueCurrent().getValue();
+    inputs.leftMotorPosition.mut_replace(leftTalon.getPosition().getValue());
+    inputs.rightMotorPosition.mut_replace(rightTalon.getPosition().getValue());
+    inputs.leftMotorSpeed.mut_replace(leftTalon.getVelocity().getValue());
+    inputs.rightMotorSpeed.mut_replace(rightTalon.getVelocity().getValue());
+    inputs.leftMotorTemperature.mut_replace(leftTalon.getDeviceTemp().getValue());
+    inputs.rightMotorTemperature.mut_replace(rightTalon.getDeviceTemp().getValue());
+    inputs.leftMotorTorqueCurrent.mut_replace(leftTalon.getTorqueCurrent().getValue());
+    inputs.rightMotorTorqueCurrent.mut_replace(rightTalon.getTorqueCurrent().getValue());
   }
 
   private void setControl(ControlRequest request) {

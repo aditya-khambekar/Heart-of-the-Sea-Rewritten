@@ -1,16 +1,39 @@
 package org.team4639.robot.subsystems.superstructure.wrist;
 
-import org.team4639.lib.tunable.TunableNumber;
+import static edu.wpi.first.units.Units.*;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
+import org.team4639.lib.annotation.Untuned;
+import org.team4639.lib.unit.UnitConverter;
 
 public class WristConstants {
-  public static TunableNumber wristKp =
-      new TunableNumber().withDefaultValue(40.0).send("Scoring PIDs/Wrist kP");
-  public static TunableNumber wristKi =
-      new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Wrist kI");
-  public static TunableNumber wristKd =
-      new TunableNumber().withDefaultValue(0).send("Scoring PIDs/Wrist kD");
-  public static TunableNumber wristVelocity =
-      new TunableNumber().withDefaultValue(60).send("Scoring PIDs/Wrist Velocity");
-  public static TunableNumber wristAcceleration =
-      new TunableNumber().withDefaultValue(20).send("Scoring PIDs/Wrist Acceleration");
+  public static final Rotation2d MAX_ROTATION = Rotation2d.fromDegrees(-200);
+  public static final Rotation2d IDLE_ROTATION = Rotation2d.fromDegrees(30);
+
+  @Untuned public static final Angle MAX_POSITION = Rotations.of(-31.846);
+  @Untuned public static final Angle MIN_POSITION = Rotations.of(0);
+
+  public static final Rotation2d TRANSITION_ROTATION = Rotation2d.fromDegrees(-85);
+
+  @Untuned
+  public static final Rotation2d[] SAFE_TRANSITION_RANGE =
+      new Rotation2d[] {
+        TRANSITION_ROTATION.plus(Rotation2d.fromDegrees(20)),
+        TRANSITION_ROTATION.minus(Rotation2d.fromDegrees(20)),
+      };
+
+  public static final UnitConverter<Rotation2d, Angle> RotationToPosition =
+      UnitConverter.create(Rotation2d::getDegrees, Rotation2d::fromDegrees)
+          .then(
+              UnitConverter.linearConvertingRange(
+                  IDLE_ROTATION.getDegrees(),
+                  MAX_ROTATION.getDegrees(),
+                  MIN_POSITION.baseUnitMagnitude(),
+                  MAX_POSITION.baseUnitMagnitude()))
+          .then(
+              UnitConverter.create(
+                  d -> Angle.ofBaseUnits(d, Degree.getBaseUnit()), Angle::baseUnitMagnitude));
+
+  public static final Angle wristTolerance = Degrees.of(1);
 }

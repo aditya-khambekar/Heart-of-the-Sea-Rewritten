@@ -254,15 +254,6 @@ public class RobotContainer {
             () -> -driver.getLeftX(),
             () -> -driver.getRightX()));
 
-    //    Subsystems.elevator.setDefaultCommand(
-    //        Subsystems.elevator.defer(
-    //            () ->
-    //                Subsystems.elevator
-    //                    .runToSetpoint(
-    //                        ElevatorConstants.ProportionToPosition.convert(
-    //                            ElevatorConstants.Setpoints.IDLE_PROPORTION))
-    //                    .withName("Default")));
-
     DriveTriggers.closeToLeftStation
         .and(RobotMode::isComp)
         .and(RobotModeTriggers.teleop())
@@ -280,23 +271,6 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.vectorCoralStationAlignRight(
                 Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
-
-    //    SuperstructureTriggers.intake
-    //        .and(RobotMode::isComp)
-    //        .and(RobotModeTriggers.teleop())
-    //        .whileTrue(Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
-    //
-    //    SuperstructureTriggers.raiseElevator
-    //        .and(RobotMode::isComp)
-    //        .and(RobotModeTriggers.teleop())
-    //        .whileTrue(
-    //            Subsystems.elevator.defer(
-    //                () ->
-    //                    Subsystems.elevator
-    //                        .runToSetpoint(
-    //                            ElevatorConstants.ProportionToPosition.convert(
-    //                                ElevatorConstants.Setpoints.SCORE_READY_POSITION))
-    //                        .withName("Raise Elevator")));
 
     driver
         .rightTrigger()
@@ -318,38 +292,6 @@ public class RobotContainer {
         .and(RobotMode::isComp)
         .and(VisionTriggers.visionIsActive())
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)));
-
-    driver
-        .a()
-        .whileTrue(
-            Subsystems.elevator.runEnd(
-                () -> Subsystems.elevator.elevatorUp(), () -> Subsystems.elevator.elevatorStop()));
-    driver
-        .b()
-        .whileTrue(
-            Subsystems.elevator.runEnd(
-                () -> Subsystems.elevator.elevatorDown(),
-                () -> Subsystems.elevator.elevatorStop()));
-
-    driver
-        .x()
-        .whileTrue(
-            Subsystems.elevator.runEnd(
-                () -> Subsystems.elevator.setPercentage(Percent.of(10)),
-                Subsystems.elevator::elevatorStop));
-    driver
-        .y()
-        .whileTrue(
-            Subsystems.elevator.runEnd(
-                () -> Subsystems.elevator.setPercentage(Percent.of(40)),
-                Subsystems.elevator::elevatorStop));
-
-    //    driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
-    //
-    // driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
-    //
-    //    driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
-    //    driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
   }
 
   /**
