@@ -2,6 +2,7 @@ package org.team4639.robot.robot;
 
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.drive.Drive;
+import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
 import org.team4639.robot.subsystems.superstructure.roller.RollerSubsystem;
 import org.team4639.robot.subsystems.superstructure.wrist.WristSubsystem;
@@ -14,4 +15,5 @@ public class Subsystems {
   public static ElevatorSubsystem elevator;
   public static WristSubsystem wrist;
   public static RollerSubsystem roller;
+  public static Superstructure superstructure;
 }

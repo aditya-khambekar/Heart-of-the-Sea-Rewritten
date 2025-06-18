@@ -7,7 +7,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.BooleanSupplier;
 import org.team4639.robot.robot.Subsystems;
-import org.team4639.robot.subsystems.superstructure.SuperstructureHelper;
+import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureState;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
 
@@ -25,7 +25,8 @@ public class SuperstructureCommand extends Command {
    *     the command has reached the EXECUTING_ACTION state.
    */
   public SuperstructureCommand(SuperstructureState setpoint, BooleanSupplier endCondition) {
-    addRequirements(Subsystems.elevator, Subsystems.wrist, Subsystems.roller);
+    addRequirements(
+        Subsystems.elevator, Subsystems.wrist, Subsystems.roller, Subsystems.superstructure);
     this.setpoint = setpoint;
     this.state = SuperstructureCommandState.TO_SAFE_ANGLE;
     this.endCondition = endCondition;
@@ -34,7 +35,7 @@ public class SuperstructureCommand extends Command {
   @Override
   public void initialize() {
     // check if we are already at the right position
-    if (SuperstructureHelper.atPosition(SuperstructureHelper.getSuperstructureState(), setpoint))
+    if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       state = SuperstructureCommandState.EXECUTING_ACTION;
   }
 
@@ -42,7 +43,7 @@ public class SuperstructureCommand extends Command {
   public void execute() {
     switch (state) {
       case TO_SAFE_ANGLE -> {
-        if (SuperstructureHelper.isWristAtSafeAngle())
+        if (Superstructure.isWristAtSafeAngle())
           state = SuperstructureCommandState.TO_ELEVATOR_SETPOINT;
 
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
@@ -56,7 +57,7 @@ public class SuperstructureCommand extends Command {
             ElevatorConstants.elevatorTolerance.baseUnitMagnitude()))
           state = SuperstructureCommandState.TO_WRIST_SETPOINT;
 
-        if (SuperstructureHelper.isWristAtSafeAngle()) {
+        if (Superstructure.isWristAtSafeAngle()) {
           Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         } else {
           Subsystems.wrist.setWristDutyCycle(Percent.zero());
@@ -65,8 +66,7 @@ public class SuperstructureCommand extends Command {
         Subsystems.roller.setVelocity(RotationsPerSecond.zero());
       }
       case TO_WRIST_SETPOINT -> {
-        if (SuperstructureHelper.atPosition(
-            SuperstructureHelper.getSuperstructureState(), setpoint))
+        if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
           state = SuperstructureCommandState.EXECUTING_ACTION;
 
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());

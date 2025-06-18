@@ -7,12 +7,12 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public abstract class LaserCanIO implements Sendable {
-  public class LaserCanIOInputs {
-    Distance measurement;
-    int status;
-    LaserCanInterface.RangingMode mode;
-    LaserCanInterface.RegionOfInterest regionOfInterest;
-    LaserCanInterface.TimingBudget timingBudget;
+  public static class LaserCanIOInputs {
+    public Distance measurement;
+    public int status;
+    public LaserCanInterface.RangingMode mode;
+    public LaserCanInterface.RegionOfInterest regionOfInterest;
+    public LaserCanInterface.TimingBudget timingBudget;
   }
 
   public abstract void updateInputs(LaserCanIOInputs inputs);

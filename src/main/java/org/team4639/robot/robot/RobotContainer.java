@@ -13,14 +13,7 @@
 
 package org.team4639.robot.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.units.DimensionlessUnit.*;
-import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -46,17 +39,12 @@ import org.team4639.robot.Constants;
 import org.team4639.robot.auto.AutoFactory;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.constants.FieldConstants;
-import org.team4639.robot.constants.IDs;
 import org.team4639.robot.modaltriggers.DriveTriggers;
 import org.team4639.robot.modaltriggers.IOTriggers;
 import org.team4639.robot.modaltriggers.VisionTriggers;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
-import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
-import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIO;
-import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFX;
-import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFXSim;
 import org.team4639.robot.subsystems.vision.*;
 
 /**
@@ -105,9 +93,6 @@ public class RobotContainer {
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation));
-
-        Subsystems.elevator =
-            new ElevatorSubsystem(new ElevatorIOTalonFX(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
         break;
 
       case SIM:
@@ -139,9 +124,6 @@ public class RobotContainer {
                     VisionConstants.robotToCameraBack,
                     () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
 
-        Subsystems.elevator =
-            new ElevatorSubsystem(new ElevatorIOTalonFXSim(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
-
         break;
 
       default:
@@ -157,34 +139,6 @@ public class RobotContainer {
         Subsystems.vision =
             new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
         Subsystems.dashboardOutputs = new DashboardOutputs();
-        Subsystems.elevator =
-            new ElevatorSubsystem(
-                new ElevatorIO() {
-
-                  @Override
-                  public void setNeutralSetpoint() {}
-
-                  @Override
-                  public void setCoastSetpoint() {}
-
-                  @Override
-                  public void setVoltageSetpoint(Voltage voltage) {}
-
-                  @Override
-                  public void setDutyCycleSetpoint(Dimensionless percent) {}
-
-                  @Override
-                  public void setMotionMagicSetpoint(Angle mechanismPosition) {}
-
-                  @Override
-                  public void setVelocitySetpoint(AngularVelocity mechanismVelocity) {}
-
-                  @Override
-                  public void setPositionSetpoint(Angle mechanismPosition) {}
-
-                  @Override
-                  public void updateInputs(ElevatorIOInputs inputs) {}
-                });
         break;
     }
 
@@ -249,10 +203,20 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     Subsystems.drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            Subsystems.drive,
-            () -> -driver.getLeftY(),
-            () -> -driver.getLeftX(),
-            () -> -driver.getRightX()));
+                Subsystems.drive,
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
+                () -> -driver.getRightX())
+            .withName("Drive Joystick"));
+
+    //    Subsystems.elevator.setDefaultCommand(
+    //        Subsystems.elevator.defer(
+    //            () ->
+    //                Subsystems.elevator
+    //                    .runToSetpoint(
+    //                        ElevatorConstants.ProportionToPosition.convert(
+    //                            ElevatorConstants.Setpoints.IDLE_PROPORTION))
+    //                    .withName("Default")));
 
     DriveTriggers.closeToLeftStation
         .and(RobotMode::isComp)
@@ -271,6 +235,23 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.vectorCoralStationAlignRight(
                 Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
+
+    //    SuperstructureTriggers.intake
+    //        .and(RobotMode::isComp)
+    //        .and(RobotModeTriggers.teleop())
+    //        .whileTrue(Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
+    //
+    //    SuperstructureTriggers.raiseElevator
+    //        .and(RobotMode::isComp)
+    //        .and(RobotModeTriggers.teleop())
+    //        .whileTrue(
+    //            Subsystems.elevator.defer(
+    //                () ->
+    //                    Subsystems.elevator
+    //                        .runToSetpoint(
+    //                            ElevatorConstants.ProportionToPosition.convert(
+    //                                ElevatorConstants.Setpoints.SCORE_READY_POSITION))
+    //                        .withName("Raise Elevator")));
 
     driver
         .rightTrigger()
@@ -292,6 +273,13 @@ public class RobotContainer {
         .and(RobotMode::isComp)
         .and(VisionTriggers.visionIsActive())
         .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)));
+
+    //    driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
+    //
+    // driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
+    //
+    //    driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
+    //    driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
   }
 
   /**

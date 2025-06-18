@@ -1,48 +1,60 @@
 package org.team4639.robot.subsystems.superstructure.wrist;
 
+import static edu.wpi.first.units.Units.Millimeter;
 import static edu.wpi.first.units.Units.Percent;
 
+import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team4639.lib.io.sensor.lasercan.LaserCanIO;
 import org.team4639.robot.subsystems.superstructure.wrist.io.WristIO;
 
 public class WristSubsystem extends SubsystemBase {
   WristIO.WristIOInputs wristIOInputs;
-  WristIO io;
+  org.team4639.lib.io.sensor.lasercan.LaserCanIO.LaserCanIOInputs laserCanIOInputs;
+  WristIO WristIO;
+  LaserCanIO LaserCanIO;
 
-  public WristSubsystem(WristIO io) {
+  public WristSubsystem(WristIO WristIO, LaserCanIO laserCanIO) {
     wristIOInputs = new WristIO.WristIOInputs();
-    this.io = io;
+    laserCanIOInputs = new LaserCanIO.LaserCanIOInputs();
+    this.WristIO = WristIO;
+    this.LaserCanIO = laserCanIO;
   }
 
   @Override
   public void periodic() {
-    io.updateInputs(wristIOInputs);
+    WristIO.updateInputs(wristIOInputs);
   }
 
   public void wristForward() {
-    io.setDutyCycleOutput(Percent.of(10));
+    WristIO.setDutyCycleOutput(Percent.of(10));
   }
 
   public void wristBack() {
-    io.setDutyCycleOutput(Percent.of(-10));
+    WristIO.setDutyCycleOutput(Percent.of(-10));
   }
 
   public void setWristSetpoint(Rotation2d setpoint) {
-    io.setPosition(WristConstants.RotationToPosition.convert(setpoint));
+    WristIO.setPosition(WristConstants.RotationToPosition.convert(setpoint));
   }
 
   public void setWristDutyCycle(Dimensionless dutyCycle) {
-    io.setDutyCycleOutput(dutyCycle);
+    WristIO.setDutyCycleOutput(dutyCycle);
   }
 
   public void setWristSetpoint(Angle setpoint) {
-    io.setPosition(setpoint);
+    WristIO.setPosition(setpoint);
   }
 
   public Rotation2d getWristAngle() {
     return WristConstants.RotationToPosition.convertBackwards(wristIOInputs.motorPosition);
+  }
+
+  public boolean hasCoral() {
+    return laserCanIOInputs.measurement.in(Millimeter) < 20
+        && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT;
   }
 }

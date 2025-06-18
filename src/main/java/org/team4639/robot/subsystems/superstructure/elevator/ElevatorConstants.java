@@ -9,8 +9,8 @@ import org.team4639.lib.tunable.*;
 import org.team4639.lib.unit.UnitConverter;
 
 public class ElevatorConstants {
-  public static final Distance HEIGHT_MAX = Inches.of(100);
-  public static final Distance HEIGHT_MIN = Inches.of(0);
+  public static final Distance HEIGHT_MAX = Inches.of(90);
+  public static final Distance HEIGHT_MIN = Inches.of(15);
 
   public static final Angle MOTOR_MAX = Rotations.of(60.91);
   public static final Angle MOTOR_MIN = Rotations.of(0);
