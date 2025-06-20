@@ -32,9 +32,10 @@ public class RollerIOSparkFlex extends RollerIO {
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
-    inputs.motorCurrent = Amps.of(sparkFlex.getOutputCurrent());
-    inputs.motorTemperature = Celsius.of(sparkFlex.getMotorTemperature());
-    inputs.motorVelocity = Rotations.per(Minute).of(sparkFlex.getAbsoluteEncoder().getVelocity());
+    inputs.motorCurrent.mut_replace(Amps.of(sparkFlex.getOutputCurrent()));
+    inputs.motorTemperature.mut_replace(Celsius.of(sparkFlex.getMotorTemperature()));
+    inputs.motorVelocity.mut_replace(
+        Rotations.per(Minute).of(sparkFlex.getAbsoluteEncoder().getVelocity()));
   }
 
   @Override

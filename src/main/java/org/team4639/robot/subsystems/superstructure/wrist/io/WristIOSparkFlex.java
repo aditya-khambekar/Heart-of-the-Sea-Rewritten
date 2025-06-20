@@ -25,11 +25,11 @@ public class WristIOSparkFlex extends WristIO {
 
   @Override
   public void updateInputs(WristIOInputs inputs) {
-    inputs.motorCurrent = Amps.of(sparkFlex.getOutputCurrent());
-    inputs.motorPosition = Rotations.of(sparkFlex.getAbsoluteEncoder().getPosition());
-    inputs.motorTemperature = Celsius.of(sparkFlex.getMotorTemperature());
-    inputs.motorVelocity =
-        RotationsPerSecond.of(sparkFlex.getAbsoluteEncoder().getVelocity() / 60.);
+    inputs.motorCurrent.mut_replace(Amps.of(sparkFlex.getOutputCurrent()));
+    inputs.motorPosition.mut_replace(Rotations.of(sparkFlex.getAbsoluteEncoder().getPosition()));
+    inputs.motorTemperature.mut_replace(Celsius.of(sparkFlex.getMotorTemperature()));
+    inputs.motorVelocity.mut_replace(
+        RotationsPerSecond.of(sparkFlex.getAbsoluteEncoder().getVelocity() / 60.));
   }
 
   @Override

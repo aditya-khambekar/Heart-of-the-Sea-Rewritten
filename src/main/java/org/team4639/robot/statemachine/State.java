@@ -16,7 +16,7 @@ public class State {
   Supplier<State> onAccelerationLimit;
   Supplier<State> onTimeout;
   Map<BooleanSupplier, Supplier<State>> endConditions;
-  private MutTime timeout;
+  private final MutTime timeout;
 
   public State(String name) {
     this.name = name;
@@ -39,12 +39,10 @@ public class State {
 
   public void scheduleCommands() {
     commandsList.forEach(Command::schedule);
-    System.out.println("Commands Scheduled: " + name);
   }
 
   public void cancelCommands() {
     commandsList.forEach(Command::cancel);
-    System.out.println("Commands Cancelled: " + name);
   }
 
   public State onEmergency(Supplier<State> state) {
@@ -76,5 +74,10 @@ public class State {
       }
     }
     if (timeSinceLastStateChange >= timeout.in(Seconds)) StateMachine.setState(onTimeout.get());
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 }
