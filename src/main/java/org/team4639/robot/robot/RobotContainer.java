@@ -13,6 +13,8 @@
 
 package org.team4639.robot.robot;
 
+import static edu.wpi.first.units.Units.Millimeter;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -20,11 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.lib.error.Errors;
+import org.team4639.lib.io.sensor.lasercan.LaserCanIOHardware;
+import org.team4639.lib.io.sensor.lasercan.LaserCanIOSim;
 import org.team4639.lib.io.swerve.GyroIO;
 import org.team4639.lib.io.swerve.GyroIOPigeon2;
 import org.team4639.lib.io.swerve.ModuleIO;
@@ -39,12 +42,22 @@ import org.team4639.robot.Constants;
 import org.team4639.robot.auto.AutoFactory;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.constants.FieldConstants;
-import org.team4639.robot.modaltriggers.DriveTriggers;
+import org.team4639.robot.constants.IDs;
 import org.team4639.robot.modaltriggers.IOTriggers;
-import org.team4639.robot.modaltriggers.VisionTriggers;
+import org.team4639.robot.statemachine.StateMachine;
+import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
+import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
+import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFX;
+import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFXSim;
+import org.team4639.robot.subsystems.superstructure.roller.RollerSubsystem;
+import org.team4639.robot.subsystems.superstructure.roller.io.RollerIOSim;
+import org.team4639.robot.subsystems.superstructure.roller.io.RollerIOSparkFlex;
+import org.team4639.robot.subsystems.superstructure.wrist.WristSubsystem;
+import org.team4639.robot.subsystems.superstructure.wrist.io.WristIOSim;
+import org.team4639.robot.subsystems.superstructure.wrist.io.WristIOSparkFlex;
 import org.team4639.robot.subsystems.vision.*;
 
 /**
@@ -93,6 +106,13 @@ public class RobotContainer {
                     VisionConstants.cameraRightName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation));
+
+        Subsystems.elevator =
+            new ElevatorSubsystem(new ElevatorIOTalonFX(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
+        Subsystems.wrist =
+            new WristSubsystem(
+                new WristIOSparkFlex(IDs.WRIST), new LaserCanIOHardware(IDs.WRIST_LASERCAN));
+        Subsystems.roller = new RollerSubsystem(new RollerIOSparkFlex(IDs.ROLLER));
         break;
 
       case SIM:
@@ -123,6 +143,12 @@ public class RobotContainer {
                     VisionConstants.cameraBackName,
                     VisionConstants.robotToCameraBack,
                     () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
+        Subsystems.elevator =
+            new ElevatorSubsystem(new ElevatorIOTalonFXSim(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
+        Subsystems.wrist =
+            new WristSubsystem(
+                new WristIOSim(IDs.WRIST), new LaserCanIOSim(() -> Millimeter.of(100)));
+        Subsystems.roller = new RollerSubsystem(new RollerIOSim(IDs.ROLLER));
 
         break;
 
@@ -179,6 +205,8 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
+    States.initStates();
+    StateMachine.setState(States.IDLE);
   }
 
   /**
@@ -208,78 +236,6 @@ public class RobotContainer {
                 () -> -driver.getLeftX(),
                 () -> -driver.getRightX())
             .withName("Drive Joystick"));
-
-    //    Subsystems.elevator.setDefaultCommand(
-    //        Subsystems.elevator.defer(
-    //            () ->
-    //                Subsystems.elevator
-    //                    .runToSetpoint(
-    //                        ElevatorConstants.ProportionToPosition.convert(
-    //                            ElevatorConstants.Setpoints.IDLE_PROPORTION))
-    //                    .withName("Default")));
-
-    DriveTriggers.closeToLeftStation
-        .and(RobotMode::isComp)
-        .and(RobotModeTriggers.teleop())
-        .and(VisionTriggers.visionIsActive())
-        .and(IOTriggers.hasDriverRotationalInput.negate())
-        .whileTrue(
-            DriveCommands.vectorCoralStationAlignLeft(
-                Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
-
-    DriveTriggers.closeToRightStation
-        .and(RobotMode::isComp)
-        .and(RobotModeTriggers.teleop())
-        .and(VisionTriggers.visionIsActive())
-        .and(IOTriggers.hasDriverRotationalInput.negate())
-        .whileTrue(
-            DriveCommands.vectorCoralStationAlignRight(
-                Subsystems.drive, () -> -driver.getLeftY(), () -> -driver.getLeftX()));
-
-    //    SuperstructureTriggers.intake
-    //        .and(RobotMode::isComp)
-    //        .and(RobotModeTriggers.teleop())
-    //        .whileTrue(Subsystems.elevator.defer(SuperstructureCommands::intakeCoral));
-    //
-    //    SuperstructureTriggers.raiseElevator
-    //        .and(RobotMode::isComp)
-    //        .and(RobotModeTriggers.teleop())
-    //        .whileTrue(
-    //            Subsystems.elevator.defer(
-    //                () ->
-    //                    Subsystems.elevator
-    //                        .runToSetpoint(
-    //                            ElevatorConstants.ProportionToPosition.convert(
-    //                                ElevatorConstants.Setpoints.SCORE_READY_POSITION))
-    //                        .withName("Raise Elevator")));
-
-    driver
-        .rightTrigger()
-        .and(RobotModeTriggers.teleop())
-        .and(RobotMode::isComp)
-        .and(VisionTriggers.visionIsActive())
-        .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)));
-
-    driver
-        .leftBumper()
-        .and(RobotModeTriggers.teleop())
-        .and(RobotMode::isComp)
-        .and(VisionTriggers.visionIsActive())
-        .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)));
-
-    driver
-        .rightBumper()
-        .and(RobotModeTriggers.teleop())
-        .and(RobotMode::isComp)
-        .and(VisionTriggers.visionIsActive())
-        .whileTrue(Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)));
-
-    //    driver.povUp().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(5.0));
-    //
-    // driver.povDown().and(RobotMode::isManual).whileTrue(Subsystems.elevator.runVelocity(-5.0));
-    //
-    //    driver.a().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(0.5));
-    //    driver.b().and(RobotMode::isManual).whileTrue(Subsystems.scoring.runMotor(-0.5));
   }
 
   /**

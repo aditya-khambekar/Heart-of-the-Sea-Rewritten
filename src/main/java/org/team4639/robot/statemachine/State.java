@@ -1,25 +1,31 @@
 package org.team4639.robot.statemachine;
 
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.units.measure.MutTime;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 public class State {
   private final String name;
-  Trigger trigger;
-  State onEmergency;
-  State onAccelerationLimit;
-  Map<BooleanSupplier, State> endConditions;
+  Collection<Command> commandsList;
+  Supplier<State> onEmergency;
+  Supplier<State> onAccelerationLimit;
+  Supplier<State> onTimeout;
+  Map<BooleanSupplier, Supplier<State>> endConditions;
+  private MutTime timeout;
 
   public State(String name) {
     this.name = name;
-    trigger = new Trigger(() -> StateMachine.getState() == this);
-    onEmergency = this;
-    onAccelerationLimit = this;
+    commandsList = new ArrayList<>();
+    onEmergency = () -> this;
+    onAccelerationLimit = () -> this;
+    onTimeout = () -> this;
     endConditions = new HashMap<>();
+    timeout = Seconds.mutable(Integer.MAX_VALUE);
   }
 
   public String getName() {
@@ -27,27 +33,48 @@ public class State {
   }
 
   public State whileTrue(Command... commands) {
-    Arrays.stream(commands).forEach(trigger::whileTrue);
+    commandsList.addAll(Arrays.asList(commands));
     return this;
   }
 
-  public State onEmergency(State state) {
+  public void scheduleCommands() {
+    commandsList.forEach(Command::schedule);
+    System.out.println("Commands Scheduled: " + name);
+  }
+
+  public void cancelCommands() {
+    commandsList.forEach(Command::cancel);
+    System.out.println("Commands Cancelled: " + name);
+  }
+
+  public State onEmergency(Supplier<State> state) {
     onEmergency = state;
     return this;
   }
 
-  public State onAccelerationLimit(State state) {
+  public State onAccelerationLimit(Supplier<State> state) {
     onAccelerationLimit = state;
     return this;
   }
 
-  public State withEndCondition(BooleanSupplier condition, State nextState) {
+  public State withEndCondition(BooleanSupplier condition, Supplier<State> nextState) {
     endConditions.put(condition, nextState);
     return this;
   }
 
-  public void evaluate() {
-    endConditions.forEach(
-        (condition, state) -> StateMachine.setState(condition.getAsBoolean() ? state : this));
+  public State withTimeout(Time timeout, Supplier<State> nextState) {
+    this.timeout.mut_replace(timeout);
+    this.onTimeout = nextState;
+    return this;
+  }
+
+  public void evaluate(double timeSinceLastStateChange) {
+    for (BooleanSupplier b : endConditions.keySet()) {
+      if (b.getAsBoolean()) {
+        State next = endConditions.get(b).get();
+        StateMachine.setState(next);
+      }
+    }
+    if (timeSinceLastStateChange >= timeout.in(Seconds)) StateMachine.setState(onTimeout.get());
   }
 }

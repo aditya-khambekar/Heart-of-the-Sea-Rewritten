@@ -1,6 +1,9 @@
 package org.team4639.lib.io.sensor.lasercan;
 
+import static edu.wpi.first.units.Units.Millimeter;
+
 import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.util.sendable.Sendable;
@@ -8,9 +11,9 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 
 public abstract class LaserCanIO implements Sendable {
   public static class LaserCanIOInputs {
-    public Distance measurement;
-    public int status;
-    public LaserCanInterface.RangingMode mode;
+    public Distance measurement = Millimeter.of(Integer.MAX_VALUE);
+    public int status = LaserCan.LASERCAN_STATUS_WEAK_SIGNAL;
+    public LaserCanInterface.RangingMode mode = LaserCanInterface.RangingMode.LONG;
     public LaserCanInterface.RegionOfInterest regionOfInterest;
     public LaserCanInterface.TimingBudget timingBudget;
   }

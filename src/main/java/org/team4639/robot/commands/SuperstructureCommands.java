@@ -18,7 +18,11 @@ public class SuperstructureCommands {
   public static final Command L3_ALGAE = Commands.none();
   public static final Command ALGAE_SCORE = Commands.none();
   public static final Command ALGAE_STOW = Commands.none();
+  public static final Command HOMING_READY = Commands.none();
   public static final Command HOMING = Commands.none();
 
   public static final Command HOLD = Commands.none();
+
+  public static final Command REJECT_CORAL = Commands.none();
+  public static final Command REJECT_ALGAE = Commands.none();
 }

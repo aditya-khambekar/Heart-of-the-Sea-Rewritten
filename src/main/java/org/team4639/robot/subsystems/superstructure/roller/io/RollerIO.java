@@ -10,9 +10,9 @@ import java.util.Optional;
 
 public abstract class RollerIO {
   public static class RollerIOInputs implements Sendable {
-    public AngularVelocity motorVelocity;
-    public Temperature motorTemperature;
-    public Current motorCurrent;
+    public AngularVelocity motorVelocity = RadiansPerSecond.zero();
+    public Temperature motorTemperature = Celsius.zero();
+    public Current motorCurrent = Amps.zero();
 
     @Override
     public void initSendable(SendableBuilder builder) {

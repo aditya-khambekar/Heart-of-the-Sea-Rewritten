@@ -30,6 +30,7 @@ import org.team4639.BuildConstants;
 import org.team4639.lib.error.Errors;
 import org.team4639.lib.util.AllianceFlipUtil;
 import org.team4639.robot.Constants;
+import org.team4639.robot.statemachine.StateMachine;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 
 /**
@@ -157,6 +158,7 @@ public class Robot extends LoggedRobot {
     //    var listPoses = robotContainer.field.getObject("Auto Poses").getPoses();
     //    listPoses.add(AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose()));
     //    robotContainer.field.getObject("Auto Poses").setPoses(listPoses);
+    StateMachine.getInstance().periodic();
   }
 
   @Override
@@ -178,7 +180,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    StateMachine.getInstance().periodic();
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override

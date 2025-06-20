@@ -19,4 +19,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState intake =
       new SuperstructureState(Percent.zero(), Rotation2d.fromDegrees(-10.25), coralIn);
+
+  public static final SuperstructureState homing_ready =
+      new SuperstructureState(Percent.zero(), Rotation2d.fromDegrees(-10.25), coralIn);
 }

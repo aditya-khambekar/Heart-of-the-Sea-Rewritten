@@ -10,10 +10,10 @@ import java.util.Optional;
 
 public abstract class WristIO {
   public static class WristIOInputs implements Sendable {
-    public Angle motorPosition;
-    public AngularVelocity motorVelocity;
-    public Temperature motorTemperature;
-    public Current motorCurrent;
+    public Angle motorPosition = Degrees.zero();
+    public AngularVelocity motorVelocity = RadiansPerSecond.zero();
+    public Temperature motorTemperature = Celsius.zero();
+    public Current motorCurrent = Amps.zero();
 
     @Override
     public void initSendable(SendableBuilder builder) {

@@ -26,14 +26,14 @@ public abstract class ElevatorIO {
 
   @AutoLog
   public static class ElevatorIOInputs implements Sendable {
-    public MutAngle leftMotorPosition;
-    public MutAngle rightMotorPosition;
-    public MutAngularVelocity leftMotorSpeed;
-    public MutAngularVelocity rightMotorSpeed;
-    public MutTemperature leftMotorTemperature;
-    public MutTemperature rightMotorTemperature;
-    public MutCurrent leftMotorTorqueCurrent;
-    public MutCurrent rightMotorTorqueCurrent;
+    public MutAngle leftMotorPosition = Degrees.mutable(0);
+    public MutAngle rightMotorPosition = Degrees.mutable(0);
+    public MutAngularVelocity leftMotorSpeed = RadiansPerSecond.mutable(0);
+    public MutAngularVelocity rightMotorSpeed = RadiansPerSecond.mutable(0);
+    public MutTemperature leftMotorTemperature = Celsius.mutable(0);
+    public MutTemperature rightMotorTemperature = Celsius.mutable(0);
+    public MutCurrent leftMotorTorqueCurrent = Amps.mutable(0);
+    public MutCurrent rightMotorTorqueCurrent = Amps.mutable(0);
 
     @Override
     public void initSendable(SendableBuilder sendableBuilder) {
