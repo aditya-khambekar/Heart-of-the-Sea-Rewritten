@@ -98,12 +98,7 @@ public class DriveCommands {
                   linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
                   omega * drive.getMaxAngularSpeedRadPerSec());
           boolean isFlipped = false;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+          drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation()));
 
           SmartDashboard.putNumber(
               "Velocity", Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond));
@@ -412,19 +407,9 @@ public class DriveCommands {
     //
     //    return PIDto(drive, startPose, nearestReefPose);
 
-    return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
+    return PIDtoReefWithVelocityReset(drive, drivePose, nearestReefPose);
   }
-
-  public static Command alignHeadOn(Drive drive, Pose2d destination) {
-    var drivePose = drive.getPose();
-    var dist =
-        Math.max(
-            Math.abs(destination.getX() - drivePose.getX()),
-            Math.abs(destination.getY() - drivePose.getY()));
-    Pose2d startPose = destination.transformBy(new Transform2d(-dist, 0, Rotation2d.kZero));
-
-    return PIDtowithVelocityReset(drive, startPose, destination);
-  }
+  
 
   public static Command reefAlignRight(Drive drive) {
     Pose2d drivePose = drive.getPose();
@@ -448,67 +433,9 @@ public class DriveCommands {
     // Rotation2d.kZero));
     //    return PIDto(drive, startPose, nearestReefPose);
 
-    return PIDtowithVelocityReset(drive, drivePose, nearestReefPose);
+    return PIDtoReefWithVelocityReset(drive, drivePose, nearestReefPose);
   }
 
-  public static Command PIDto(Drive drive, Pose2d startingPose, Pose2d destinationPose) {
-    ProfiledPIDController pidX =
-        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-    ProfiledPIDController pidY =
-        new ProfiledPIDController(6, 0, 0, new TrapezoidProfile.Constraints(3, 3));
-    PIDController headingController = new PIDController(16, 0, 0);
-    headingController.enableContinuousInput(-Math.PI, Math.PI);
-    headingController.setSetpoint(destinationPose.getRotation().getRadians());
-
-    pidX.reset(startingPose.getX());
-    // pidX.reset(drive.getPose().getX());
-    pidX.setGoal(destinationPose.getX());
-
-    pidY.reset(startingPose.getY());
-    // pidY.reset(drive.getPose().getY());
-    pidY.setGoal(destinationPose.getY());
-
-    Debouncer toleranceDebouncer = new Debouncer(0.1);
-
-    // PhoenixPIDController pidX = new PhoenixPIDController(6, 0, 0);
-    // PhoenixPIDController pidY = new PhoenixPIDController(6, 0, 0);
-
-    double kp = 6;
-
-    return drive
-        .run(
-            () -> {
-              drive.runVelocity(
-                  ChassisSpeeds.fromFieldRelativeSpeeds(
-                      new ChassisSpeeds(
-                          pidX.calculate(drive.getPose().getX()),
-                          pidY.calculate(drive.getPose().getY()),
-                          headingController.calculate(drive.getPose().getRotation().getRadians())),
-                      drive.getPose().getRotation()));
-              drive
-                  .getField()
-                  .getObject("PID Setpoint")
-                  .setPose(
-                      new Pose2d(
-                          pidX.getSetpoint().position,
-                          pidY.getSetpoint().position,
-                          Rotation2d.fromRadians(headingController.getSetpoint())));
-              drive
-                  .getField()
-                  .getObject("PID Goal")
-                  .setPose(
-                      new Pose2d(
-                          pidX.getGoal().position,
-                          pidY.getGoal().position,
-                          Rotation2d.fromRadians(headingController.getSetpoint())));
-            })
-        .until(
-            () ->
-                toleranceDebouncer.calculate(
-                    Math.abs(pidX.getPositionError()) < 0.01
-                        && Math.abs(pidY.getPositionError()) < 0.01
-                        && Math.abs(headingController.getError()) < 0.001));
-  }
 
   public static Command PIDtowithVelocityReset(
       Drive drive, Pose2d startingPose, Pose2d destinationPose) {
@@ -526,7 +453,7 @@ public class DriveCommands {
     pidY.reset(startingPose.getY(), drive.getSpeeds()[1]);
     pidY.setGoal(destinationPose.getY());
 
-    Debouncer toleranceDebouncer = new Debouncer(0.1);
+    drive.setpoint = destinationPose;
 
     // PhoenixPIDController pidX = new PhoenixPIDController(6, 0, 0);
     // PhoenixPIDController pidY = new PhoenixPIDController(6, 0, 0);
@@ -552,12 +479,56 @@ public class DriveCommands {
                           pidY.getSetpoint().position,
                           Rotation2d.fromRadians(headingController.getSetpoint())));
             })
-        .until(
-            () ->
-                toleranceDebouncer.calculate(
-                    Math.abs(pidX.getPositionError()) < 0.03
-                        && Math.abs(pidY.getPositionError()) < 0.03
-                        && Math.abs(headingController.getError()) < 0.005));
+        .until(drive::atSetpointTranslation);
+  }
+
+  public static Command PIDtoReefWithVelocityReset(
+      Drive drive, Pose2d startingPose, Pose2d destinationPose) {
+    ProfiledPIDController pidX =
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    ProfiledPIDController pidY =
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+    PIDController headingController = new PIDController(16, 0, 0);
+    headingController.enableContinuousInput(-Math.PI, Math.PI);
+    headingController.setSetpoint(destinationPose.getRotation().getRadians());
+
+    pidX.reset(startingPose.getX(), drive.getSpeeds()[0]);
+    pidX.setGoal(destinationPose.getX());
+
+    pidY.reset(startingPose.getY(), drive.getSpeeds()[1]);
+    pidY.setGoal(destinationPose.getY());
+
+    drive.setpoint = destinationPose;
+
+    Debouncer toleranceDebouncer = new Debouncer(0.1);
+
+    // PhoenixPIDController pidX = new PhoenixPIDController(6, 0, 0);
+    // PhoenixPIDController pidY = new PhoenixPIDController(6, 0, 0);
+
+    double kp = 6;
+
+    return drive
+        .run(
+            () -> {
+              headingController.setSetpoint(
+                  FieldConstants.getRotationToClosestBranchPosition(drive.getPose()).getRadians());
+              drive.runVelocity(
+                  ChassisSpeeds.fromFieldRelativeSpeeds(
+                      new ChassisSpeeds(
+                          pidX.getSetpoint().velocity + pidX.calculate(drive.getPose().getX()),
+                          pidY.getSetpoint().velocity + pidY.calculate(drive.getPose().getY()),
+                          headingController.calculate(drive.getPose().getRotation().getRadians())),
+                      drive.getPose().getRotation()));
+              drive
+                  .getField()
+                  .getObject("PID Setpoint")
+                  .setPose(
+                      new Pose2d(
+                          pidX.getSetpoint().position,
+                          pidY.getSetpoint().position,
+                          Rotation2d.fromRadians(headingController.getSetpoint())));
+            })
+        .until(drive::atSetpointTranslation);
   }
 
   public static Command robotOrientedDrive(Drive drive, ChassisSpeeds speeds) {

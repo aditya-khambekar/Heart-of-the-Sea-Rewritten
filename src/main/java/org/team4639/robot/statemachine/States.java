@@ -5,7 +5,9 @@ import static edu.wpi.first.units.Units.Seconds;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.Controls;
+import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.modaltriggers.DriveTriggers;
+import org.team4639.robot.robot.RobotContainer;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
@@ -14,10 +16,10 @@ public class States {
 
   public static State IDLE;
   public static State NONE = new State("NONE");
-  public static State INTAKE_LEFT;
-  public static State INTAKE_RIGHT;
-  public static State INTAKE_NODIR;
-  public static State INTAKE_II;
+  public static State HP_LEFT;
+  public static State HP_RIGHT;
+  public static State HP_NODIR;
+  public static State INTAKE_LOWER;
   public static State CORAL_STOW;
   public static State CORAL_SCORE_ALIGN_LEFT;
   public static State CORAL_SCORE_ALIGN_RIGHT;
@@ -37,54 +39,62 @@ public class States {
     IDLE =
         new State("IDLE")
             .whileTrue(SuperstructureCommands.IDLE)
-            .withEndCondition(DriveTriggers.closeToRightStation, () -> INTAKE_RIGHT)
-            .withEndCondition(DriveTriggers.closeToLeftStation, () -> INTAKE_LEFT)
-            .withEndCondition(Controls.intake, () -> INTAKE_NODIR);
+            .withEndCondition(DriveTriggers.closeToRightStation, () -> HP_RIGHT)
+            .withEndCondition(DriveTriggers.closeToLeftStation, () -> HP_LEFT)
+            .withEndCondition(Controls.intake, () -> HP_NODIR)
+            .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW);
 
-    INTAKE_LEFT =
-        new State("INTAKE_LEFT")
+    HP_LEFT =
+        new State("HP_LEFT")
             .whileTrue(
-                DriveCommands.coralStationAlignLeft(Subsystems.drive),
-                SuperstructureCommands.INTAKE)
-            .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_II)
-            .withEndCondition(Controls.secondIntake, () -> INTAKE_II)
+                DriveCommands.coralStationAlignLeft(Subsystems.drive), SuperstructureCommands.HP)
+            .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER)
+            .withEndCondition(Controls.secondIntake, () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
 
-    INTAKE_RIGHT =
-        new State("INTAKE_RIGHT")
+    HP_RIGHT =
+        new State("HP_RIGHT")
             .whileTrue(
-                DriveCommands.coralStationAlignRight(Subsystems.drive),
-                SuperstructureCommands.INTAKE)
-            .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_II)
-            .withEndCondition(Controls.secondIntake, () -> INTAKE_II)
+                DriveCommands.coralStationAlignRight(Subsystems.drive), SuperstructureCommands.HP)
+            .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER)
+            .withEndCondition(Controls.secondIntake, () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
 
-    INTAKE_NODIR =
+    HP_NODIR =
         new State("INTAKE_NODIR")
-            .whileTrue(SuperstructureCommands.INTAKE)
-            .withEndCondition(Controls.secondIntake, () -> INTAKE_II);
+            .whileTrue(SuperstructureCommands.HP)
+            .withEndCondition(Controls.secondIntake, () -> INTAKE_LOWER);
 
-    INTAKE_II =
-        new State("INTAKE_II")
-            .whileTrue(SuperstructureCommands.INTAKE_II)
+    INTAKE_LOWER =
+        new State("INTAKE_LOWER")
+            .whileTrue(SuperstructureCommands.HP_LOWER)
             .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW)
             .onEmergency(() -> IDLE);
 
     CORAL_STOW =
         new State("CORAL_STOW")
-            .whileTrue(SuperstructureCommands.CORAL_STOW)
+            .whileTrue(
+                SuperstructureCommands.CORAL_STOW,
+                DriveCommands.joystickDriveAtAngle(
+                    Subsystems.drive,
+                    () -> -RobotContainer.driver.getLeftY(),
+                    () -> -RobotContainer.driver.getLeftX(),
+                    () ->
+                        FieldConstants.getRotationToClosestBranchPosition(
+                            Subsystems.drive.getPose())))
             .withEndCondition(Controls.alignLeft, () -> CORAL_SCORE_ALIGN_LEFT)
             .withEndCondition(Controls.alignRight, () -> CORAL_SCORE_ALIGN_RIGHT)
+            .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> REJECT_CORAL);
 
     CORAL_SCORE_ALIGN_LEFT =
         new State("CORAL_SCORE_ALIGN_LEFT")
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
-                DriveCommands.reefAlignLeft(Subsystems.drive))
-            .withEndCondition(
-                () -> Subsystems.drive.getCurrentCommand().getName().endsWith("Joystick"),
-                () -> CHOOSE_CORAL_LEVEL)
+                Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)))
+            .withEndCondition(Subsystems.drive::atSetpointTranslation, () -> CHOOSE_CORAL_LEVEL)
+            .withEndCondition(Controls.alignRight, () -> States.CORAL_SCORE_ALIGN_RIGHT)
+            .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
@@ -92,10 +102,10 @@ public class States {
         new State("CORAL_SCORE_ALIGN_RIGHT")
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
-                DriveCommands.reefAlignRight(Subsystems.drive))
-            .withEndCondition(
-                () -> Subsystems.drive.getCurrentCommand().getName().endsWith("Joystick"),
-                () -> CHOOSE_CORAL_LEVEL)
+                Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)))
+            .withEndCondition(Subsystems.drive::atSetpointTranslation, () -> CHOOSE_CORAL_LEVEL)
+            .withEndCondition(Controls.alignLeft, () -> States.CORAL_SCORE_ALIGN_LEFT)
+            .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
@@ -114,6 +124,9 @@ public class States {
         new State("CHOOSE_CORAL_LEVEL")
             .whileTrue(
                 SuperstructureCommands.HOLD, Subsystems.drive.run(() -> Subsystems.drive.stop()))
+            .withEndCondition(Controls.alignLeft, () -> CORAL_SCORE_ALIGN_LEFT)
+            .withEndCondition(Controls.alignRight, () -> CORAL_SCORE_ALIGN_RIGHT)
+            .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .withEndCondition(Controls.L1Coral, () -> L1_CORAL_SCORE)
             .withEndCondition(Controls.L2Coral, () -> L2_CORAL_SCORE)
             .withEndCondition(Controls.L3Coral, () -> L3_CORAL_SCORE)
@@ -146,7 +159,7 @@ public class States {
                 () ->
                     Superstructure.atPosition(
                         Superstructure.getSuperstructureState(),
-                        SuperstructureSetpoints.homing_ready),
+                        SuperstructureSetpoints.HOMING_READY),
                 () -> HOMING);
 
     HOMING = new State("HOMING").whileTrue(SuperstructureCommands.HOMING);

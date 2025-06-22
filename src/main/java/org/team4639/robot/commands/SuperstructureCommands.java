@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 /** Placeholder class. All of these are commands.none right now while i get things sorted out. */
 public class SuperstructureCommands {
   public static final Command IDLE = Commands.none();
-  public static final Command INTAKE = Commands.none();
-  public static final Command INTAKE_II = Commands.none();
+  public static final Command HP = Commands.none();
+  public static final Command HP_LOWER = Commands.none();
   public static final Command CORAL_STOW = Commands.none();
   public static final Command ELEVATOR_READY = Commands.none();
   public static final Command L1 = Commands.none();

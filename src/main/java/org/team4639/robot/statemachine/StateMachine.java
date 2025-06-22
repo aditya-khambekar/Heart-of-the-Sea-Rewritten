@@ -6,6 +6,7 @@ import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Objects;
+import org.team4639.robot.constants.Controls;
 
 public class StateMachine {
   private static volatile StateMachine instance;
@@ -15,7 +16,7 @@ public class StateMachine {
   }
 
   private State state;
-  private MutTime timeOfLastStateChange;
+  private final MutTime timeOfLastStateChange;
 
   private StateMachine() {
     state = States.NONE;
@@ -36,6 +37,7 @@ public class StateMachine {
   }
 
   public void periodic() {
+    if (Controls.emergency.getAsBoolean()) setState(state.onEmergency.get());
     SmartDashboard.putString("State", state.getName());
     state.evaluate(Timer.getTimestamp() - timeOfLastStateChange.in(Seconds));
   }

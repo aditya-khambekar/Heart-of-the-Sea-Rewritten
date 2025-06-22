@@ -56,6 +56,7 @@ import org.team4639.lib.io.swerve.GyroIOInputsAutoLogged;
 import org.team4639.lib.io.swerve.ModuleIO;
 import org.team4639.robot.Constants;
 import org.team4639.robot.Constants.Mode;
+import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 import org.team4639.robot.subsystems.vision.Vision;
 import org.team4639.robot.subsystems.vision.VisionPoses;
@@ -117,6 +118,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   private final Field2d field = new Field2d();
 
+  public Pose2d setpoint = new Pose2d();
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
@@ -169,6 +172,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
   }
 
+  public boolean atSetpointTranslation() {
+    return Math.abs(Subsystems.drive.getPose().getX() - setpoint.getX()) < 0.03
+        && Math.abs(Subsystems.drive.getPose().getY() - setpoint.getY()) < 0.03;
+  }
+
   @Override
   public void periodic() {
     odometryLock.lock(); // Prevents odometry updates while reading data
@@ -178,6 +186,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
       module.periodic();
     }
     odometryLock.unlock();
+
+    field.getObject("Drive Setpoint").setPose(setpoint);
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {

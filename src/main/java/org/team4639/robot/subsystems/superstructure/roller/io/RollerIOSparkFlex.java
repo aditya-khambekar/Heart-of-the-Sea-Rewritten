@@ -32,6 +32,7 @@ public class RollerIOSparkFlex extends RollerIO {
 
   @Override
   public void updateInputs(RollerIOInputs inputs) {
+    // TODO: make this better
     inputs.motorCurrent.mut_replace(Amps.of(sparkFlex.getOutputCurrent()));
     inputs.motorTemperature.mut_replace(Celsius.of(sparkFlex.getMotorTemperature()));
     inputs.motorVelocity.mut_replace(

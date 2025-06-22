@@ -19,6 +19,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -143,13 +144,17 @@ public class RobotContainer {
                     VisionConstants.cameraBackName,
                     VisionConstants.robotToCameraBack,
                     () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
+        SmartDashboard.putBoolean("Has Coral", false);
         Subsystems.elevator =
             new ElevatorSubsystem(new ElevatorIOTalonFXSim(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
         Subsystems.wrist =
             new WristSubsystem(
-                new WristIOSim(IDs.WRIST), new LaserCanIOSim(() -> Millimeter.of(100)));
+                new WristIOSim(IDs.WRIST),
+                new LaserCanIOSim(
+                    () ->
+                        Millimeter.of(
+                            SmartDashboard.getBoolean("Has Coral", true) ? 1 : Integer.MAX_VALUE)));
         Subsystems.roller = new RollerSubsystem(new RollerIOSim(IDs.ROLLER));
-
         break;
 
       default:

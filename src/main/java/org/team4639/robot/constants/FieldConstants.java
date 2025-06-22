@@ -7,10 +7,14 @@
 
 package org.team4639.robot.constants;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.*;
 import org.team4639.lib.util.PoseUtil;
 
 /**
@@ -26,6 +30,38 @@ public class FieldConstants {
   public static void init() {
     Reef.init();
     initAlgaeLocations();
+  }
+
+  public enum AprilTagLayoutType {
+    OFFICIAL("2025-official"),
+    NO_BARGE("2025-no-barge"),
+    BLUE_REEF("2025-blue-reef"),
+    RED_REEF("2025-red-reef"),
+    NONE("2025-none");
+
+    AprilTagLayoutType(String name) {
+      try {
+        layout =
+            new AprilTagFieldLayout(
+                Path.of("src", "main", "deploy", "apriltags", "andymark", "2025-official.json"));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+
+      try {
+        layoutString = new ObjectMapper().writeValueAsString(layout);
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(
+            "Failed to serialize AprilTag layout JSON " + toString() + "for Northstar");
+      }
+    }
+
+    private final AprilTagFieldLayout layout;
+    private final String layoutString;
+
+    public AprilTagFieldLayout getLayout() {
+      return layout;
+    }
   }
 
   public static class Processor {
@@ -59,47 +95,107 @@ public class FieldConstants {
             Rotation2d.fromDegrees(144.011 - 90));
   }
 
+  public enum ReefLevel {
+    L1(0, Units.inchesToMeters(25.0), 0),
+    L2(1, Units.inchesToMeters(31.875 - Math.cos(Math.toRadians(35.0)) * 0.625), -35),
+    L3(2, Units.inchesToMeters(47.625 - Math.cos(Math.toRadians(35.0)) * 0.625), -35),
+    L4(3, Units.inchesToMeters(72), -90);
+
+    ReefLevel(int levelNumber, double height, double pitch) {
+      this.levelNumber = levelNumber;
+      this.height = height;
+      this.pitch = pitch; // Degrees
+    }
+
+    public static ReefLevel fromLevel(int level) {
+      return Arrays.stream(values())
+          .filter(height -> height.ordinal() == level)
+          .findFirst()
+          .orElse(L4);
+    }
+
+    public final int levelNumber;
+    public final double height;
+    public final double pitch;
+  }
+
+  public static final double aprilTagWidth = Units.inchesToMeters(6.50);
+  public static final int aprilTagCount = 22;
+  public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.NO_BARGE;
+
   public static class Reef {
+    public static final double faceLength = Units.inchesToMeters(36.792600);
     public static final Translation2d center =
-        new Translation2d(Units.inchesToMeters(176.746), Units.inchesToMeters(158.501));
+        new Translation2d(Units.inchesToMeters(176.746), fieldWidth / 2.0);
     public static final double faceToZoneLine =
         Units.inchesToMeters(12); // Side of the reef to the inside of the reef zone line
 
     public static final Pose2d[] centerFaces =
         new Pose2d[6]; // Starting facing the driver station in clockwise order
+    public static final List<Map<ReefLevel, Pose3d>> branchPositions =
+        new ArrayList<>(); // Starting at the right branch facing the driver station in clockwise
+    public static final List<Map<ReefLevel, Pose2d>> branchPositions2d = new ArrayList<>();
 
     public static void init() {
       // Initialize faces
-      centerFaces[0] =
-          new Pose2d(
-              Units.inchesToMeters(144.003),
-              Units.inchesToMeters(158.500),
-              Rotation2d.fromDegrees(180));
-      centerFaces[1] =
-          new Pose2d(
-              Units.inchesToMeters(160.373),
-              Units.inchesToMeters(186.857),
-              Rotation2d.fromDegrees(120));
-      centerFaces[2] =
-          new Pose2d(
-              Units.inchesToMeters(193.116),
-              Units.inchesToMeters(186.858),
-              Rotation2d.fromDegrees(60));
-      centerFaces[3] =
-          new Pose2d(
-              Units.inchesToMeters(209.489),
-              Units.inchesToMeters(158.502),
-              Rotation2d.fromDegrees(0));
-      centerFaces[4] =
-          new Pose2d(
-              Units.inchesToMeters(193.118),
-              Units.inchesToMeters(130.145),
-              Rotation2d.fromDegrees(-60));
-      centerFaces[5] =
-          new Pose2d(
-              Units.inchesToMeters(160.375),
-              Units.inchesToMeters(130.144),
-              Rotation2d.fromDegrees(-120));
+      var aprilTagLayout = AprilTagLayoutType.OFFICIAL.getLayout();
+      centerFaces[0] = aprilTagLayout.getTagPose(18).get().toPose2d();
+      centerFaces[1] = aprilTagLayout.getTagPose(19).get().toPose2d();
+      centerFaces[2] = aprilTagLayout.getTagPose(20).get().toPose2d();
+      centerFaces[3] = aprilTagLayout.getTagPose(21).get().toPose2d();
+      centerFaces[4] = aprilTagLayout.getTagPose(22).get().toPose2d();
+      centerFaces[5] = aprilTagLayout.getTagPose(17).get().toPose2d();
+
+      // Initialize branch positions
+      for (int face = 0; face < 6; face++) {
+        Map<ReefLevel, Pose3d> fillRight = new HashMap<>();
+        Map<ReefLevel, Pose3d> fillLeft = new HashMap<>();
+        Map<ReefLevel, Pose2d> fillRight2d = new HashMap<>();
+        Map<ReefLevel, Pose2d> fillLeft2d = new HashMap<>();
+        for (var level : ReefLevel.values()) {
+          Pose2d poseDirection = new Pose2d(center, Rotation2d.fromDegrees(180 - (60 * face)));
+          double adjustX = Units.inchesToMeters(30.738);
+          double adjustY = Units.inchesToMeters(6.469);
+
+          var rightBranchPose =
+              new Pose3d(
+                  new Translation3d(
+                      poseDirection
+                          .transformBy(new Transform2d(adjustX, adjustY, Rotation2d.kZero))
+                          .getX(),
+                      poseDirection
+                          .transformBy(new Transform2d(adjustX, adjustY, Rotation2d.kZero))
+                          .getY(),
+                      level.height),
+                  new Rotation3d(
+                      0,
+                      Units.degreesToRadians(level.pitch),
+                      poseDirection.getRotation().getRadians()));
+          var leftBranchPose =
+              new Pose3d(
+                  new Translation3d(
+                      poseDirection
+                          .transformBy(new Transform2d(adjustX, -adjustY, Rotation2d.kZero))
+                          .getX(),
+                      poseDirection
+                          .transformBy(new Transform2d(adjustX, -adjustY, Rotation2d.kZero))
+                          .getY(),
+                      level.height),
+                  new Rotation3d(
+                      0,
+                      Units.degreesToRadians(level.pitch),
+                      poseDirection.getRotation().getRadians()));
+
+          fillRight.put(level, rightBranchPose);
+          fillLeft.put(level, leftBranchPose);
+          fillRight2d.put(level, rightBranchPose.toPose2d());
+          fillLeft2d.put(level, leftBranchPose.toPose2d());
+        }
+        branchPositions.add(fillRight);
+        branchPositions.add(fillLeft);
+        branchPositions2d.add(fillRight2d);
+        branchPositions2d.add(fillLeft2d);
+      }
     }
   }
 
@@ -199,5 +295,22 @@ public class FieldConstants {
     ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_GH.Pose, 0b0);
     ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_IJ.Pose, 0b1);
     ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_KL.Pose, 0b0);
+  }
+
+  public static Pose2d getClosestBranchPosition(Pose2d currentPose) {
+    List<Pose2d> branches = new ArrayList<>();
+    for (Map<ReefLevel, Pose2d> x : Reef.branchPositions2d) {
+      branches.addAll(x.values());
+    }
+
+    return currentPose.nearest(branches);
+  }
+
+  public static Rotation2d getRotationToClosestBranchPosition(Pose2d currentPose) {
+    var closestBranchPosition = getClosestBranchPosition(currentPose);
+    return Rotation2d.fromRadians(
+        Math.atan2(
+            closestBranchPosition.getY() - currentPose.getY(),
+            closestBranchPosition.getX() - currentPose.getX()));
   }
 }

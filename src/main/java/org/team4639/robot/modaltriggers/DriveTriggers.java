@@ -7,19 +7,21 @@ import org.team4639.robot.robot.Subsystems;
 public class DriveTriggers {
   public static Trigger closeToLeftStation =
       new Trigger(
-          () ->
-              Subsystems.drive
-                      .getPose()
-                      .getTranslation()
-                      .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
-                  < 1.5);
+              () ->
+                  Subsystems.drive
+                          .getPose()
+                          .getTranslation()
+                          .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
+                      < 1.5)
+          .and(VisionTriggers.visionIsActive());
 
   public static Trigger closeToRightStation =
       new Trigger(
-          () ->
-              Subsystems.drive
-                      .getPose()
-                      .getTranslation()
-                      .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
-                  < 1.5);
+              () ->
+                  Subsystems.drive
+                          .getPose()
+                          .getTranslation()
+                          .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
+                      < 1.5)
+          .and(VisionTriggers.visionIsActive());
 }

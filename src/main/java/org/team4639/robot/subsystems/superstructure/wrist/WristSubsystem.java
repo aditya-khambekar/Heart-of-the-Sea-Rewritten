@@ -27,6 +27,7 @@ public class WristSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     WristIO.updateInputs(wristIOInputs);
+    LaserCanIO.updateInputs(laserCanIOInputs);
   }
 
   public void wristForward() {

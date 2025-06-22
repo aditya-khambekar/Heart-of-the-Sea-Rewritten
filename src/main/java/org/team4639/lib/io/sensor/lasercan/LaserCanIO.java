@@ -12,7 +12,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 public abstract class LaserCanIO implements Sendable {
   public static class LaserCanIOInputs {
     public Distance measurement = Millimeter.of(Integer.MAX_VALUE);
-    public int status = LaserCan.LASERCAN_STATUS_WEAK_SIGNAL;
+    public int status = LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT;
     public LaserCanInterface.RangingMode mode = LaserCanInterface.RangingMode.LONG;
     public LaserCanInterface.RegionOfInterest regionOfInterest;
     public LaserCanInterface.TimingBudget timingBudget;
