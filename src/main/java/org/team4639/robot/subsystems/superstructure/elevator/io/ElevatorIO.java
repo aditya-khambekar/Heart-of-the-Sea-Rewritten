@@ -95,4 +95,6 @@ public abstract class ElevatorIO {
   }
 
   public abstract void updateInputs(ElevatorIOInputs inputs);
+
+  public abstract void zero();
 }

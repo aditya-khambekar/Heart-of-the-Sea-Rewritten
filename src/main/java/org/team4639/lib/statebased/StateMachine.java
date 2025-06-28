@@ -1,4 +1,4 @@
-package org.team4639.robot.statemachine;
+package org.team4639.lib.statebased;
 
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Objects;
 import org.team4639.robot.constants.Controls;
+import org.team4639.robot.statemachine.States;
 
 public class StateMachine {
   private static volatile StateMachine instance;

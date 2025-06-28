@@ -32,6 +32,10 @@ public class SuperstructureCommand extends Command {
     this.endCondition = endCondition;
   }
 
+  public SuperstructureCommand(SuperstructureState setpoint) {
+    this(setpoint, () -> false);
+  }
+
   @Override
   public void initialize() {
     // check if we are already at the right position

@@ -14,6 +14,14 @@ public class SuperstructureSetpoints {
           RotationsPerSecond.of(0.0 * 20) // Intake_Idle_Speed: 0.0 * 20 = 0.0 RPS
           );
 
+  public static final SuperstructureState CORAL_STOW =
+      new SuperstructureState(
+          Value.of(0.04), // IDLE_Proportion
+          Rotation2d.fromDegrees(
+              30 - 230 * 0.414), // Wrist_IDLE_Proportion: 30 - 230 * 0.414 = -65.22 degrees
+          RotationsPerSecond.of(0.0 * 20) // Intake_Idle_Speed: 0.0 * 20 = 0.0 RPS
+          );
+
   // HP State
   public static final SuperstructureState HP =
       new SuperstructureState(
@@ -26,12 +34,16 @@ public class SuperstructureSetpoints {
   // Processor State
   public static final SuperstructureState PROCESSOR =
       new SuperstructureState(
-          Value.of(0.655), // Processor_Proportion: ProportionToPosition.convertBackwards(2.620) -
+          Value.of(0.15), // Processor_Proportion: ProportionToPosition.convertBackwards(2.620) -
           // assuming this equals ~0.655
           Rotation2d.fromDegrees(
               30 - 230 * 0.709), // Wrist_Processor_Proportion: 30 - 230 * 0.709 = -133.07 degrees
           RotationsPerSecond.of(0.5 * 20) // Intake_Processor_Speed: 0.5 * 20 = 10.0 RPS
           );
+
+  public static final SuperstructureState ELEVATOR_READY =
+      new SuperstructureState(
+          Value.of(0.4), Rotation2d.fromDegrees(-150), RotationsPerSecond.of(0));
 
   // L1 State
   public static final SuperstructureState L1 =
@@ -129,4 +141,11 @@ public class SuperstructureSetpoints {
   public static final SuperstructureState HOMING_READY =
       new SuperstructureState(
           Value.of(0.1), Rotation2d.fromDegrees(30 - 230 * 0.414), RotationsPerSecond.zero());
+
+  public static final SuperstructureState REJECT_CORAL =
+      new SuperstructureState(
+          Value.of(0), Rotation2d.fromDegrees(30 - 230 * 0.7), RotationsPerSecond.of(-5));
+
+  public static final SuperstructureState REJECT_ALGAE =
+      new SuperstructureState(Value.of(0), Rotation2d.fromDegrees(-70), RotationsPerSecond.of(5));
 }

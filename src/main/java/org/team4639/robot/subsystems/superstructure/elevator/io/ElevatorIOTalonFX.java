@@ -107,4 +107,9 @@ public class ElevatorIOTalonFX extends ElevatorIO {
   public void setPositionSetpoint(Angle mechanismPosition) {
     setControl(requestGetter.getPositionRequest(mechanismPosition));
   }
+
+  public void zero() {
+    leftTalon.setPosition(0);
+    rightTalon.setPosition(0);
+  }
 }

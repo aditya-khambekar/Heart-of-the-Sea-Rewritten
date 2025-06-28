@@ -28,9 +28,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.team4639.BuildConstants;
 import org.team4639.lib.error.Errors;
+import org.team4639.lib.statebased.StateMachine;
 import org.team4639.lib.util.AllianceFlipUtil;
 import org.team4639.robot.Constants;
-import org.team4639.robot.statemachine.StateMachine;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 
 /**

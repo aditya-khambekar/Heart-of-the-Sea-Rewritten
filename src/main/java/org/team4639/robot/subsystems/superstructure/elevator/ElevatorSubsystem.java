@@ -3,6 +3,7 @@ package org.team4639.robot.subsystems.superstructure.elevator;
 import static edu.wpi.first.units.Units.Percent;
 
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,5 +61,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public Dimensionless getPercentage() {
     return ElevatorConstants.rotationsToPercentage.convert(elevatorIOInputs.rightMotorPosition);
+  }
+
+  public void zero() {
+    io.zero();
+  }
+
+  public AngularVelocity getMotorSpeed() {
+    return elevatorIOInputs.leftMotorSpeed;
   }
 }

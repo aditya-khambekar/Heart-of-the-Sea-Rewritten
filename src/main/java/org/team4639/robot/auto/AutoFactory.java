@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.parser.ParseException;
+import org.team4639.robot.commands.AutoCommands;
+import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
 
 public class AutoFactory {
@@ -41,94 +43,45 @@ public class AutoFactory {
   public static Command compileAuto(Locations... locations) {
     List<Command> commands = new ArrayList<>();
     List<PathPlannerPath> paths = new ArrayList<>();
-    //    for (int i = 0; i < locations.length - 1; i++) {
-    //      try {
-    //        var path = PathPlannerPath.fromChoreoTrajectory(locations[i] + "-" + locations[i +
-    // 1]);
-    //        paths.add(path);
-    //        if (i == 0)
-    //          commands.add(
-    //              Commands.runOnce(
-    //                  () ->
-    //                      Subsystems.drive.setPose(
-    //                          path.getStartingHolonomicPose().orElse(new Pose2d()))));
-    //        commands.add(AutoState.setState(eAutoState.PATH));
-    //        commands.add(AutoBuilder.followPath(path));
-    //        commands.add(AutoState.setState(eAutoState.ALIGN));
-    //        commands.add(
-    //            switch (locations[i + 1]) {
-    //              case RHP -> DriveCommands.coralStationAlignRight(Subsystems.drive);
-    //              case LHP -> DriveCommands.coralStationAlignLeft(Subsystems.drive);
-    //              case A -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_A.getPose());
-    //              case B -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_B.getPose());
-    //              case C -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_C.getPose());
-    //              case D -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_D.getPose());
-    //              case E -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_E.getPose());
-    //              case F -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_F.getPose());
-    //              case G -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_G.getPose());
-    //              case H -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_H.getPose());
-    //              case I -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_I.getPose());
-    //              case J -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_J.getPose());
-    //              case K -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_K.getPose());
-    //              case L -> SuperstructureCommands.score(
-    //                  ElevatorConstants.Setpoints.L4_PROPORTION,
-    //                  FieldConstants.TargetPositions.REEF_L.getPose());
-    //              case ALGH -> SuperstructureCommands.intakeAlgae(
-    //                  FieldConstants.TargetPositions.REEF_GH
-    //                      .getPose()
-    //                      .transformBy(new Transform2d(0.2, 0, Rotation2d.kZero)));
-    //              case ALIJ -> SuperstructureCommands.intakeAlgae(
-    //                  FieldConstants.TargetPositions.REEF_IJ
-    //                      .getPose()
-    //                      .transformBy(new Transform2d(0.2, 0, Rotation2d.kZero)));
-    //              case ALGSC1 -> Subsystems.drive.defer(
-    //                  () ->
-    //                      DriveCommands.PIDtowithVelocityReset(
-    //                          Subsystems.drive,
-    //                          Subsystems.drive.getPose(),
-    //                          FieldConstants.TargetPositions.BARGE_FARCAGE.getPose()));
-    //              case ALGSC2 -> Subsystems.drive.defer(
-    //                  () ->
-    //                      DriveCommands.PIDtowithVelocityReset(
-    //                          Subsystems.drive,
-    //                          Subsystems.drive.getPose(),
-    //                          FieldConstants.TargetPositions.BARGE_MIDDLECAGE.getPose()));
-    //              case ALGSC3 -> Subsystems.drive.defer(
-    //                  () ->
-    //                      DriveCommands.PIDtowithVelocityReset(
-    //                          Subsystems.drive,
-    //                          Subsystems.drive.getPose(),
-    //                          FieldConstants.TargetPositions.BARGE_CLOSECAGE.getPose()));
-    //              case RS, LS, MS -> throw new IllegalArgumentException("what the fuck");
-    //            });
-    //      } catch (IOException | ParseException e) {
-    //        System.err.println(locations[i] + "-" + locations[i + 1]);
-    //        throw new RuntimeException(e);
-    //      }
-    //    }
-    //    commands.add(AutoState.setState(eAutoState.NOT_IN_AUTO));
+    for (int i = 0; i < locations.length - 1; i++) {
+      try {
+        var path = PathPlannerPath.fromChoreoTrajectory(locations[i] + "-" + locations[i + 1]);
+        paths.add(path);
+        if (i == 0)
+          commands.add(
+              Commands.runOnce(
+                  () ->
+                      Subsystems.drive.setPose(
+                          path.getStartingHolonomicPose().orElse(new Pose2d()))));
+        commands.add(AutoBuilder.followPath(path));
+        commands.add(
+            switch (locations[i + 1]) {
+              case RHP -> AutoCommands.intakeRight();
+              case LHP -> AutoCommands.intakeLeft();
+              case A -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_A.getPose());
+              case B -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_B.getPose());
+              case C -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_C.getPose());
+              case D -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_D.getPose());
+              case E -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_E.getPose());
+              case F -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_F.getPose());
+              case G -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_G.getPose());
+              case H -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_H.getPose());
+              case I -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_I.getPose());
+              case J -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_J.getPose());
+              case K -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_K.getPose());
+              case L -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_L.getPose());
+              case ALGH -> Commands.none();
+              case ALIJ -> Commands.none();
+              case ALGSC1 -> Commands.none();
+              case ALGSC2 -> Commands.none();
+              case ALGSC3 -> Commands.none();
+              case RS, LS, MS -> throw new IllegalArgumentException("what the fuck");
+            });
+      } catch (IOException | ParseException e) {
+        System.err.println(locations[i] + "-" + locations[i + 1]);
+        throw new RuntimeException(e);
+      }
+    }
     return Commands.sequence(commands.toArray(new Command[0]));
   }
 

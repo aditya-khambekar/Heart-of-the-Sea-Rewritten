@@ -409,7 +409,6 @@ public class DriveCommands {
 
     return PIDtoReefWithVelocityReset(drive, drivePose, nearestReefPose);
   }
-  
 
   public static Command reefAlignRight(Drive drive) {
     Pose2d drivePose = drive.getPose();
@@ -435,7 +434,6 @@ public class DriveCommands {
 
     return PIDtoReefWithVelocityReset(drive, drivePose, nearestReefPose);
   }
-
 
   public static Command PIDtowithVelocityReset(
       Drive drive, Pose2d startingPose, Pose2d destinationPose) {
@@ -604,5 +602,9 @@ public class DriveCommands {
   public static Command pathFindTo(Drive drive, Pose2d pose) {
     // TODO: this
     return Commands.none();
+  }
+
+  public static Command stopWithX() {
+    return Subsystems.drive.run(() -> Subsystems.drive.stopWithX());
   }
 }

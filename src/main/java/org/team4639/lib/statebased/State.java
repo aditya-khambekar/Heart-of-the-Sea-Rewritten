@@ -1,10 +1,12 @@
-package org.team4639.robot.statemachine;
+package org.team4639.lib.statebased;
 
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -57,6 +59,26 @@ public class State {
 
   public State withEndCondition(BooleanSupplier condition, Supplier<State> nextState) {
     endConditions.put(condition, nextState);
+    return this;
+  }
+
+  /**
+   * Triggers an end condition when a trigger *becomes* true.
+   *
+   * @param trigger
+   * @param nextState
+   * @return this
+   */
+  public State onTrigger(Trigger trigger, Supplier<State> nextState) {
+    trigger
+        .and(() -> StateMachine.getState() == this)
+        .onTrue(new InstantCommand(() -> StateMachine.setState(nextState.get())));
+    return this;
+  }
+
+  public State deadlineFor(Command cmd, Supplier<State> nextState) {
+    this.whileTrue(cmd);
+    this.withEndCondition(cmd::isFinished, nextState);
     return this;
   }
 
