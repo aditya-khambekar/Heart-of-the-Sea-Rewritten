@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Current;
 import org.team4639.lib.annotation.Untuned;
 import org.team4639.lib.unit.UnitConverter;
 
@@ -15,6 +16,8 @@ public class WristConstants {
   @Untuned public static final Angle MIN_POSITION = Rotations.of(0);
 
   public static final Rotation2d TRANSITION_ROTATION = Rotation2d.fromDegrees(-85);
+
+  public static final Current ALGAE_CURRENT = Amps.of(1);
 
   @Untuned
   public static final Rotation2d[] SAFE_TRANSITION_RANGE =

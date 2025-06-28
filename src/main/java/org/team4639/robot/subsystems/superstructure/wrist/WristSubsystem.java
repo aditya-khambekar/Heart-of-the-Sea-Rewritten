@@ -1,8 +1,5 @@
 package org.team4639.robot.subsystems.superstructure.wrist;
 
-import static edu.wpi.first.units.Units.Millimeter;
-import static edu.wpi.first.units.Units.Percent;
-
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
@@ -10,6 +7,8 @@ import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIO;
 import org.team4639.robot.subsystems.superstructure.wrist.io.WristIO;
+
+import static edu.wpi.first.units.Units.*;
 
 public class WristSubsystem extends SubsystemBase {
   WristIO.WristIOInputs wristIOInputs;
@@ -61,5 +60,9 @@ public class WristSubsystem extends SubsystemBase {
 
   public boolean doesNotHaveCoral() {
     return !hasCoral();
+  }
+
+  public boolean hasIntakedAlgae(){
+    return wristIOInputs.motorCurrent.in(Amps) > WristConstants.ALGAE_CURRENT.in(Amps);
   }
 }

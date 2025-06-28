@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import org.team4639.lib.statebased.State;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.commands.SuperstructureCommands;
+import org.team4639.robot.commands.superstructure.MicroAdjustmentCommand;
 import org.team4639.robot.constants.Controls;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.modaltriggers.DriveTriggers;
@@ -35,6 +36,7 @@ public class States {
   public static State HOMING;
   public static State REJECT_CORAL;
   public static State REJECT_ALGAE;
+  public static State MICROADJUSTMENTS;
 
   public static void initStates() {
     IDLE =
@@ -92,7 +94,8 @@ public class States {
         new State("CORAL_SCORE_ALIGN_LEFT")
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
-                Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)))
+                Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)),
+                    Subsystems.dashboardOutputs.displayUpcomingReefLevel())
             .withEndCondition(Subsystems.drive::atSetpointTranslation, () -> CHOOSE_CORAL_LEVEL)
             .onTrigger(Controls.alignRight, () -> States.CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
@@ -103,7 +106,8 @@ public class States {
         new State("CORAL_SCORE_ALIGN_RIGHT")
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
-                Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)))
+                Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)),
+                    Subsystems.dashboardOutputs.displayUpcomingReefLevel())
             .withEndCondition(Subsystems.drive::atSetpointTranslation, () -> CHOOSE_CORAL_LEVEL)
             .onTrigger(Controls.alignLeft, () -> States.CORAL_SCORE_ALIGN_LEFT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
@@ -128,35 +132,39 @@ public class States {
             .withEndCondition(Controls.alignLeft, () -> CORAL_SCORE_ALIGN_LEFT)
             .withEndCondition(Controls.alignRight, () -> CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
-            .withEndCondition(Controls.L1Coral, () -> L1_CORAL_SCORE)
-            .withEndCondition(Controls.L2Coral, () -> L2_CORAL_SCORE)
-            .withEndCondition(Controls.L3Coral, () -> L3_CORAL_SCORE)
-            .withEndCondition(Controls.L4Coral, () -> L4_CORAL_SCORE);
+            .withEndCondition(() -> Subsystems.dashboardOutputs.upcomingReefLevel() == 1, () -> L1_CORAL_SCORE)
+            .withEndCondition(() -> Subsystems.dashboardOutputs.upcomingReefLevel() == 2, () -> L2_CORAL_SCORE)
+            .withEndCondition(() -> Subsystems.dashboardOutputs.upcomingReefLevel() == 3, () -> L3_CORAL_SCORE)
+            .withEndCondition(() -> Subsystems.dashboardOutputs.upcomingReefLevel() == 4, () -> L4_CORAL_SCORE);
 
     L1_CORAL_SCORE =
         new State("L1_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L1)
+            .whileTrue(SuperstructureCommands.L1,
+                    Subsystems.reefTracker.scoreL1())
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L2_CORAL_SCORE =
         new State("L2_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L2)
+            .whileTrue(SuperstructureCommands.L2,
+                    Subsystems.reefTracker.scoreL2())
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L3_CORAL_SCORE =
         new State("L3_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L3)
+            .whileTrue(SuperstructureCommands.L3,
+                    Subsystems.reefTracker.scoreL3())
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L4_CORAL_SCORE =
         new State("L4_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L4)
+            .whileTrue(SuperstructureCommands.L4,
+                    Subsystems.reefTracker.scoreL4())
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
@@ -183,5 +191,9 @@ public class States {
         new State("REJECT_ALGAE")
             .whileTrue(SuperstructureCommands.REJECT_ALGAE)
             .withTimeout(Seconds.of(0.5), () -> IDLE);
+
+    MICROADJUSTMENTS = new State("MICROADJUSTMENTS")
+            .whileTrue(new MicroAdjustmentCommand(), DriveCommands.stopWithX())
+            .onEmergency(() -> CORAL_STOW);
   }
 }

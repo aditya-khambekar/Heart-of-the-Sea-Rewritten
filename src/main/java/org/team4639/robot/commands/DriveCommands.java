@@ -503,6 +503,8 @@ public class DriveCommands {
     // PhoenixPIDController pidX = new PhoenixPIDController(6, 0, 0);
     // PhoenixPIDController pidY = new PhoenixPIDController(6, 0, 0);
 
+      Subsystems.reefTracker.setCurrentReefPose(destinationPose);
+
     double kp = 6;
 
     return drive

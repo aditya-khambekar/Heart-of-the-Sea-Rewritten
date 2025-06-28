@@ -48,6 +48,7 @@ import org.team4639.robot.constants.IDs;
 import org.team4639.robot.modaltriggers.IOTriggers;
 import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.DashboardOutputs;
+import org.team4639.robot.subsystems.ReefTracker;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
@@ -169,9 +170,11 @@ public class RobotContainer {
 
         Subsystems.vision =
             new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
-        Subsystems.dashboardOutputs = new DashboardOutputs();
         break;
     }
+
+    Subsystems.dashboardOutputs = new DashboardOutputs();
+    Subsystems.reefTracker = new ReefTracker();
 
     VisionUpdates.addConsumer(Subsystems.drive);
     VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
