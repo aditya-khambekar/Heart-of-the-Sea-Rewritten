@@ -31,7 +31,6 @@ public class FieldConstants {
 
   public static void init() {
     Reef.init();
-    initAlgaeLocations();
   }
 
   public enum AprilTagLayoutType {

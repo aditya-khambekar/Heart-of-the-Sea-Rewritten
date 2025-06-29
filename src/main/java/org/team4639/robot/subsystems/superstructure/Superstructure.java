@@ -9,9 +9,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.Arrays;
-import java.util.Comparator;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
 import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
@@ -70,11 +69,11 @@ public class Superstructure extends SubsystemBase implements Sendable {
     return MathUtil.isNear(
             current.elevatorProportion().baseUnitMagnitude(),
             target.elevatorProportion().baseUnitMagnitude(),
-            ElevatorConstants.elevatorTolerance.baseUnitMagnitude())
+            Math.abs(ElevatorConstants.elevatorTolerance.baseUnitMagnitude()))
         && MathUtil.isNear(
             current.wristRotation().getRotations(),
             target.wristRotation().getRotations(),
-            WristConstants.wristTolerance.in(Rotations));
+            Math.abs(WristConstants.wristTolerance.in(Rotations)));
   }
 
   public static SuperstructureState getSuperstructureState() {
@@ -86,18 +85,42 @@ public class Superstructure extends SubsystemBase implements Sendable {
 
   /** Determines if the wrist is at a safe angle to move the elevator. */
   public static boolean isWristAtSafeAngle() {
-    Rotation2d[] ordered =
-        (Rotation2d[])
-            Arrays.stream(WristConstants.SAFE_TRANSITION_RANGE)
-                .sorted(Comparator.comparingDouble(Rotation2d::getRadians))
-                .toArray();
-    var max = ordered[1];
-    var min = ordered[0];
+    var max =
+        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
+                > WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
+            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
+            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
+    var min =
+        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
+                <= WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
+            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
+            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
+    ;
 
     var wristRotation = Subsystems.wrist.getWristAngle();
 
-    return wristRotation.getRadians() > min.getRadians()
-        && wristRotation.getRadians() < max.getRadians();
+    var ret =
+        wristRotation.getRadians() > min.getRadians()
+            && wristRotation.getRadians() < max.getRadians();
+
+    SmartDashboard.putBoolean("Wrist Safe", ret);
+    return ret;
+  }
+
+  public static boolean isAtSafeAngle(Rotation2d rotation) {
+    var max =
+        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
+                > WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
+            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
+            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
+    var min =
+        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
+                <= WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
+            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
+            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
+    ;
+
+    return rotation.getRadians() > min.getRadians() && rotation.getRadians() < max.getRadians();
   }
 
   @Override

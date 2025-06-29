@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.Objects;
 import org.team4639.robot.constants.Controls;
 import org.team4639.robot.statemachine.States;
@@ -22,6 +23,7 @@ public class StateMachine {
   private StateMachine() {
     state = States.NONE;
     timeOfLastStateChange = Seconds.mutable(0);
+    Controls.emergency.onTrue(Commands.runOnce(() -> setState(state.onEmergency.get())));
   }
 
   public static State getState() {
@@ -38,7 +40,6 @@ public class StateMachine {
   }
 
   public void periodic() {
-    if (Controls.emergency.getAsBoolean()) setState(state.onEmergency.get());
     SmartDashboard.putString("State", state.getName());
     state.evaluate(Timer.getTimestamp() - timeOfLastStateChange.in(Seconds));
   }

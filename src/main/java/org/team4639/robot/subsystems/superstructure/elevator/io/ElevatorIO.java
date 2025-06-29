@@ -40,14 +40,12 @@ public abstract class ElevatorIO {
       sendableBuilder.addDoubleProperty(
           "Left Motor Rotations",
           () ->
-              Optional.ofNullable((Angle) leftMotorPosition).orElse(Rotations.zero()).in(Rotations),
+              Optional.ofNullable((Angle) leftMotorPosition).orElse(Rotations.one()).in(Rotations),
           null);
       sendableBuilder.addDoubleProperty(
           "Right Motor Rotations",
           () ->
-              Optional.ofNullable((Angle) rightMotorPosition)
-                  .orElse(Rotations.zero())
-                  .in(Rotations),
+              Optional.ofNullable((Angle) rightMotorPosition).orElse(Rotations.one()).in(Rotations),
           null);
       sendableBuilder.addDoubleProperty(
           "Left Motor Speed Rad/s",

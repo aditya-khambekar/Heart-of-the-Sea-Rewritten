@@ -79,5 +79,5 @@ public class ElevatorConstants {
   public static TunableNumber elevatorKa =
       new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator Ka");
 
-  public static final Dimensionless elevatorTolerance = heightToPercentage.convert(Inches.of(0.5));
+  public static final Dimensionless elevatorTolerance = Percent.of(1);
 }

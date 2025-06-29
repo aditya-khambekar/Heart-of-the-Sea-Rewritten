@@ -231,7 +231,7 @@ public class States {
                 () -> HOMING)
             .onEmergency(() -> IDLE);
 
-    HOMING = new State("HOMING").whileTrue(SuperstructureCommands.HOMING);
+    HOMING = new State("HOMING").whileTrue(SuperstructureCommands.HOMING).onEmergency(() -> IDLE);
 
     REJECT_CORAL =
         new State("REJECT_CORAL")
@@ -253,7 +253,10 @@ public class States {
     var pose = reef.getPose();
     return new State("PATHFIND_TO_REEF")
         .deadlineFor(DriveCommands.pathFindToReef(Subsystems.drive, pose), () -> CHOOSE_CORAL_LEVEL)
-        .whileTrue(SuperstructureCommands.ELEVATOR_READY)
+        .whileTrue(
+            SuperstructureCommands.ELEVATOR_READY,
+            Subsystems.dashboardOutputs.displayUpcomingReefLevel())
+        .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
         .onEmergency(() -> CORAL_STOW);
   }
 }

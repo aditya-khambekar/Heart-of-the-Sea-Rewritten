@@ -31,19 +31,23 @@ public class WristIOSim extends WristIO {
             WristConstants.IDLE_ROTATION.getRadians());
 
     wristPIDController =
-        new ProfiledPIDController(40, 0, 0, new TrapezoidProfile.Constraints(60, 20));
+        new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(60, 20));
 
     SmartDashboard.putData("Wrist PID Controller", wristPIDController);
   }
 
   @Override
   public void updateInputs(WristIOInputs inputs) {
-        inputs.motorCurrent.mut_replace(Amps.zero());
-    
-     inputs.motorPosition.mut_replace(WristConstants.RotationToPosition.convert(Rotation2d.fromRadians(pivotSim.getAngleRads())));
-        inputs.motorTemperature.mut_replace(Celsius.zero());
-        inputs.motorVelocity.mut_replace(
-                Rotations.per(Minute).of(WristConstants.RotationToPosition.convert(Rotation2d.fromRadians(pivotSim.getVelocityRadPerSec())).in(Rotations)));
+    inputs.motorCurrent.mut_replace(Amps.zero());
+    inputs.motorPosition.mut_replace(
+        WristConstants.RotationToPosition.convert(Rotation2d.fromRadians(pivotSim.getAngleRads())));
+    inputs.motorTemperature.mut_replace(Celsius.zero());
+    inputs.motorVelocity.mut_replace(
+        Rotations.per(Minute)
+            .of(
+                WristConstants.RotationToPosition.convert(
+                        Rotation2d.fromRadians(pivotSim.getVelocityRadPerSec()))
+                    .in(Rotations)));
   }
 
   @Override

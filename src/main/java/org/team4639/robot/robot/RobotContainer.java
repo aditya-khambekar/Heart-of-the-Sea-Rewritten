@@ -43,6 +43,7 @@ import org.team4639.lib.util.AllianceFlipUtil;
 import org.team4639.robot.Constants;
 import org.team4639.robot.auto.AutoFactory;
 import org.team4639.robot.commands.DriveCommands;
+import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.constants.IDs;
 import org.team4639.robot.modaltriggers.IOTriggers;
@@ -51,6 +52,7 @@ import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.ReefTracker;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
+import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
 import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFX;
 import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFXSim;
@@ -82,10 +84,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    FieldConstants.init();
-    // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
-    double x = FieldConstants.fieldLength;
-    var y = IOTriggers.hasDriverJoystickInput;
     Errors.addCheck(OI.driver::isConnected, "Driver Controller disconnected");
     Errors.addCheck(OI.operator::isConnected, "Operator Controller disconnected");
     switch (Constants.currentMode) {
@@ -175,9 +173,21 @@ public class RobotContainer {
 
     Subsystems.dashboardOutputs = new DashboardOutputs();
     Subsystems.reefTracker = new ReefTracker();
+    Subsystems.superstructure = new Superstructure();
 
     VisionUpdates.addConsumer(Subsystems.drive);
     VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
+
+    // Configure the button bindings
+    configureButtonBindings();
+    SuperstructureCommands.initCommands();
+    FieldConstants.init();
+    FieldConstants.initAlgaeLocations();
+    Subsystems.reefTracker.resetReefTracker();
+    States.initStaticStates();
+    // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
+    double x = FieldConstants.fieldLength;
+    var y = IOTriggers.hasDriverJoystickInput;
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -211,9 +221,6 @@ public class RobotContainer {
         "Drive SysId (Dynamic Reverse)",
         Subsystems.drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-    // Configure the button bindings
-    configureButtonBindings();
-    States.initStaticStates();
     StateMachine.setState(States.IDLE);
   }
 

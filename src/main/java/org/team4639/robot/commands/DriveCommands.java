@@ -606,21 +606,24 @@ public class DriveCommands {
   }
 
   public static Command pathFindToReef(Drive drive, Pose2d pose) {
-    return drive
-        .defer(
-            () ->
-                AutoBuilder.pathfindToPose(
-                    pose,
-                    new PathConstraints(
-                        MetersPerSecond.of(3),
-                        MetersPerSecondPerSecond.of(6),
-                        RotationsPerSecond.of(2),
-                        RotationsPerSecondPerSecond.of(4),
-                        Volts.of(12),
-                        true),
-                    MetersPerSecond.of(1)))
-        .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
-        .andThen(PIDtoReefWithVelocityReset(drive, drive.getPose(), pose));
+    return (drive
+            .defer(
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        pose,
+                        new PathConstraints(
+                            MetersPerSecond.of(3),
+                            MetersPerSecondPerSecond.of(6),
+                            RotationsPerSecond.of(2),
+                            RotationsPerSecondPerSecond.of(4),
+                            Volts.of(12),
+                            true),
+                        MetersPerSecond.of(1)))
+            .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
+            .andThen(
+                Subsystems.drive.defer(
+                    () -> PIDtoReefWithVelocityReset(drive, drive.getPose(), pose))))
+        .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(pose));
   }
 
   public static Command stopWithX() {

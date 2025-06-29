@@ -12,10 +12,10 @@ public class AutoCommands {
         .andThen(
             ((DriveCommands.PIDtoReefWithVelocityReset(
                             Subsystems.drive, Subsystems.drive.getPose(), pose)
-                        .alongWith(SuperstructureCommands.ELEVATOR_READY))
-                    .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.L4))
+                        .alongWith(SuperstructureCommands.elevatorReady()))
+                    .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.l4()))
                     .until(Subsystems.wrist::doesNotHaveCoral))
-                .andThen(SuperstructureCommands.IDLE)
+                .andThen(SuperstructureCommands.idle())
                 .until(
                     () ->
                         Superstructure.atPosition(
@@ -25,13 +25,13 @@ public class AutoCommands {
 
   public static Command intakeLeft() {
     return DriveCommands.coralStationAlignLeft(Subsystems.drive)
-        .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.HP_LOWER))
+        .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.hpLower()))
         .until(Subsystems.wrist::hasCoral);
   }
 
   public static Command intakeRight() {
     return DriveCommands.coralStationAlignLeft(Subsystems.drive)
-        .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.HP_LOWER))
+        .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.hpLower()))
         .until(Subsystems.wrist::hasCoral);
   }
 }

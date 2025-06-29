@@ -31,7 +31,6 @@ public class DashboardOutputs extends SubsystemBase {
     else if (Controls.L3Coral.getAsBoolean()) return 3;
     else if (Controls.L2Coral.getAsBoolean()) return 2;
     else if (Controls.L1Coral.getAsBoolean()) return 1;
-    else if (recommended != 0) return recommended;
-    return 0;
+    else return recommended;
   }
 }

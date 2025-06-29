@@ -1,13 +1,14 @@
 package org.team4639.robot.subsystems.superstructure.elevator;
 
 import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
 import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIO;
 
 public class ElevatorSubsystem extends SubsystemBase {
@@ -34,29 +35,23 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   private void setMotionMagicSetpoint(Angle setpoint) {
     io.setMotionMagicSetpoint(setpoint);
+    SmartDashboard.putNumber("Setpoint Rotations", setpoint.in(Rotations));
   }
 
   public void setPercentageRaw(Dimensionless percentage) {
-    var x =
-        ElevatorConstants.heightToPercentage.inverted().then(ElevatorConstants.heightToRotations);
-    setMotionMagicSetpoint(x.convert(percentage));
+    setMotionMagicSetpoint(ElevatorConstants.rotationsToPercentage.convertBackwards(percentage));
   }
 
   @Override
   public void periodic() {
     io.updateInputs(elevatorIOInputs);
+    SmartDashboard.putString(
+        "Elevator Command",
+        Optional.ofNullable(this.getCurrentCommand()).map(x -> x.getName()).orElse("NONE"));
   }
 
-  private void elevatorHoldRaw() {
-    setMotionMagicSetpoint(elevatorIOInputs.rightMotorPosition);
-  }
-
-  public Command setPercentage(Dimensionless percentage) {
-    return run(() -> setPercentage(percentage));
-  }
-
-  public Command elevatorHold() {
-    return run(this::elevatorHoldRaw);
+  public void elevatorHoldRaw() {
+    setMotionMagicSetpoint(elevatorIOInputs.rightMotorPosition.copy());
   }
 
   public Dimensionless getPercentage() {

@@ -78,7 +78,7 @@ public class State {
 
   public State deadlineFor(Command cmd, Supplier<State> nextState) {
     this.whileTrue(cmd);
-    this.withEndCondition(cmd::isFinished, nextState);
+    this.withEndCondition(() -> !cmd.isScheduled(), nextState);
     return this;
   }
 

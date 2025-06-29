@@ -12,9 +12,7 @@ public class ReefTracker extends SubsystemBase {
   private Map<Pose2d, boolean[]> reefs = new HashMap<Pose2d, boolean[]>();
   private Pose2d currentReefPose = new Pose2d();
 
-  public ReefTracker() {
-    resetReefTracker();
-  }
+  public ReefTracker() {}
 
   public Command scoreL1() {
     return runOnce(() -> reefs.get(currentReefPose)[0] = true);
