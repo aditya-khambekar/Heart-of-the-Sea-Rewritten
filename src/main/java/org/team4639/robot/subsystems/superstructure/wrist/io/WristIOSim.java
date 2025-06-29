@@ -38,12 +38,12 @@ public class WristIOSim extends WristIO {
 
   @Override
   public void updateInputs(WristIOInputs inputs) {
-    //    inputs.motorCurrent.mut_replace(Amps.of(sparkFlex.getOutputCurrent()));
-    //
-    // inputs.motorPosition.mut_replace(Rotations.of(sparkFlex.getAbsoluteEncoder().getPosition()));
-    //    inputs.motorTemperature.mut_replace(Celsius.of(sparkFlex.getMotorTemperature()));
-    //    inputs.motorVelocity.mut_replace(
-    //            RotationsPerSecond.of(sparkFlex.getAbsoluteEncoder().getVelocity() / 60.));
+        inputs.motorCurrent.mut_replace(Amps.zero());
+    
+     inputs.motorPosition.mut_replace(WristConstants.RotationToPosition.convert(Rotation2d.fromRadians(pivotSim.getAngleRads())));
+        inputs.motorTemperature.mut_replace(Celsius.zero());
+        inputs.motorVelocity.mut_replace(
+                Rotations.per(Minute).of(WristConstants.RotationToPosition.convert(Rotation2d.fromRadians(pivotSim.getVelocityRadPerSec())).in(Rotations)));
   }
 
   @Override

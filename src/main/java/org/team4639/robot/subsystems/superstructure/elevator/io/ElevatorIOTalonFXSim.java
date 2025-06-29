@@ -6,6 +6,8 @@ import static org.team4639.robot.subsystems.superstructure.elevator.ElevatorCons
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.NeutralOut;
+import com.fasterxml.jackson.databind.EnumNamingStrategies.CamelCaseStrategy;
+
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -18,6 +20,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import org.team4639.lib.io.motor.MotorIOTalonFX;
 import org.team4639.lib.unit.Units2;
+import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
 
 public class ElevatorIOTalonFXSim extends ElevatorIO {
   private final ElevatorFeedforward elevatorFeedforward;
@@ -40,14 +43,14 @@ public class ElevatorIOTalonFXSim extends ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-    //    inputs.leftMotorPosition.mut_replace(leftTalon.getPosition().getValue());
-    //    inputs.rightMotorPosition.mut_replace(rightTalon.getPosition().getValue());
-    //    inputs.leftMotorSpeed.mut_replace(leftTalon.getVelocity().getValue());
-    //    inputs.rightMotorSpeed.mut_replace(rightTalon.getVelocity().getValue());
-    //    inputs.leftMotorTemperature.mut_replace(leftTalon.getDeviceTemp().getValue());
-    //    inputs.rightMotorTemperature.mut_replace(rightTalon.getDeviceTemp().getValue());
-    //    inputs.leftMotorTorqueCurrent.mut_replace(leftTalon.getTorqueCurrent().getValue());
-    //    inputs.rightMotorTorqueCurrent.mut_replace(rightTalon.getTorqueCurrent().getValue());
+        inputs.leftMotorPosition.mut_replace(ElevatorConstants.heightToRotations.convert(Meters.of(elevatorSim.getPositionMeters())));
+        inputs.rightMotorPosition.mut_replace(ElevatorConstants.heightToRotations.convert(Meters.of(elevatorSim.getPositionMeters())));
+        inputs.leftMotorSpeed.mut_replace(RotationsPerSecond.of(ElevatorConstants.heightToRotations.convert(Meters.of(elevatorSim.getVelocityMetersPerSecond())).in(Rotations)));
+        inputs.rightMotorSpeed.mut_replace(RotationsPerSecond.of(ElevatorConstants.heightToRotations.convert(Meters.of(elevatorSim.getVelocityMetersPerSecond())).in(Rotations)));
+        inputs.leftMotorTemperature.mut_replace(Celsius.zero());
+        inputs.rightMotorTemperature.mut_replace(Celsius.zero());
+        inputs.leftMotorTorqueCurrent.mut_replace(Amps.zero());
+        inputs.rightMotorTorqueCurrent.mut_replace(Amps.zero());
   }
 
   private void setControl(ControlRequest request) {}
