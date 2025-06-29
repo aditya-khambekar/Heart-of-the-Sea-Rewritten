@@ -1,7 +1,6 @@
 package org.team4639.robot.subsystems.superstructure.wrist;
 
-import static edu.wpi.first.units.Units.Millimeter;
-import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.*;
 
 import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -61,5 +60,9 @@ public class WristSubsystem extends SubsystemBase {
 
   public boolean doesNotHaveCoral() {
     return !hasCoral();
+  }
+
+  public boolean hasIntakedAlgae() {
+    return wristIOInputs.motorCurrent.in(Amps) > WristConstants.ALGAE_CURRENT.in(Amps);
   }
 }

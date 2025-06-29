@@ -72,7 +72,8 @@ public class ElevatorIOTalonFXSim extends ElevatorIO {
 
   @Override
   public void setDutyCycleSetpoint(Dimensionless percent) {
-    setControl(requestGetter.getDutyCycleRequest(percent));
+    elevatorSim.setInputVoltage(12 * percent.in(Value));
+    elevatorSim.update(0.02);
   }
 
   @Override
@@ -82,6 +83,7 @@ public class ElevatorIOTalonFXSim extends ElevatorIO {
         elevatorPID.calculate(
                 heightToRotations.convert(Meters.of(elevatorSim.getPositionMeters())).in(Rotations))
             + elevatorFeedforward.calculate(elevatorPID.getSetpoint().velocity);
+    elevatorSim.setInputVoltage(output);
     elevatorSim.update(0.02);
   }
 

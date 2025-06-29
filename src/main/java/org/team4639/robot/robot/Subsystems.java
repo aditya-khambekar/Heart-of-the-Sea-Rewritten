@@ -1,6 +1,7 @@
 package org.team4639.robot.robot;
 
 import org.team4639.robot.subsystems.DashboardOutputs;
+import org.team4639.robot.subsystems.ReefTracker;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
@@ -16,4 +17,5 @@ public class Subsystems {
   public static WristSubsystem wrist;
   public static RollerSubsystem roller;
   public static Superstructure superstructure;
+  public static ReefTracker reefTracker;
 }

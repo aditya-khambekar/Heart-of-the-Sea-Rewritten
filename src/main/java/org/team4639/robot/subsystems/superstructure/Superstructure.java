@@ -1,11 +1,14 @@
 package org.team4639.robot.subsystems.superstructure;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Value;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -17,7 +20,7 @@ import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
  * Does literally nothing except as a way to impose default commands on the elevator, wrist, and
  * roller and provide helper methods for controlling the superstructure.
  */
-public class Superstructure extends SubsystemBase {
+public class Superstructure extends SubsystemBase implements Sendable {
   /**
    * Mutates the given AngularVelocity to correspond to intaking a coral
    *
@@ -95,5 +98,14 @@ public class Superstructure extends SubsystemBase {
 
     return wristRotation.getRadians() > min.getRadians()
         && wristRotation.getRadians() < max.getRadians();
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("Superstructure");
+    builder.addDoubleProperty(
+        "Elevator Proportion", () -> getSuperstructureState().elevatorProportion().in(Value), null);
+    builder.addDoubleProperty(
+        "Wrist Angle Degrees", () -> getSuperstructureState().wristRotation().getDegrees(), null);
   }
 }

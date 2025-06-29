@@ -1,10 +1,13 @@
 package org.team4639.robot.commands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import java.util.List;
 import java.util.Set;
 import org.team4639.robot.commands.superstructure.HomingCommand;
 import org.team4639.robot.commands.superstructure.SuperstructureCommand;
+import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
@@ -43,4 +46,20 @@ public class SuperstructureCommands {
       new SuperstructureCommand(SuperstructureSetpoints.REJECT_CORAL);
   public static final Command REJECT_ALGAE =
       new SuperstructureCommand(SuperstructureSetpoints.REJECT_ALGAE);
+
+  public static final Command ALGAE_INTAKE =
+      Commands.select(
+          FieldConstants.ReefCenterPoseToAlgaeLocation,
+          () -> {
+            Pose2d drivePose = Subsystems.drive.getPose();
+
+            return drivePose.nearest(
+                List.of(
+                    FieldConstants.TargetPositions.REEF_AB.getPose(),
+                    FieldConstants.TargetPositions.REEF_CD.getPose(),
+                    FieldConstants.TargetPositions.REEF_EF.getPose(),
+                    FieldConstants.TargetPositions.REEF_GH.getPose(),
+                    FieldConstants.TargetPositions.REEF_IJ.getPose(),
+                    FieldConstants.TargetPositions.REEF_KL.getPose()));
+          });
 }

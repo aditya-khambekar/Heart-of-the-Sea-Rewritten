@@ -47,7 +47,10 @@ public class WristIOSim extends WristIO {
   }
 
   @Override
-  public void setDutyCycleOutput(Dimensionless percent) {}
+  public void setDutyCycleOutput(Dimensionless percent) {
+    pivotSim.setInputVoltage(12 * percent.in(Value));
+    pivotSim.update(0.02);
+  }
 
   @Override
   public void setPosition(Angle position) {
