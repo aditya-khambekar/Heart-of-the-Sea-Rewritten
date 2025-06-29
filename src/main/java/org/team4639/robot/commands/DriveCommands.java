@@ -13,6 +13,10 @@
 
 package org.team4639.robot.commands;
 
+import static edu.wpi.first.units.Units.*;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -503,7 +507,7 @@ public class DriveCommands {
     // PhoenixPIDController pidX = new PhoenixPIDController(6, 0, 0);
     // PhoenixPIDController pidY = new PhoenixPIDController(6, 0, 0);
 
-      Subsystems.reefTracker.setCurrentReefPose(destinationPose);
+    Subsystems.reefTracker.setCurrentReefPose(destinationPose);
 
     double kp = 6;
 
@@ -601,12 +605,29 @@ public class DriveCommands {
                 FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose()));
   }
 
-  public static Command pathFindTo(Drive drive, Pose2d pose) {
-    // TODO: this
-    return Commands.none();
+  public static Command pathFindToReef(Drive drive, Pose2d pose) {
+    return drive
+        .defer(
+            () ->
+                AutoBuilder.pathfindToPose(
+                    pose,
+                    new PathConstraints(
+                        MetersPerSecond.of(3),
+                        MetersPerSecondPerSecond.of(6),
+                        RotationsPerSecond.of(2),
+                        RotationsPerSecondPerSecond.of(4),
+                        Volts.of(12),
+                        true),
+                    MetersPerSecond.of(1)))
+        .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
+        .andThen(PIDtoReefWithVelocityReset(drive, drive.getPose(), pose));
   }
 
   public static Command stopWithX() {
     return Subsystems.drive.run(() -> Subsystems.drive.stopWithX());
+  }
+
+  public static Command forwardsMovementRobotRelative() {
+    return Subsystems.drive.run(() -> Subsystems.drive.runVelocity(new ChassisSpeeds(2, 0, 0)));
   }
 }

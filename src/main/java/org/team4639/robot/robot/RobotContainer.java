@@ -213,7 +213,7 @@ public class RobotContainer {
 
     // Configure the button bindings
     configureButtonBindings();
-    States.initStates();
+    States.initStaticStates();
     StateMachine.setState(States.IDLE);
   }
 

@@ -12,10 +12,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.Command;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import org.team4639.lib.util.PoseUtil;
+import org.team4639.robot.commands.SuperstructureCommands;
 
 /**
  * Contains various field dimensions and useful reference points. All units are in meters and poses
@@ -286,15 +288,21 @@ public class FieldConstants {
     public final Pose2d leftPose, rightPose;
   }
 
-  public static Map<Pose2d, Integer> ReefCenterPoseToAlgaeLocation = new HashMap<>();
+  public static Map<Pose2d, Command> ReefCenterPoseToAlgaeLocation = new HashMap<>();
 
   public static void initAlgaeLocations() {
-    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_AB.Pose, 0b1);
-    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_CD.Pose, 0b0);
-    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_EF.Pose, 0b1);
-    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_GH.Pose, 0b0);
-    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_IJ.Pose, 0b1);
-    ReefCenterPoseToAlgaeLocation.put(TargetPositions.REEF_KL.Pose, 0b0);
+    ReefCenterPoseToAlgaeLocation.put(
+        TargetPositions.REEF_AB.Pose, SuperstructureCommands.L3_ALGAE);
+    ReefCenterPoseToAlgaeLocation.put(
+        TargetPositions.REEF_CD.Pose, SuperstructureCommands.L2_ALGAE);
+    ReefCenterPoseToAlgaeLocation.put(
+        TargetPositions.REEF_EF.Pose, SuperstructureCommands.L3_ALGAE);
+    ReefCenterPoseToAlgaeLocation.put(
+        TargetPositions.REEF_GH.Pose, SuperstructureCommands.L2_ALGAE);
+    ReefCenterPoseToAlgaeLocation.put(
+        TargetPositions.REEF_IJ.Pose, SuperstructureCommands.L3_ALGAE);
+    ReefCenterPoseToAlgaeLocation.put(
+        TargetPositions.REEF_KL.Pose, SuperstructureCommands.L2_ALGAE);
   }
 
   public static Pose2d getClosestBranchPosition(Pose2d currentPose) {

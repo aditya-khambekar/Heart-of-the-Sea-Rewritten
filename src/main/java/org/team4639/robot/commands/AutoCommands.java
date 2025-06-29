@@ -8,17 +8,19 @@ import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
 
 public class AutoCommands {
   public static Command scoreL4(Pose2d pose) {
-    return (Subsystems.reefTracker.setCurrentReefPoseCommand(pose)).andThen(((DriveCommands.PIDtoReefWithVelocityReset(
-                    Subsystems.drive, Subsystems.drive.getPose(), pose)
-                .alongWith(SuperstructureCommands.ELEVATOR_READY))
-            .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.L4))
-            .until(Subsystems.wrist::doesNotHaveCoral))
-        .andThen(SuperstructureCommands.IDLE)
-        .until(
-            () ->
-                Superstructure.atPosition(
-                    Superstructure.getSuperstructureState(), SuperstructureSetpoints.IDLE)))
-            .andThen(Subsystems.reefTracker.scoreL4());
+    return (Subsystems.reefTracker.setCurrentReefPoseCommand(pose))
+        .andThen(
+            ((DriveCommands.PIDtoReefWithVelocityReset(
+                            Subsystems.drive, Subsystems.drive.getPose(), pose)
+                        .alongWith(SuperstructureCommands.ELEVATOR_READY))
+                    .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.L4))
+                    .until(Subsystems.wrist::doesNotHaveCoral))
+                .andThen(SuperstructureCommands.IDLE)
+                .until(
+                    () ->
+                        Superstructure.atPosition(
+                            Superstructure.getSuperstructureState(), SuperstructureSetpoints.IDLE)))
+        .andThen(Subsystems.reefTracker.scoreL4());
   }
 
   public static Command intakeLeft() {
