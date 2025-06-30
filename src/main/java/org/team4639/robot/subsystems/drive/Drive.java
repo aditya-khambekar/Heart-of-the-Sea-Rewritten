@@ -388,7 +388,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+    return DriveConstants.MAX_LINEAR_MPS.in(MetersPerSecond);
   }
 
   /** Returns the maximum angular speed in radians per sec. */

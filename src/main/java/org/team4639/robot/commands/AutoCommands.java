@@ -53,13 +53,15 @@ public class AutoCommands {
   }
 
   public static Command intakeLeft() {
-    return DriveCommands.coralStationAlignLeft(Subsystems.drive)
+    return (DriveCommands.coralStationAlignLeft(Subsystems.drive)
+            .deadlineFor(SuperstructureCommands.hpLower()))
         .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.hpLower()))
         .until(Subsystems.wrist::hasCoral);
   }
 
   public static Command intakeRight() {
-    return DriveCommands.coralStationAlignRight(Subsystems.drive)
+    return (DriveCommands.coralStationAlignRight(Subsystems.drive)
+            .deadlineFor(SuperstructureCommands.hpLower()))
         .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.hpLower()))
         .until(Subsystems.wrist::hasCoral);
   }
