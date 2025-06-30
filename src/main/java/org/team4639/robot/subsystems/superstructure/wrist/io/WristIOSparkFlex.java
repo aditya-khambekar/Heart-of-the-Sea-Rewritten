@@ -18,9 +18,11 @@ public class WristIOSparkFlex extends WristIO {
     sparkFlex = new SparkFlex(ID, SparkLowLevel.MotorType.kBrushless);
 
     wristPIDController =
-        new ProfiledPIDController(40, 0, 0, new TrapezoidProfile.Constraints(60, 20));
+        new ProfiledPIDController(40, 0, 0, new TrapezoidProfile.Constraints(60, 180));
 
     SmartDashboard.putData("Wrist PID Controller", wristPIDController);
+
+    // TODO: reset PID
   }
 
   @Override

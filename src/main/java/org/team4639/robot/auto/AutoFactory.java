@@ -85,6 +85,63 @@ public class AutoFactory {
     return Commands.sequence(commands.toArray(new Command[0]));
   }
 
+  public static Command compileAlgaeAuto(Locations... locations) {
+    List<Command> commands = new ArrayList<>();
+    List<PathPlannerPath> paths = new ArrayList<>();
+    for (int i = 0; i < locations.length - 1; i++) {
+      try {
+        var path = PathPlannerPath.fromChoreoTrajectory(locations[i] + "-" + locations[i + 1]);
+        paths.add(path);
+        if (i == 0) {
+          commands.add(
+              Commands.runOnce(
+                  () ->
+                      Subsystems.drive.setPose(
+                          path.getStartingHolonomicPose().orElse(new Pose2d()))));
+          commands.add(AutoCommands.path(path));
+        } else {
+          commands.add(
+              AutoCommands.pathForAlgae(
+                  path,
+                  switch (locations[i + 1]) {
+                    case ALGSC1, ALGSC2, ALGSC3 -> true;
+                    default -> false;
+                  }));
+        }
+        commands.add(
+            switch (locations[i + 1]) {
+              case RHP -> AutoCommands.intakeRight();
+              case LHP -> AutoCommands.intakeLeft();
+              case A -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_A.getPose());
+              case B -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_B.getPose());
+              case C -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_C.getPose());
+              case D -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_D.getPose());
+              case E -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_E.getPose());
+              case F -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_F.getPose());
+              case G -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_G.getPose());
+              case H -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_H.getPose());
+              case I -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_I.getPose());
+              case J -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_J.getPose());
+              case K -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_K.getPose());
+              case L -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_L.getPose());
+              case ALGH -> AutoCommands.algaeIntakeSequence();
+              case ALIJ -> AutoCommands.algaeIntakeSequence();
+              case ALGSC1 -> AutoCommands.scoreBarge(
+                  FieldConstants.TargetPositions.BARGE_FARCAGE.getPose());
+              case ALGSC2 -> AutoCommands.scoreBarge(
+                  FieldConstants.TargetPositions.BARGE_MIDDLECAGE.getPose());
+              case ALGSC3 -> AutoCommands.scoreBarge(
+                  FieldConstants.TargetPositions.BARGE_CLOSECAGE.getPose());
+              case RS, LS, MS -> throw new IllegalArgumentException("what the fuck");
+            });
+      } catch (IOException | ParseException e) {
+        System.err.println(locations[i] + "-" + locations[i + 1]);
+        throw new RuntimeException(e);
+      }
+    }
+    return Commands.sequence(commands.toArray(new Command[0]));
+  }
+
   public static Command RS_F_E_D_C() {
     return compileAuto(
         Locations.RS,
@@ -130,7 +187,7 @@ public class AutoFactory {
   }
 
   public static Command MS_G_ALGH_ALGSC1_ALIJ_ALGSC2() {
-    return compileAuto(
+    return compileAlgaeAuto(
         Locations.MS,
         Locations.G,
         Locations.ALGH,

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Set;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -37,11 +38,14 @@ import org.team4639.lib.io.swerve.ModuleIOTalonFX;
 import org.team4639.lib.io.vision.VisionIO;
 import org.team4639.lib.io.vision.VisionIOLimelight;
 import org.team4639.lib.io.vision.VisionIOPhotonVisionSim;
+import org.team4639.lib.led.subsystem.PhysicalLEDStrip;
 import org.team4639.lib.oi.OI;
 import org.team4639.lib.util.AllianceFlipUtil;
+import org.team4639.lib.util.DriverStationUtil;
 import org.team4639.robot.Constants;
 import org.team4639.robot.auto.AutoFactory;
 import org.team4639.robot.commands.DriveCommands;
+import org.team4639.robot.commands.LEDCommands;
 import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.constants.IDs;
@@ -175,6 +179,7 @@ public class RobotContainer {
     Subsystems.reefTracker = new ReefTracker();
     Subsystems.superstructure = new Superstructure();
     Subsystems.limelightFlash = new LimelightFlash(VisionConstants.cameraBackName);
+    Subsystems.leds = new PhysicalLEDStrip(9, 96);
 
     VisionUpdates.addConsumer(Subsystems.drive);
     VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
@@ -248,6 +253,10 @@ public class RobotContainer {
                 () -> -driver.getLeftX(),
                 () -> -driver.getRightX())
             .withName("Drive Joystick"));
+
+    Subsystems.leds.setDefaultCommand(LEDCommands.disabled());
+
+    new Trigger(DriverStationUtil::usingDSAlliance).onTrue(LEDCommands.disabled());
   }
 
   /**

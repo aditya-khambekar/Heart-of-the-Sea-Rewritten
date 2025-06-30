@@ -304,6 +304,18 @@ public class FieldConstants {
         TargetPositions.REEF_KL.Pose, SuperstructureCommands.L2_ALGAE);
   }
 
+  public static Map<Pose2d, Command> ReefCenterPoseToAlgaeLocation() {
+    var x = new HashMap<Pose2d, Command>();
+    x.put(TargetPositions.REEF_AB.Pose, SuperstructureCommands.l3Algae());
+    x.put(TargetPositions.REEF_CD.Pose, SuperstructureCommands.l2Algae());
+    x.put(TargetPositions.REEF_EF.Pose, SuperstructureCommands.l3Algae());
+    x.put(TargetPositions.REEF_GH.Pose, SuperstructureCommands.l2Algae());
+    x.put(TargetPositions.REEF_IJ.Pose, SuperstructureCommands.l3Algae());
+    x.put(TargetPositions.REEF_KL.Pose, SuperstructureCommands.l2Algae());
+
+    return x;
+  }
+
   public static Pose2d getClosestBranchPosition(Pose2d currentPose) {
     List<Pose2d> branches = new ArrayList<>();
     for (Map<ReefLevel, Pose2d> x : Reef.branchPositions2d) {

@@ -6,6 +6,7 @@ import au.grapplerobotics.LaserCan;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIO;
@@ -24,6 +25,7 @@ public class WristSubsystem extends SubsystemBase {
     this.LaserCanIO = laserCanIO;
 
     SmartDashboard.putData("Wrist", wristIOInputs);
+    SmartDashboard.putBoolean("Algae", false);
   }
 
   @Override
@@ -68,6 +70,8 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public boolean hasIntakedAlgae() {
-    return wristIOInputs.motorCurrent.in(Amps) > WristConstants.ALGAE_CURRENT.in(Amps);
+    return RobotBase.isSimulation()
+        ? SmartDashboard.getBoolean("ALGAE", false)
+        : wristIOInputs.motorCurrent.in(Amps) > WristConstants.ALGAE_CURRENT.in(Amps);
   }
 }

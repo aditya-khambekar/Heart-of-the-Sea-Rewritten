@@ -97,6 +97,14 @@ public class SuperstructureSetpoints {
           RotationsPerSecond.of(1.0 * 20) // Intake_L3_ALGAE_Speed: 1.0 * 20 = 20.0 RPS
           );
 
+  public static final SuperstructureState ALGAE_STOW =
+      new SuperstructureState(
+          Value.of(0.32), // L2_ALGAE_Proportion
+          Rotation2d.fromDegrees(
+              135), // Wrist_L2_ALGAE_Proportion: 30 - 230 * 0.82 = -158.6 degrees
+          RotationsPerSecond.of(0.05 * 20) // Intake_L2_ALGAE_Speed: 1.0 * 20 = 20.0 RPS
+          );
+
   // Barge State
   public static final SuperstructureState BARGE =
       new SuperstructureState(

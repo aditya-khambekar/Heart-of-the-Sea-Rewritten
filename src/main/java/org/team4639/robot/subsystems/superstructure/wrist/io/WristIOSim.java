@@ -14,6 +14,7 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.team4639.lib.unit.Units2;
 import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
 
 public class WristIOSim extends WristIO {
@@ -32,12 +33,16 @@ public class WristIOSim extends WristIO {
             WristConstants.IDLE_ROTATION.getRadians(),
             WristConstants.MAX_ROTATION.getRadians(),
             false,
-            WristConstants.IDLE_ROTATION.getRadians());
+            Units2.degreesToRadians.convert(120));
 
     feedforward = new ArmFeedforward(0, 0, 0.5);
 
     wristPIDController =
         new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(60, 20));
+
+    wristPIDController.reset(
+        WristConstants.RotationToPosition.convert(Rotation2d.fromRadians(pivotSim.getAngleRads()))
+            .in(Rotation));
 
     SmartDashboard.putData("Wrist PID Controller", wristPIDController);
     SmartDashboard.putData(

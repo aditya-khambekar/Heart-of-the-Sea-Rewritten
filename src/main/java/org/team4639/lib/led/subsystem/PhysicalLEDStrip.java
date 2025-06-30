@@ -3,10 +3,9 @@ package org.team4639.lib.led.subsystem;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import java.util.Objects;
-import org.team4639.lib.annotation.PackagePrivate;
 import org.team4639.lib.led.pattern.LEDPattern;
 
 public class PhysicalLEDStrip extends LEDStrip {
@@ -17,14 +16,7 @@ public class PhysicalLEDStrip extends LEDStrip {
 
   private LEDPattern currentPattern = LEDPattern.BLANK;
 
-  private static volatile PhysicalLEDStrip instance;
-
-  @PackagePrivate
-  static synchronized PhysicalLEDStrip getInstance() {
-    return Objects.requireNonNullElseGet(instance, () -> instance = new PhysicalLEDStrip(9, 96));
-  }
-
-  private PhysicalLEDStrip(int port, int length) {
+  public PhysicalLEDStrip(int port, int length) {
     this.length = length;
 
     led = new AddressableLED(port);
@@ -45,6 +37,7 @@ public class PhysicalLEDStrip extends LEDStrip {
     for (int i = 0; i < length; i++) {
       Color color = currentPattern.get(i, Timer.getFPGATimestamp() - timeAtLastReset);
       buffer.setLED(i, new Color8Bit(color));
+      if (i % 12 == 0) SmartDashboard.putString("LED " + i, color.toHexString());
     }
     led.setData(buffer);
   }

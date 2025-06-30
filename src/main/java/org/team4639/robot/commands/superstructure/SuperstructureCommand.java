@@ -3,12 +3,15 @@ package org.team4639.robot.commands.superstructure;
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Value;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.MutTime;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.BooleanSupplier;
@@ -24,6 +27,8 @@ public class SuperstructureCommand extends Command {
   private SuperstructureCommandState state;
   private BooleanSupplier endCondition;
   private Dimensionless holdPosition;
+  private MutTime timeOfExecutingAction;
+  private Time executingActionTimeout = Seconds.of(Double.POSITIVE_INFINITY);
   private boolean flash;
 
   /**
@@ -41,6 +46,7 @@ public class SuperstructureCommand extends Command {
     this.state = SuperstructureCommandState.TO_SAFE_ANGLE;
     this.endCondition = endCondition;
     holdPosition = Value.zero();
+    timeOfExecutingAction = Seconds.mutable(0);
   }
 
   public SuperstructureCommand(SuperstructureState setpoint) {
@@ -50,6 +56,8 @@ public class SuperstructureCommand extends Command {
   @Override
   public void initialize() {
     setState(SuperstructureCommandState.TO_SAFE_ANGLE);
+    if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
+      setState(SuperstructureCommandState.EXECUTING_ACTION);
   }
 
   @Override
@@ -113,7 +121,10 @@ public class SuperstructureCommand extends Command {
         Subsystems.roller.setVelocity(RotationsPerSecond.zero());
       }
       case EXECUTING_ACTION -> {
+        timeOfExecutingAction.mut_plus(0.02, Seconds);
         if (endCondition.getAsBoolean()) setState(SuperstructureCommandState.DONE);
+        if (timeOfExecutingAction.gte(executingActionTimeout))
+          setState(SuperstructureCommandState.DONE);
         if (flash) Subsystems.limelightFlash.flash();
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
@@ -159,5 +170,10 @@ public class SuperstructureCommand extends Command {
   private void setState(SuperstructureCommandState state) {
     this.state = state;
     setHoldPosition();
+  }
+
+  public SuperstructureCommand withExecutionTimeout(Time time) {
+    this.executingActionTimeout = time;
+    return this;
   }
 }

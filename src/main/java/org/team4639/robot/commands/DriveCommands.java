@@ -442,9 +442,9 @@ public class DriveCommands {
   public static Command PIDtowithVelocityReset(
       Drive drive, Pose2d startingPose, Pose2d destinationPose) {
     ProfiledPIDController pidX =
-        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 5));
     ProfiledPIDController pidY =
-        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 5));
     PIDController headingController = new PIDController(16, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
@@ -627,6 +627,26 @@ public class DriveCommands {
   }
 
   public static Command pathFindToHP(Drive drive, Pose2d pose) {
+    return (drive
+            .defer(
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        pose,
+                        new PathConstraints(
+                            MetersPerSecond.of(3),
+                            MetersPerSecondPerSecond.of(6),
+                            RotationsPerSecond.of(2),
+                            RotationsPerSecondPerSecond.of(4),
+                            Volts.of(12),
+                            true),
+                        MetersPerSecond.of(1)))
+            .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
+            .andThen(
+                Subsystems.drive.defer(() -> PIDtowithVelocityReset(drive, drive.getPose(), pose))))
+        .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(pose));
+  }
+
+  public static Command pathFindToReefCenter(Drive drive, Pose2d pose) {
     return (drive
             .defer(
                 () ->

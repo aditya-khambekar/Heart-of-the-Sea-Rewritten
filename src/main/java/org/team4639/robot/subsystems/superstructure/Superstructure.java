@@ -87,6 +87,18 @@ public class Superstructure extends SubsystemBase implements Sendable {
             Math.abs(WristConstants.wristTolerance.in(Rotations)));
   }
 
+  public static boolean atPosition(SuperstructureState target) {
+    var current = getSuperstructureState();
+    return MathUtil.isNear(
+            current.elevatorProportion().baseUnitMagnitude(),
+            target.elevatorProportion().baseUnitMagnitude(),
+            Math.abs(ElevatorConstants.elevatorTolerance.baseUnitMagnitude()))
+        && MathUtil.isNear(
+            current.wristRotation().getRotations(),
+            target.wristRotation().getRotations(),
+            Math.abs(WristConstants.wristTolerance.in(Rotations)));
+  }
+
   public static SuperstructureState getSuperstructureState() {
     return new SuperstructureState(
         Subsystems.elevator.getPercentage(),

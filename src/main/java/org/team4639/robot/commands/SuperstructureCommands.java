@@ -148,7 +148,7 @@ public class SuperstructureCommands {
             .withName("BARGE");
     ALGAE_STOW =
         Commands.defer(
-                () -> Commands.none(),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
@@ -222,59 +222,59 @@ public class SuperstructureCommands {
   }
 
   // Method versions that create new commands each time
-  public static Command idle() {
+  public static SuperstructureCommand idle() {
     return new SuperstructureCommand(SuperstructureSetpoints.IDLE);
   }
 
-  public static Command hp() {
+  public static SuperstructureCommand hp() {
     return new SuperstructureCommand(SuperstructureSetpoints.HP).flashOnDone();
   }
 
-  public static Command hpLower() {
+  public static SuperstructureCommand hpLower() {
     return new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER).flashOnDone();
   }
 
-  public static Command coralStow() {
+  public static SuperstructureCommand coralStow() {
     return new SuperstructureCommand(SuperstructureSetpoints.CORAL_STOW);
   }
 
-  public static Command elevatorReady() {
+  public static SuperstructureCommand elevatorReady() {
     return new SuperstructureCommand(SuperstructureSetpoints.ELEVATOR_READY);
   }
 
-  public static Command l1() {
+  public static SuperstructureCommand l1() {
     return new SuperstructureCommand(SuperstructureSetpoints.L1).flashOnDone();
   }
 
-  public static Command l2() {
+  public static SuperstructureCommand l2() {
     return new SuperstructureCommand(SuperstructureSetpoints.L2).flashOnDone();
   }
 
-  public static Command l3() {
+  public static SuperstructureCommand l3() {
     return new SuperstructureCommand(SuperstructureSetpoints.L3).flashOnDone();
   }
 
-  public static Command l4() {
+  public static SuperstructureCommand l4() {
     return new SuperstructureCommand(SuperstructureSetpoints.L4).flashOnDone();
   }
 
-  public static Command l2Algae() {
+  public static SuperstructureCommand l2Algae() {
     return new SuperstructureCommand(SuperstructureSetpoints.L2_ALGAE);
   }
 
-  public static Command l3Algae() {
+  public static SuperstructureCommand l3Algae() {
     return new SuperstructureCommand(SuperstructureSetpoints.L3_ALGAE);
   }
 
-  public static Command barge() {
+  public static SuperstructureCommand barge() {
     return new SuperstructureCommand(SuperstructureSetpoints.BARGE);
   }
 
-  public static Command algaeStow() {
-    return Commands.none();
+  public static SuperstructureCommand algaeStow() {
+    return new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW);
   }
 
-  public static Command homingReady() {
+  public static SuperstructureCommand homingReady() {
     return new SuperstructureCommand(SuperstructureSetpoints.HOMING_READY);
   }
 
@@ -289,21 +289,36 @@ public class SuperstructureCommands {
             Subsystems.superstructure, Subsystems.elevator, Subsystems.wrist, Subsystems.roller));
   }
 
-  public static Command rejectCoral() {
+  public static SuperstructureCommand rejectCoral() {
     return new SuperstructureCommand(SuperstructureSetpoints.REJECT_CORAL);
   }
 
-  public static Command rejectAlgae() {
+  public static SuperstructureCommand rejectAlgae() {
     return new SuperstructureCommand(SuperstructureSetpoints.REJECT_ALGAE);
   }
 
   public static Command algaeIntake() {
     return Commands.select(
-        FieldConstants.ReefCenterPoseToAlgaeLocation,
+        FieldConstants.ReefCenterPoseToAlgaeLocation(),
         () -> {
           Pose2d drivePose = Subsystems.drive.getPose();
 
           return drivePose.nearest(
+              List.of(
+                  FieldConstants.TargetPositions.REEF_AB.getPose(),
+                  FieldConstants.TargetPositions.REEF_CD.getPose(),
+                  FieldConstants.TargetPositions.REEF_EF.getPose(),
+                  FieldConstants.TargetPositions.REEF_GH.getPose(),
+                  FieldConstants.TargetPositions.REEF_IJ.getPose(),
+                  FieldConstants.TargetPositions.REEF_KL.getPose()));
+        });
+  }
+
+  public static Command algaeIntake(Pose2d pose) {
+    return Commands.select(
+        FieldConstants.ReefCenterPoseToAlgaeLocation(),
+        () -> {
+          return pose.nearest(
               List.of(
                   FieldConstants.TargetPositions.REEF_AB.getPose(),
                   FieldConstants.TargetPositions.REEF_CD.getPose(),
