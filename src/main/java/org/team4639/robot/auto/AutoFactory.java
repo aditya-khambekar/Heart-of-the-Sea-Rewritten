@@ -53,7 +53,7 @@ public class AutoFactory {
                   () ->
                       Subsystems.drive.setPose(
                           path.getStartingHolonomicPose().orElse(new Pose2d()))));
-        commands.add(AutoBuilder.followPath(path));
+        commands.add(AutoCommands.path(path));
         commands.add(
             switch (locations[i + 1]) {
               case RHP -> AutoCommands.intakeRight();

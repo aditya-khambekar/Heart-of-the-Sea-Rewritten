@@ -10,21 +10,29 @@ import org.team4639.lib.annotation.Untuned;
 import org.team4639.lib.unit.UnitConverter;
 
 public class WristConstants {
-  public static final Rotation2d MAX_ROTATION = Rotation2d.fromDegrees(-200);
+  public static final Rotation2d MAX_ROTATION = Rotation2d.fromDegrees(230);
   public static final Rotation2d IDLE_ROTATION = Rotation2d.fromDegrees(30);
 
   @Untuned public static final Angle MAX_POSITION = Rotations.of(-31.846);
   @Untuned public static final Angle MIN_POSITION = Rotations.of(0);
 
-  public static final Rotation2d TRANSITION_ROTATION = Rotation2d.fromDegrees(-85);
+  public static final Rotation2d TRANSITION_ROTATION = Rotation2d.fromDegrees(145);
 
   public static final Current ALGAE_CURRENT = Amps.of(1);
 
   @Untuned
-  public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE =
+  public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_LOW =
       new Pair<>(
-          TRANSITION_ROTATION.plus(Rotation2d.fromDegrees(20)),
-          TRANSITION_ROTATION.minus(Rotation2d.fromDegrees(20)));
+          TRANSITION_ROTATION.plus(Rotation2d.fromDegrees(25)),
+          TRANSITION_ROTATION.minus(Rotation2d.fromDegrees(25)));
+
+  @Untuned
+  public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_HIGH =
+      new Pair<>(MAX_ROTATION, TRANSITION_ROTATION.minus(Rotation2d.fromDegrees(25)));
+
+  @Untuned
+  public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_INTERIOR =
+      new Pair<>(IDLE_ROTATION, Rotation2d.fromDegrees(80));
 
   public static final UnitConverter<Rotation2d, Angle> RotationToPosition =
       UnitConverter.create(Rotation2d::getDegrees, Rotation2d::fromDegrees)

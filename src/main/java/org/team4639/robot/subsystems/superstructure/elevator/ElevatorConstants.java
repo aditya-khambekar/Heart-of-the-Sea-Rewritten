@@ -80,4 +80,10 @@ public class ElevatorConstants {
       new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator Ka");
 
   public static final Dimensionless elevatorTolerance = Percent.of(1);
+
+  /**
+   * The point at which we can expand the wrist safe zone to include the full exterior range of
+   * motion
+   */
+  public static final Dimensionless SAFE_ZONE_EXPANSION = Percent.of(25);
 }

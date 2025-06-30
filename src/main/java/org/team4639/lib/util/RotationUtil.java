@@ -36,4 +36,8 @@ public class RotationUtil {
     return Rotation2d.fromDegrees(
         Arrays.stream(args).mapToDouble(x -> x.getDegrees()).average().orElse(-1));
   }
+
+  public static boolean boundedBy(Rotation2d target, Rotation2d fence1, Rotation2d fence2) {
+    return compare(target, max(fence1, fence2)) <= 0 && compare(target, min(fence1, fence2)) >= 0;
+  }
 }

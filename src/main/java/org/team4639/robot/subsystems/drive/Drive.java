@@ -39,6 +39,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -170,6 +172,20 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
+
+    SmartDashboard.putData(
+        "Chassis Speeds",
+        new Sendable() {
+
+          @Override
+          public void initSendable(SendableBuilder builder) {
+            builder.setSmartDashboardType("Chassis Speeds");
+            builder.addDoubleProperty("vx", () -> getChassisSpeeds().vxMetersPerSecond, null);
+            builder.addDoubleProperty("vy", () -> getChassisSpeeds().vyMetersPerSecond, null);
+            builder.addDoubleProperty(
+                "omega", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
+          }
+        });
   }
 
   public boolean atSetpointTranslation() {
@@ -274,7 +290,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   /** Stops the drive. */
   public void stop() {
-    runVelocity(new ChassisSpeeds());
+    runVelocity(new ChassisSpeeds(0, 0, 0));
   }
 
   /**

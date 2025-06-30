@@ -46,8 +46,10 @@ public class States {
             .whileTrue(SuperstructureCommands.IDLE)
             .onTrigger(DriveTriggers.closeToRightStation, () -> HP_RIGHT)
             .onTrigger(DriveTriggers.closeToLeftStation, () -> HP_LEFT)
-            .onTrigger(Controls.intake, () -> HP_NODIR)
-            .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW);
+            .withEndCondition(Controls.intake, () -> HP_NODIR)
+            .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW)
+            .withEndCondition(Controls.LEFT_HP, States::pathFindToHPLeft)
+            .withEndCondition(Controls.RIGHT_HP, States::pathFindToHPRight);
 
     HP_LEFT =
         new State("HP_LEFT")
@@ -194,28 +196,28 @@ public class States {
 
     L1_CORAL_SCORE =
         new State("L1_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L1, Subsystems.reefTracker.scoreL1())
+            .whileTrue(SuperstructureCommands.L1)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L2_CORAL_SCORE =
         new State("L2_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L2, Subsystems.reefTracker.scoreL2())
+            .whileTrue(SuperstructureCommands.L2)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L3_CORAL_SCORE =
         new State("L3_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L3, Subsystems.reefTracker.scoreL3())
+            .whileTrue(SuperstructureCommands.L3)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L4_CORAL_SCORE =
         new State("L4_CORAL_SCORE")
-            .whileTrue(SuperstructureCommands.L4, Subsystems.reefTracker.scoreL4())
+            .whileTrue(SuperstructureCommands.L4)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
@@ -231,7 +233,12 @@ public class States {
                 () -> HOMING)
             .onEmergency(() -> IDLE);
 
-    HOMING = new State("HOMING").whileTrue(SuperstructureCommands.HOMING).onEmergency(() -> IDLE);
+    HOMING =
+        new State("HOMING")
+            .deadlineFor(SuperstructureCommands.HOMING, () -> IDLE)
+            .onEmergency(() -> IDLE);
+
+    // if (RobotBase.isSimulation()) HOMING.withTimeout(Seconds.of(0.1), () -> IDLE);
 
     REJECT_CORAL =
         new State("REJECT_CORAL")
@@ -258,5 +265,29 @@ public class States {
             Subsystems.dashboardOutputs.displayUpcomingReefLevel())
         .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
         .onEmergency(() -> CORAL_STOW);
+  }
+
+  public static State pathFindToHPLeft() {
+    return new State("PATHFIND_TO_HP_LEFT")
+        .deadlineFor(
+            DriveCommands.pathFindToHP(
+                Subsystems.drive, FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose()),
+            () -> HP_LEFT)
+        .whileTrue(SuperstructureCommands.HP)
+        .onEmergency(() -> IDLE);
+  }
+
+  public static State pathFindToHPRight() {
+    return new State("PATHFIND_TO_HP_RIGHT")
+        .deadlineFor(
+            DriveCommands.pathFindToHP(
+                Subsystems.drive, FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose()),
+            () -> HP_RIGHT)
+        .whileTrue(SuperstructureCommands.HP)
+        .onEmergency(() -> IDLE);
+  }
+
+  public static State determineState() {
+    return Subsystems.wrist.hasCoral() ? CORAL_STOW : IDLE;
   }
 }

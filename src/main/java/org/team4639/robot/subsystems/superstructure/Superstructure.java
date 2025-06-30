@@ -1,16 +1,27 @@
 package org.team4639.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Value;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.team4639.lib.util.RotationUtil;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
 import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
@@ -85,42 +96,17 @@ public class Superstructure extends SubsystemBase implements Sendable {
 
   /** Determines if the wrist is at a safe angle to move the elevator. */
   public static boolean isWristAtSafeAngle() {
-    var max =
-        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
-                > WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
-            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
-            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
-    var min =
-        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
-                <= WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
-            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
-            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
-    ;
-
-    var wristRotation = Subsystems.wrist.getWristAngle();
-
+    var zone = getEffectiveExteriorSafeZone();
     var ret =
-        wristRotation.getRadians() > min.getRadians()
-            && wristRotation.getRadians() < max.getRadians();
-
+        RotationUtil.boundedBy(Subsystems.wrist.getWristAngle(), zone.getFirst(), zone.getSecond());
     SmartDashboard.putBoolean("Wrist Safe", ret);
     return ret;
   }
 
-  public static boolean isAtSafeAngle(Rotation2d rotation) {
-    var max =
-        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
-                > WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
-            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
-            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
-    var min =
-        WristConstants.SAFE_TRANSITION_RANGE.getFirst().getDegrees()
-                <= WristConstants.SAFE_TRANSITION_RANGE.getSecond().getDegrees()
-            ? WristConstants.SAFE_TRANSITION_RANGE.getFirst()
-            : WristConstants.SAFE_TRANSITION_RANGE.getSecond();
-    ;
-
-    return rotation.getRadians() > min.getRadians() && rotation.getRadians() < max.getRadians();
+  public static Pair<Rotation2d, Rotation2d> getEffectiveExteriorSafeZone() {
+    return Subsystems.elevator.getPercentage().compareTo(ElevatorConstants.SAFE_ZONE_EXPANSION) >= 0
+        ? WristConstants.SAFE_TRANSITION_RANGE_HIGH
+        : WristConstants.SAFE_TRANSITION_RANGE_LOW;
   }
 
   @Override
@@ -130,5 +116,54 @@ public class Superstructure extends SubsystemBase implements Sendable {
         "Elevator Proportion", () -> getSuperstructureState().elevatorProportion().in(Value), null);
     builder.addDoubleProperty(
         "Wrist Angle Degrees", () -> getSuperstructureState().wristRotation().getDegrees(), null);
+  }
+
+  public static final double height = 120;
+  public static final double width = 28.5;
+
+  public static final java.awt.Color currentColor = new java.awt.Color(16, 125, 215);
+  public static final java.awt.Color targetColor = new java.awt.Color(0, 178, 99);
+
+  public static final Distance hopperLength = Inches.of(14);
+
+  public static final Translation2d origin =
+      new Translation2d(Units.inchesToMeters(width / 2 + 6.25), 0.0);
+
+  public static final Mechanism2d mechanismView =
+      new Mechanism2d(Units.inchesToMeters(width), Units.inchesToMeters(height));
+
+  public static final MechanismRoot2d elevatorRoot =
+      mechanismView.getRoot("Current Elevator Root", origin.getX(), origin.getY());
+
+  public static final MechanismLigament2d currentElevatorLigament =
+      elevatorRoot.append(
+          new MechanismLigament2d(
+              "Current Elevator Ligament",
+              ElevatorConstants.heightToPercentage
+                  .convertBackwards(Subsystems.elevator.getPercentage())
+                  .in(Meters),
+              90,
+              4,
+              new Color8Bit(
+                  currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue())));
+
+  public static final MechanismLigament2d currentHopperLigament =
+      currentElevatorLigament.append(
+          new MechanismLigament2d(
+              "Current Hopper Ligament",
+              hopperLength.in(Meters),
+              0,
+              4,
+              new Color8Bit(
+                  currentColor.getRed(), currentColor.getGreen(), currentColor.getBlue())));
+
+  @Override
+  public void periodic() {
+    currentElevatorLigament.setLength(
+        ElevatorConstants.heightToPercentage
+            .convertBackwards(Subsystems.elevator.getPercentage())
+            .in(Meters));
+    currentHopperLigament.setAngle(Subsystems.wrist.getWristAngle().minus(Rotation2d.kCCW_90deg));
+    SmartDashboard.putData("Superstructure", mechanismView);
   }
 }

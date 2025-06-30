@@ -45,7 +45,7 @@ public class SuperstructureCommands {
             .withName("IDLE");
     HP =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.HP),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.HP).flashOnDone(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
@@ -81,39 +81,43 @@ public class SuperstructureCommands {
             .withName("ELEVATOR_READY");
     L1 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L1),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L1).flashOnDone(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
+            .finallyDo(Subsystems.reefTracker::scoreL1Raw)
             .withName("L1");
     L2 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L2),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L2).flashOnDone(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
+            .finallyDo(Subsystems.reefTracker::scoreL2Raw)
             .withName("L2");
     L3 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L3),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L3).flashOnDone(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
+            .finallyDo(Subsystems.reefTracker::scoreL3Raw)
             .withName("L3");
     L4 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L4),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L4).flashOnDone(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
+            .finallyDo(Subsystems.reefTracker::scoreL4Raw)
             .withName("L4");
     L2_ALGAE =
         Commands.defer(
@@ -223,11 +227,11 @@ public class SuperstructureCommands {
   }
 
   public static Command hp() {
-    return new SuperstructureCommand(SuperstructureSetpoints.HP);
+    return new SuperstructureCommand(SuperstructureSetpoints.HP).flashOnDone();
   }
 
   public static Command hpLower() {
-    return new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER);
+    return new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER).flashOnDone();
   }
 
   public static Command coralStow() {
@@ -239,19 +243,19 @@ public class SuperstructureCommands {
   }
 
   public static Command l1() {
-    return new SuperstructureCommand(SuperstructureSetpoints.L1);
+    return new SuperstructureCommand(SuperstructureSetpoints.L1).flashOnDone();
   }
 
   public static Command l2() {
-    return new SuperstructureCommand(SuperstructureSetpoints.L2);
+    return new SuperstructureCommand(SuperstructureSetpoints.L2).flashOnDone();
   }
 
   public static Command l3() {
-    return new SuperstructureCommand(SuperstructureSetpoints.L3);
+    return new SuperstructureCommand(SuperstructureSetpoints.L3).flashOnDone();
   }
 
   public static Command l4() {
-    return new SuperstructureCommand(SuperstructureSetpoints.L4);
+    return new SuperstructureCommand(SuperstructureSetpoints.L4).flashOnDone();
   }
 
   public static Command l2Algae() {

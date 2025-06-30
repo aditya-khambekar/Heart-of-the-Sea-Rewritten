@@ -1,6 +1,7 @@
 package org.team4639.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
@@ -14,20 +15,20 @@ public class ReefTracker extends SubsystemBase {
 
   public ReefTracker() {}
 
-  public Command scoreL1() {
-    return runOnce(() -> reefs.get(currentReefPose)[0] = true);
+  public void scoreL1Raw() {
+    reefs.get(currentReefPose)[0] = true;
   }
 
-  public Command scoreL2() {
-    return runOnce(() -> reefs.get(currentReefPose)[1] = true);
+  public void scoreL2Raw() {
+    reefs.get(currentReefPose)[1] = true;
   }
 
-  public Command scoreL3() {
-    return runOnce(() -> reefs.get(currentReefPose)[2] = true);
+  public void scoreL3Raw() {
+    reefs.get(currentReefPose)[2] = true;
   }
 
-  public Command scoreL4() {
-    return runOnce(() -> reefs.get(currentReefPose)[3] = true);
+  public void scoreL4Raw() {
+    reefs.get(currentReefPose)[3] = true;
   }
 
   public int getRecommendedLevel() {
@@ -84,5 +85,11 @@ public class ReefTracker extends SubsystemBase {
     reefs.put(
         FieldConstants.TargetPositions.REEF_L.getPose(),
         new boolean[] {false, false, false, false});
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putBooleanArray(
+        "Current Reef", reefs.getOrDefault(currentReefPose, new boolean[] {false}));
   }
 }

@@ -57,4 +57,7 @@ public class Controls {
   public static final Trigger REEF_GH = RobotContainer.driver.povUp();
   public static final Trigger REEF_IJ = RobotContainer.driver.povUpLeft();
   public static final Trigger REEF_KL = RobotContainer.driver.povDownLeft();
+
+  public static final Trigger LEFT_HP = RobotContainer.driver.leftBumper();
+  public static final Trigger RIGHT_HP = RobotContainer.driver.rightBumper();
 }

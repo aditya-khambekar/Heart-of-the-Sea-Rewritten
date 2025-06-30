@@ -28,8 +28,8 @@ public class ElevatorIOTalonFXSim extends ElevatorIO {
   MotorIOTalonFX.ControlRequestGetter requestGetter;
 
   public ElevatorIOTalonFXSim(int leftMotorID, int rightMotorID) {
-    elevatorPID = new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(50, 200));
-    elevatorFeedforward = new ElevatorFeedforward(0, 0.63195475, 0.085, 0.01);
+    elevatorPID = new ProfiledPIDController(2, 0, 0, new TrapezoidProfile.Constraints(50, 200));
+    elevatorFeedforward = new ElevatorFeedforward(0, 0.63195475, 0.085, 0.0);
     elevatorSim =
         new ElevatorSim(
             LinearSystemId.createElevatorSystem(DCMotor.getKrakenX60(2), 10, 0.0762, 10),

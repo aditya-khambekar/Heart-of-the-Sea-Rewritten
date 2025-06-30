@@ -30,6 +30,8 @@ public class WristSubsystem extends SubsystemBase {
   public void periodic() {
     WristIO.updateInputs(wristIOInputs);
     LaserCanIO.updateInputs(laserCanIOInputs);
+
+    SmartDashboard.putNumber("Wrist Angle", this.getWristAngle().getDegrees());
   }
 
   public void wristForward() {

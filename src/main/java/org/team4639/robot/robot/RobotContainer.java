@@ -38,7 +38,6 @@ import org.team4639.lib.io.vision.VisionIO;
 import org.team4639.lib.io.vision.VisionIOLimelight;
 import org.team4639.lib.io.vision.VisionIOPhotonVisionSim;
 import org.team4639.lib.oi.OI;
-import org.team4639.lib.statebased.StateMachine;
 import org.team4639.lib.util.AllianceFlipUtil;
 import org.team4639.robot.Constants;
 import org.team4639.robot.auto.AutoFactory;
@@ -49,6 +48,7 @@ import org.team4639.robot.constants.IDs;
 import org.team4639.robot.modaltriggers.IOTriggers;
 import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.DashboardOutputs;
+import org.team4639.robot.subsystems.LimelightFlash;
 import org.team4639.robot.subsystems.ReefTracker;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
@@ -174,6 +174,7 @@ public class RobotContainer {
     Subsystems.dashboardOutputs = new DashboardOutputs();
     Subsystems.reefTracker = new ReefTracker();
     Subsystems.superstructure = new Superstructure();
+    Subsystems.limelightFlash = new LimelightFlash(VisionConstants.cameraBackName);
 
     VisionUpdates.addConsumer(Subsystems.drive);
     VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
@@ -220,8 +221,6 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)",
         Subsystems.drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
-
-    StateMachine.setState(States.IDLE);
   }
 
   /**
@@ -231,17 +230,15 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-    driver
-        .leftStick()
-        .onTrue(
-            Commands.defer(
-                () ->
-                    Commands.runOnce(
-                        () -> {
-                          if (RobotMode.isComp()) RobotMode.setRobotMode((byte) 0b1);
-                          else RobotMode.setRobotMode((byte) 0b0);
-                        }),
-                Set.of()));
+
+    Subsystems.superstructure.setDefaultCommand(
+        Commands.defer(
+            SuperstructureCommands::idle,
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure)));
 
     // Default command, normal field-relative drive
     Subsystems.drive.setDefaultCommand(

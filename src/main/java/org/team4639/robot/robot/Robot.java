@@ -31,6 +31,7 @@ import org.team4639.lib.error.Errors;
 import org.team4639.lib.statebased.StateMachine;
 import org.team4639.lib.util.AllianceFlipUtil;
 import org.team4639.robot.Constants;
+import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 
 /**
@@ -176,6 +177,7 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    StateMachine.setState(States.determineState());
   }
 
   /** This function is called periodically during operator control. */

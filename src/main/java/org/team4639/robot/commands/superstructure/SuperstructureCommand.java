@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Value;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +24,7 @@ public class SuperstructureCommand extends Command {
   private SuperstructureCommandState state;
   private BooleanSupplier endCondition;
   private Dimensionless holdPosition;
+  private boolean flash;
 
   /**
    * Commands the superstructure to go to a specific state
@@ -69,17 +71,23 @@ public class SuperstructureCommand extends Command {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
         if (Superstructure.isWristAtSafeAngle())
           setState(SuperstructureCommandState.TO_ELEVATOR_SETPOINT);
-
+        if (RotationUtil.boundedBy(
+                Subsystems.wrist.getWristAngle(),
+                WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getFirst(),
+                WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getSecond())
+            && RotationUtil.boundedBy(
+                setpoint.wristRotation(),
+                WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getFirst(),
+                WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getSecond()))
+          setState(SuperstructureCommandState.TO_ELEVATOR_SETPOINT);
+        Pair<Rotation2d, Rotation2d> safeTransitionRange =
+            Superstructure.getEffectiveExteriorSafeZone();
         Subsystems.wrist.setWristSetpoint(
             RotationUtil.nearest(
                 setpoint.wristRotation(),
-                RotationUtil.min(
-                        WristConstants.SAFE_TRANSITION_RANGE.getFirst(),
-                        WristConstants.SAFE_TRANSITION_RANGE.getSecond())
+                RotationUtil.min(safeTransitionRange.getFirst(), safeTransitionRange.getSecond())
                     .plus(Rotation2d.fromDegrees(2)),
-                RotationUtil.max(
-                        WristConstants.SAFE_TRANSITION_RANGE.getFirst(),
-                        WristConstants.SAFE_TRANSITION_RANGE.getSecond())
+                RotationUtil.max(safeTransitionRange.getFirst(), safeTransitionRange.getSecond())
                     .minus(Rotation2d.fromDegrees(2))));
         Subsystems.elevator.setPercentageRaw(holdPosition);
         Subsystems.roller.setVelocity(RotationsPerSecond.zero());
@@ -106,7 +114,7 @@ public class SuperstructureCommand extends Command {
       }
       case EXECUTING_ACTION -> {
         if (endCondition.getAsBoolean()) setState(SuperstructureCommandState.DONE);
-
+        if (flash) Subsystems.limelightFlash.flash();
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
         Subsystems.roller.setVelocity(setpoint.wheelSpeed());
@@ -120,6 +128,11 @@ public class SuperstructureCommand extends Command {
         Subsystems.roller.setVelocity(setpoint.wheelSpeed());
       }
     }
+  }
+
+  public SuperstructureCommand flashOnDone() {
+    this.flash = true;
+    return this;
   }
 
   @Override

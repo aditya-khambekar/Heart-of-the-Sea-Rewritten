@@ -626,8 +626,32 @@ public class DriveCommands {
         .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(pose));
   }
 
+  public static Command pathFindToHP(Drive drive, Pose2d pose) {
+    return (drive
+            .defer(
+                () ->
+                    AutoBuilder.pathfindToPose(
+                        pose,
+                        new PathConstraints(
+                            MetersPerSecond.of(3),
+                            MetersPerSecondPerSecond.of(6),
+                            RotationsPerSecond.of(2),
+                            RotationsPerSecondPerSecond.of(4),
+                            Volts.of(12),
+                            true),
+                        MetersPerSecond.of(1)))
+            .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
+            .andThen(
+                Subsystems.drive.defer(() -> PIDtowithVelocityReset(drive, drive.getPose(), pose))))
+        .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(pose));
+  }
+
   public static Command stopWithX() {
-    return Subsystems.drive.run(() -> Subsystems.drive.stopWithX());
+    return Subsystems.drive.run(() -> Subsystems.drive.stopWithX()).withName("STOP_WITH_X");
+  }
+
+  public static Command stop() {
+    return Subsystems.drive.run(() -> Subsystems.drive.stop()).withName("STOP_WITH_X");
   }
 
   public static Command forwardsMovementRobotRelative() {
