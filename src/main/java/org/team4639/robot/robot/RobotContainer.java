@@ -49,7 +49,6 @@ import org.team4639.robot.commands.LEDCommands;
 import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.constants.IDs;
-import org.team4639.robot.modaltriggers.IOTriggers;
 import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.LimelightFlash;
@@ -193,7 +192,6 @@ public class RobotContainer {
     States.initStaticStates();
     // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
     double x = FieldConstants.fieldLength;
-    var y = IOTriggers.hasDriverJoystickInput;
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
