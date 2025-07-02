@@ -29,6 +29,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   private Time executingActionTimeout = Seconds.of(Double.POSITIVE_INFINITY);
   private String name;
   private boolean flash;
+  private boolean wristSupposedToBeStopped = true;
 
   /**
    * Commands the superstructure to go to a specific state
@@ -68,11 +69,6 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
     SmartDashboard.putBoolean("Elevator At Setpoint", elevatorAtSetpoint());
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
-
-    if ((!MathUtil.isNear(0, Subsystems.elevator.getPercentage().in(Value), 0.03)
-        && Subsystems.elevator.isElevatorPhysicallyStopped())) {
-      setState(SuperstructureCommandState.STOPPED);
-    }
     switch (state) {
       case TO_SAFE_ANGLE -> {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
@@ -87,6 +83,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
                 WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getFirst(),
                 WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getSecond()))
           setState(SuperstructureCommandState.TO_ELEVATOR_SETPOINT);
+        wristSupposedToBeStopped = false;
         Pair<Rotation2d, Rotation2d> safeTransitionRange =
             Superstructure.getEffectiveExteriorSafeZone();
         Subsystems.wrist.setWristSetpoint(
@@ -101,16 +98,18 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
       }
       case TO_ELEVATOR_SETPOINT -> {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
-
         if (Superstructure.isWristAtSafeAngle()) {
           Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
+          wristSupposedToBeStopped = false;
         } else {
           Subsystems.wrist.setWristDutyCycle(Percent.zero());
+          wristSupposedToBeStopped = true;
         }
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
         Subsystems.roller.setVelocity(RotationsPerSecond.zero());
       }
       case TO_WRIST_SETPOINT -> {
+        wristSupposedToBeStopped = false;
         if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
           setState(SuperstructureCommandState.EXECUTING_ACTION);
 
@@ -120,6 +119,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
         Subsystems.roller.setVelocity(RotationsPerSecond.zero());
       }
       case EXECUTING_ACTION -> {
+        wristSupposedToBeStopped = true;
         timeOfExecutingAction.mut_plus(0.02, Seconds);
         if (endCondition.getAsBoolean()) setState(SuperstructureCommandState.DONE);
         if (timeOfExecutingAction.gte(executingActionTimeout))

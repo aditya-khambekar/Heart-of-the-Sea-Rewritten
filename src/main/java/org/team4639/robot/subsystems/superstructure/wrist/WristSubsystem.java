@@ -3,6 +3,9 @@ package org.team4639.robot.subsystems.superstructure.wrist;
 import static edu.wpi.first.units.Units.*;
 
 import au.grapplerobotics.LaserCan;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
@@ -17,6 +20,7 @@ public class WristSubsystem extends SubsystemBase {
   org.team4639.lib.io.sensor.lasercan.LaserCanIO.LaserCanIOInputs laserCanIOInputs;
   WristIO WristIO;
   LaserCanIO LaserCanIO;
+  private Debouncer wristStoppedDebouncer = new Debouncer(0.5, DebounceType.kRising);
 
   public WristSubsystem(WristIO WristIO, LaserCanIO laserCanIO) {
     wristIOInputs = new WristIO.WristIOInputs();
@@ -73,5 +77,10 @@ public class WristSubsystem extends SubsystemBase {
     return RobotBase.isSimulation()
         ? SmartDashboard.getBoolean("ALGAE", false)
         : wristIOInputs.motorCurrent.in(Amps) > WristConstants.ALGAE_CURRENT.in(Amps);
+  }
+
+  public boolean isWristStopped() {
+    return wristStoppedDebouncer.calculate(
+        MathUtil.isNear(0, wristIOInputs.motorVelocity.in(RotationsPerSecond), 0.3));
   }
 }
