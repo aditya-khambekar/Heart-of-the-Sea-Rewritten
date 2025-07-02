@@ -13,7 +13,6 @@ import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.BooleanSupplier;
 import org.team4639.lib.util.RotationUtil;
 import org.team4639.robot.robot.Subsystems;
@@ -22,13 +21,14 @@ import org.team4639.robot.subsystems.superstructure.SuperstructureState;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
 import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
 
-public class SuperstructureCommand extends Command {
+public class SuperstructureCommand extends SuperstructureCommandBase {
   private SuperstructureState setpoint;
   private SuperstructureCommandState state;
   private BooleanSupplier endCondition;
   private Dimensionless holdPosition;
   private MutTime timeOfExecutingAction;
   private Time executingActionTimeout = Seconds.of(Double.POSITIVE_INFINITY);
+  private String name;
   private boolean flash;
 
   /**
@@ -39,7 +39,8 @@ public class SuperstructureCommand extends Command {
    *     can always return false for a command that doesn't end by itself. This is checked only once
    *     the command has reached the EXECUTING_ACTION state.
    */
-  public SuperstructureCommand(SuperstructureState setpoint, BooleanSupplier endCondition) {
+  public SuperstructureCommand(
+      SuperstructureState setpoint, BooleanSupplier endCondition, String name) {
     addRequirements(
         Subsystems.elevator, Subsystems.wrist, Subsystems.roller, Subsystems.superstructure);
     this.setpoint = setpoint;
@@ -47,10 +48,12 @@ public class SuperstructureCommand extends Command {
     this.endCondition = endCondition;
     holdPosition = Value.zero();
     timeOfExecutingAction = Seconds.mutable(0);
+    this.name = name;
+    setName(name);
   }
 
-  public SuperstructureCommand(SuperstructureState setpoint) {
-    this(setpoint, () -> false);
+  public SuperstructureCommand(SuperstructureState setpoint, String name) {
+    this(setpoint, () -> false, name);
   }
 
   @Override
@@ -62,7 +65,7 @@ public class SuperstructureCommand extends Command {
 
   @Override
   public void execute() {
-    SmartDashboard.putString("Superstructure State", state.toString());
+    super.execute();
     SmartDashboard.putBoolean("Elevator At Setpoint", elevatorAtSetpoint());
     SmartDashboard.putNumber(
         "Command Elevator Setpoint",
@@ -138,6 +141,7 @@ public class SuperstructureCommand extends Command {
         ;
         Subsystems.roller.setVelocity(setpoint.wheelSpeed());
       }
+      default -> throw new IllegalArgumentException("Unexpected state: " + state);
     }
   }
 
@@ -175,5 +179,15 @@ public class SuperstructureCommand extends Command {
   public SuperstructureCommand withExecutionTimeout(Time time) {
     this.executingActionTimeout = time;
     return this;
+  }
+
+  @Override
+  public SuperstructureCommandState getState() {
+    return state;
+  }
+
+  @Override
+  public String getName() {
+    return name;
   }
 }

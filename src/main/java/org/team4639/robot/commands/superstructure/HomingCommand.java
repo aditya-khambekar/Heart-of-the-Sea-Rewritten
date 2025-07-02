@@ -6,10 +6,9 @@ import static edu.wpi.first.units.Units.Value;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj2.command.Command;
 import org.team4639.robot.robot.Subsystems;
 
-public class HomingCommand extends Command {
+public class HomingCommand extends SuperstructureCommandBase {
   private Debouncer stoppedDebouncer = new Debouncer(0.1, Debouncer.DebounceType.kRising);
 
   public HomingCommand() {
@@ -19,6 +18,7 @@ public class HomingCommand extends Command {
 
   @Override
   public void execute() {
+    super.execute();
     Subsystems.elevator.elevatorDown();
   }
 
@@ -33,5 +33,15 @@ public class HomingCommand extends Command {
   @Override
   public void end(boolean interrupted) {
     Subsystems.elevator.zero();
+  }
+
+  @Override
+  public SuperstructureCommandState getState() {
+    return SuperstructureCommandState.HOMING;
+  }
+
+  @Override
+  public String getName() {
+    return "HOMING";
   }
 }

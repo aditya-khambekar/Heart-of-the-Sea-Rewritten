@@ -5,12 +5,11 @@ import static edu.wpi.first.units.Units.Value;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.MutDimensionless;
-import edu.wpi.first.wpilibj2.command.Command;
 import org.team4639.robot.constants.Controls;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 
-public class MicroAdjustmentCommand extends Command {
+public class MicroAdjustmentCommand extends SuperstructureCommandBase {
   private MutDimensionless elevatorSetpoint;
   private Rotation2d wristSetpoint;
 
@@ -28,6 +27,7 @@ public class MicroAdjustmentCommand extends Command {
   }
 
   public void execute() {
+    super.execute();
     if (Controls.elevatorUp.getAsBoolean()) elevatorSetpoint.mut_plus(Value.of(0.001));
     else if (Controls.elevatorDown.getAsBoolean()) elevatorSetpoint.mut_minus(Value.of(0.001));
 
@@ -41,5 +41,15 @@ public class MicroAdjustmentCommand extends Command {
 
     // UNTUNED
     if (Controls.outtake.getAsBoolean()) Subsystems.roller.setVelocity(RotationsPerSecond.of(15));
+  }
+
+  @Override
+  public SuperstructureCommandState getState() {
+    return SuperstructureCommandState.MICROADJUSTMENTS;
+  }
+
+  @Override
+  public String getName() {
+    return "MICROADJUSTMENTS";
   }
 }
