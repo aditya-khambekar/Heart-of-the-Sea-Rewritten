@@ -68,6 +68,11 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
     SmartDashboard.putBoolean("Elevator At Setpoint", elevatorAtSetpoint());
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
+
+    if ((!MathUtil.isNear(0, Subsystems.elevator.getPercentage().in(Value), 0.03)
+        && Subsystems.elevator.isElevatorPhysicallyStopped())) {
+      setState(SuperstructureCommandState.STOPPED);
+    }
     switch (state) {
       case TO_SAFE_ANGLE -> {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
@@ -131,6 +136,11 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
         ;
         Subsystems.roller.setVelocity(setpoint.wheelSpeed());
+      }
+      case STOPPED -> {
+        Subsystems.wrist.setWristDutyCycle(Value.zero());
+        Subsystems.elevator.elevatorStop();
+        Subsystems.roller.setDutyCycle(Value.zero());
       }
       default -> throw new IllegalArgumentException("Unexpected state: " + state);
     }

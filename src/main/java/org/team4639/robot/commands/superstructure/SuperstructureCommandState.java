@@ -7,5 +7,6 @@ public enum SuperstructureCommandState {
   EXECUTING_ACTION,
   DONE,
   HOMING,
-  MICROADJUSTMENTS;
+  MICROADJUSTMENTS,
+  STOPPED;
 }

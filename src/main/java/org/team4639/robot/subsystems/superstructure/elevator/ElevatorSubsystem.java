@@ -2,18 +2,23 @@ package org.team4639.robot.subsystems.superstructure.elevator;
 
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
+import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIO;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private ElevatorIO io;
   private ElevatorIO.ElevatorIOInputs elevatorIOInputs;
+  private Debouncer stoppedDebouncer = new Debouncer(0.5, Debouncer.DebounceType.kRising);
 
   public ElevatorSubsystem(ElevatorIO io) {
     this.io = io;
@@ -64,5 +69,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public AngularVelocity getMotorSpeed() {
     return elevatorIOInputs.leftMotorSpeed;
+  }
+
+  public boolean isElevatorPhysicallyStopped() {
+    return stoppedDebouncer.calculate(
+        MathUtil.isNear(0, Subsystems.elevator.getMotorSpeed().in(RotationsPerSecond), 0.1));
   }
 }
