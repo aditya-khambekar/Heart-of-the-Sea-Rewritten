@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 public class StateFactory {
   public static State instantState(InstantCommand command, Supplier<State> nextState) {
-    return new State("INSTANT").deadlineFor(command, nextState);
+    return new State("INSTANT").withDeadline(command, nextState);
   }
 
   public static State none() {

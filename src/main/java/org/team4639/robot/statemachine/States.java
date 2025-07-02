@@ -129,7 +129,7 @@ public class States {
 
     CORAL_SCORE_ALIGN_LEFT =
         new State("CORAL_SCORE_ALIGN_LEFT")
-            .deadlineFor(
+            .withDeadline(
                 Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)),
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
@@ -155,7 +155,7 @@ public class States {
 
     CORAL_SCORE_ALIGN_RIGHT =
         new State("CORAL_SCORE_ALIGN_RIGHT")
-            .deadlineFor(
+            .withDeadline(
                 Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)),
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
@@ -181,7 +181,7 @@ public class States {
 
     ALIGN_ALGAE =
         new State("ALIGN_ALGAE")
-            .deadlineFor(
+            .withDeadline(
                 Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)),
                 () -> ALGAE_INTAKE)
             .whileTrue(SuperstructureCommands.ALGAE_INTAKE)
@@ -190,7 +190,7 @@ public class States {
 
     ALGAE_INTAKE =
         new State("ALGAE_INTAKE")
-            .deadlineFor(AutoCommands.algaeIntakeSequence(), () -> ALGAE_STOW)
+            .withDeadline(AutoCommands.algaeIntakeSequence(), () -> ALGAE_STOW)
             .onEmergency(() -> IDLE)
             .onAccelerationLimit(() -> IDLE);
 
@@ -262,7 +262,7 @@ public class States {
 
     HOMING =
         new State("HOMING")
-            .deadlineFor(SuperstructureCommands.HOMING, () -> IDLE)
+            .withDeadline(SuperstructureCommands.HOMING, () -> IDLE)
             .onEmergency(() -> IDLE);
 
     REJECT_CORAL =
@@ -284,7 +284,7 @@ public class States {
   public static State pathFindToReef(FieldConstants.TargetPositions reef) {
     var pose = reef.getPose();
     return new State("PATHFIND_TO_REEF")
-        .deadlineFor(DriveCommands.pathFindToReef(Subsystems.drive, pose), () -> CHOOSE_CORAL_LEVEL)
+        .withDeadline(DriveCommands.pathFindToReef(Subsystems.drive, pose), () -> CHOOSE_CORAL_LEVEL)
         .whileTrue(
             SuperstructureCommands.ELEVATOR_READY,
             Subsystems.dashboardOutputs.displayUpcomingReefLevel())
@@ -294,7 +294,7 @@ public class States {
 
   public static State pathFindToHPLeft() {
     return new State("PATHFIND_TO_HP_LEFT")
-        .deadlineFor(
+        .withDeadline(
             DriveCommands.pathFindToHP(
                 Subsystems.drive, FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose()),
             () -> HP_LEFT)
@@ -304,7 +304,7 @@ public class States {
 
   public static State pathFindToHPRight() {
     return new State("PATHFIND_TO_HP_RIGHT")
-        .deadlineFor(
+        .withDeadline(
             DriveCommands.pathFindToHP(
                 Subsystems.drive, FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose()),
             () -> HP_RIGHT)
@@ -314,7 +314,7 @@ public class States {
 
   public static State pathFindToReefAlgae(FieldConstants.TargetPositions reefCenter) {
     return new State("PATHFIND_TO_REEF_CENTER")
-        .deadlineFor(
+        .withDeadline(
             DriveCommands.pathFindToReefCenter(Subsystems.drive, reefCenter.getPose()),
             () -> ALGAE_INTAKE)
         .whileTrue(SuperstructureCommands.algaeIntake(reefCenter.getPose()))
