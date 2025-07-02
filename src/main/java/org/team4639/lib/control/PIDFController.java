@@ -2,6 +2,8 @@ package org.team4639.lib.control;
 
 import edu.wpi.first.hal.util.BoundaryException;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -10,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
  * <p>Does all computation synchronously (i.e. the calculate() function must be called by the user
  * from their own thread)
  */
-public class PIDFController {
+public class PIDFController implements Sendable {
   private double m_P; // factor for "proportional" control
   private double m_I; // factor for "integral" control
   private double m_D; // factor for "derivative" control
@@ -309,5 +311,30 @@ public class PIDFController {
 
   public String getType() {
     return "PIDController";
+  }
+
+  public void setP(double p) {
+    m_P = p;
+  }
+
+  public void setI(double i) {
+    m_I = i;
+  }
+
+  public void setD(double d) {
+    m_D = d;
+  }
+
+  public void setF(double f) {
+    m_F = f;
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("PIDF Controller");
+    builder.addDoubleProperty("kP", this::getP, this::setP);
+    builder.addDoubleProperty("kI", this::getI, this::setI);
+    builder.addDoubleProperty("kD", this::getD, this::setD);
+    builder.addDoubleProperty("kF", this::getF, this::setF);
   }
 }

@@ -38,7 +38,7 @@ public class WristIOSim extends WristIO {
     feedforward = new ArmFeedforward(0, 0, 0.5);
 
     wristPIDController =
-        new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(60, 20));
+        new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(60, 120));
 
     wristPIDController.reset(
         WristConstants.RotationToPosition.convert(Rotation2d.fromRadians(pivotSim.getAngleRads()))

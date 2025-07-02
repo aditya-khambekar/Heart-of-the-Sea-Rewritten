@@ -53,21 +53,25 @@ public class AutoCommands {
   }
 
   public static Command intakeLeft() {
-    return (DriveCommands.coralStationAlignLeft(Subsystems.drive)
-            .deadlineFor(SuperstructureCommands.hpLower()))
-        .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.hpLower()))
+    return Commands.parallel(
+            SuperstructureCommands.hpLower(),
+            DriveCommands.coralStationAlignLeft(Subsystems.drive)
+                .andThen(DriveCommands.stopWithX()))
         .until(Subsystems.wrist::hasCoral);
   }
 
   public static Command intakeRight() {
-    return (DriveCommands.coralStationAlignRight(Subsystems.drive)
-            .deadlineFor(SuperstructureCommands.hpLower()))
-        .andThen(DriveCommands.stopWithX().alongWith(SuperstructureCommands.hpLower()))
+    return Commands.parallel(
+            SuperstructureCommands.hpLower(),
+            DriveCommands.coralStationAlignRight(Subsystems.drive)
+                .andThen(DriveCommands.stopWithX()))
         .until(Subsystems.wrist::hasCoral);
   }
 
   public static Command elevatorReady() {
-    return new SuperstructureCommand(SuperstructureSetpoints.AUTO_ELEVATOR_L4_READY).flashOnDone();
+    return new SuperstructureCommand(
+            SuperstructureSetpoints.AUTO_ELEVATOR_L4_READY, "AUTO_ELEVATOR_L4_READY")
+        .flashOnDone();
   }
 
   private static Map<Boolean, Command> pathingSuperstructureCommandMap() {

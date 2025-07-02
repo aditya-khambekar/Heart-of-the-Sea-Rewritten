@@ -11,6 +11,8 @@ import java.util.Optional;
 public abstract class RollerIO {
   public static class RollerIOInputs implements Sendable {
     public MutAngularVelocity motorVelocity = RadiansPerSecond.mutable(0);
+    public MutAngle motorPosition = Rotations.mutable(0);
+    public MutVoltage voltage = Volts.mutable(0);
     public MutTemperature motorTemperature = Celsius.mutable(0);
     public MutCurrent motorCurrent = Amps.mutable(0);
 
@@ -22,6 +24,23 @@ public abstract class RollerIO {
               Optional.ofNullable((AngularVelocity) motorVelocity)
                   .orElse(RadiansPerSecond.zero())
                   .in(RadiansPerSecond),
+          null);
+
+      builder.addDoubleProperty(
+          "Motor Position Rotations",
+          () -> Optional.ofNullable((Angle) motorPosition).orElse(Rotations.zero()).in(Rotations),
+          null);
+
+      builder.addDoubleProperty(
+          "Motor Velocity RPS",
+          () ->
+              Optional.ofNullable((AngularVelocity) motorVelocity)
+                  .orElse(RotationsPerSecond.zero())
+                  .in(RotationsPerSecond),
+          null);
+      builder.addDoubleProperty(
+          "Motor Volts",
+          () -> Optional.ofNullable((Voltage) voltage).orElse(Volts.zero()).in(Volts),
           null);
       builder.addDoubleProperty(
           "Motor Celsius",
@@ -42,4 +61,6 @@ public abstract class RollerIO {
   public abstract void setDutyCycleOutput(Dimensionless percent);
 
   public abstract void setVelocity(AngularVelocity velocity);
+
+  public abstract void setInputVoltage(Voltage voltage);
 }

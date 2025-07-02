@@ -28,7 +28,7 @@ public class ElevatorIOTalonFXSim extends ElevatorIO {
   MotorIOTalonFX.ControlRequestGetter requestGetter;
 
   public ElevatorIOTalonFXSim(int leftMotorID, int rightMotorID) {
-    elevatorPID = new ProfiledPIDController(2, 0, 0, new TrapezoidProfile.Constraints(70, 200));
+    elevatorPID = new ProfiledPIDController(2, 0, 0, new TrapezoidProfile.Constraints(100, 300));
     elevatorFeedforward = new ElevatorFeedforward(0, 0.63195475, 0.085, 0.0);
     elevatorSim =
         new ElevatorSim(

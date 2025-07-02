@@ -487,9 +487,9 @@ public class DriveCommands {
   public static Command PIDtoReefWithVelocityReset(
       Drive drive, Pose2d startingPose, Pose2d destinationPose) {
     ProfiledPIDController pidX =
-        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 5));
     ProfiledPIDController pidY =
-        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 3));
+        new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 5));
     PIDController headingController = new PIDController(16, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
