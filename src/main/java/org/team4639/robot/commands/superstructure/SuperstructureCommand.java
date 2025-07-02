@@ -1,7 +1,6 @@
 package org.team4639.robot.commands.superstructure;
 
 import static edu.wpi.first.units.Units.Percent;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Value;
@@ -67,14 +66,6 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   public void execute() {
     super.execute();
     SmartDashboard.putBoolean("Elevator At Setpoint", elevatorAtSetpoint());
-    SmartDashboard.putNumber(
-        "Command Elevator Setpoint",
-        ElevatorConstants.rotationsToPercentage
-            .convertBackwards(setpoint.elevatorProportion())
-            .in(Rotations));
-    SmartDashboard.putNumber(
-        "Hold Rotations",
-        ElevatorConstants.rotationsToPercentage.convertBackwards(holdPosition).in(Rotations));
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
     switch (state) {

@@ -4,15 +4,11 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Value;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.List;
-import java.util.Map;
 import org.team4639.robot.commands.superstructure.SuperstructureCommand;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
@@ -52,49 +48,10 @@ public class AutoCommands {
                 .deadlineFor(Subsystems.drive.defer(DriveCommands::stopWithX)));
   }
 
-  public static Command intakeLeft() {
-    return Commands.parallel(
-            SuperstructureCommands.hpLower(),
-            DriveCommands.coralStationAlignLeft(Subsystems.drive)
-                .andThen(DriveCommands.stopWithX()))
-        .until(Subsystems.wrist::hasCoral);
-  }
-
-  public static Command intakeRight() {
-    return Commands.parallel(
-            SuperstructureCommands.hpLower(),
-            DriveCommands.coralStationAlignRight(Subsystems.drive)
-                .andThen(DriveCommands.stopWithX()))
-        .until(Subsystems.wrist::hasCoral);
-  }
-
   public static Command elevatorReady() {
     return new SuperstructureCommand(
             SuperstructureSetpoints.AUTO_ELEVATOR_L4_READY, "AUTO_ELEVATOR_L4_READY")
         .flashOnDone();
-  }
-
-  private static Map<Boolean, Command> pathingSuperstructureCommandMap() {
-    return Map.ofEntries(
-        Map.entry(true, SuperstructureCommands.elevatorReady()),
-        Map.entry(false, SuperstructureCommands.hpLower()));
-  }
-
-  private static Map<Boolean, Command> pathingSuperstructureCommandMapAlgae() {
-    return Map.ofEntries(
-        Map.entry(true, SuperstructureCommands.algaeStow()),
-        Map.entry(false, SuperstructureCommands.elevatorReady()));
-  }
-
-  public static Command path(PathPlannerPath path) {
-    return AutoBuilder.followPath(path)
-        .deadlineFor(
-            Commands.select(pathingSuperstructureCommandMap(), Subsystems.wrist::hasCoral));
-  }
-
-  public static Command pathForAlgae(PathPlannerPath path, boolean hasAlgae) {
-    return AutoBuilder.followPath(path)
-        .deadlineFor(Commands.select(pathingSuperstructureCommandMapAlgae(), () -> hasAlgae));
   }
 
   /**

@@ -673,8 +673,4 @@ public class DriveCommands {
   public static Command stop() {
     return Subsystems.drive.run(() -> Subsystems.drive.stop()).withName("STOP_WITH_X");
   }
-
-  public static Command forwardsMovementRobotRelative() {
-    return Subsystems.drive.run(() -> Subsystems.drive.runVelocity(new ChassisSpeeds(2, 0, 0)));
-  }
 }

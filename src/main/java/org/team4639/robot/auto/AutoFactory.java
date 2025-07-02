@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.json.simple.parser.ParseException;
 import org.team4639.robot.commands.AutoCommands;
+import org.team4639.robot.commands.DriveCommands;
+import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
 
 public class AutoFactory {
 
-  public enum Locations {
+  public static enum Location {
     RS,
     LS,
     MS,
@@ -40,160 +42,136 @@ public class AutoFactory {
     ALGSC3;
   }
 
-  public static Command compileAuto(Locations... locations) {
+  public static enum PathType {
+    OUT_CORAL,
+    OUT_ALGAE,
+    IN_CORAL,
+    IN_ALGAE
+  }
+
+  public static PathType getPathType(Location endingLocation) {
+    return switch (endingLocation) {
+      case A, B, C, D, E, F, G, H, I, J, K, L -> PathType.OUT_CORAL;
+      case ALGSC1, ALGSC2, ALGSC3 -> PathType.OUT_ALGAE;
+      case RHP, LHP -> PathType.IN_CORAL;
+      case ALGH, ALIJ -> PathType.IN_ALGAE;
+      default -> throw new IllegalArgumentException("Unexpected value: " + endingLocation);
+    };
+  }
+
+  public static Command compileAuto(Location... locations) {
     List<Command> commands = new ArrayList<>();
-    List<PathPlannerPath> paths = new ArrayList<>();
     for (int i = 0; i < locations.length - 1; i++) {
-      try {
-        var path = PathPlannerPath.fromChoreoTrajectory(locations[i] + "-" + locations[i + 1]);
-        paths.add(path);
-        if (i == 0)
-          commands.add(
-              Commands.runOnce(
-                  () ->
-                      Subsystems.drive.setPose(
-                          path.getStartingHolonomicPose().orElse(new Pose2d()))));
-        commands.add(AutoCommands.path(path));
-        commands.add(
-            switch (locations[i + 1]) {
-              case RHP -> AutoCommands.intakeRight();
-              case LHP -> AutoCommands.intakeLeft();
-              case A -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_A.getPose());
-              case B -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_B.getPose());
-              case C -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_C.getPose());
-              case D -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_D.getPose());
-              case E -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_E.getPose());
-              case F -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_F.getPose());
-              case G -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_G.getPose());
-              case H -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_H.getPose());
-              case I -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_I.getPose());
-              case J -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_J.getPose());
-              case K -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_K.getPose());
-              case L -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_L.getPose());
-              case ALGH -> Commands.none();
-              case ALIJ -> Commands.none();
-              case ALGSC1 -> Commands.none();
-              case ALGSC2 -> Commands.none();
-              case ALGSC3 -> Commands.none();
-              case RS, LS, MS -> throw new IllegalArgumentException("what the fuck");
-            });
-      } catch (IOException | ParseException e) {
-        System.err.println(locations[i] + "-" + locations[i + 1]);
-        throw new RuntimeException(e);
-      }
+      commands.add(getSegmentCommand(locations[i], locations[i + 1], i == 0));
     }
     return Commands.sequence(commands.toArray(new Command[0]));
   }
 
-  public static Command compileAlgaeAuto(Locations... locations) {
-    List<Command> commands = new ArrayList<>();
-    List<PathPlannerPath> paths = new ArrayList<>();
-    for (int i = 0; i < locations.length - 1; i++) {
-      try {
-        var path = PathPlannerPath.fromChoreoTrajectory(locations[i] + "-" + locations[i + 1]);
-        paths.add(path);
-        if (i == 0) {
-          commands.add(
-              Commands.runOnce(
-                  () ->
-                      Subsystems.drive.setPose(
-                          path.getStartingHolonomicPose().orElse(new Pose2d()))));
-          commands.add(AutoCommands.path(path));
-        } else {
-          commands.add(
-              AutoCommands.pathForAlgae(
-                  path,
-                  switch (locations[i + 1]) {
-                    case ALGSC1, ALGSC2, ALGSC3 -> true;
-                    default -> false;
-                  }));
-        }
-        commands.add(
-            switch (locations[i + 1]) {
-              case RHP -> AutoCommands.intakeRight();
-              case LHP -> AutoCommands.intakeLeft();
-              case A -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_A.getPose());
-              case B -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_B.getPose());
-              case C -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_C.getPose());
-              case D -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_D.getPose());
-              case E -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_E.getPose());
-              case F -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_F.getPose());
-              case G -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_G.getPose());
-              case H -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_H.getPose());
-              case I -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_I.getPose());
-              case J -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_J.getPose());
-              case K -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_K.getPose());
-              case L -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_L.getPose());
-              case ALGH -> AutoCommands.algaeIntakeSequence();
-              case ALIJ -> AutoCommands.algaeIntakeSequence();
-              case ALGSC1 -> AutoCommands.scoreBarge(
-                  FieldConstants.TargetPositions.BARGE_FARCAGE.getPose());
-              case ALGSC2 -> AutoCommands.scoreBarge(
-                  FieldConstants.TargetPositions.BARGE_MIDDLECAGE.getPose());
-              case ALGSC3 -> AutoCommands.scoreBarge(
-                  FieldConstants.TargetPositions.BARGE_CLOSECAGE.getPose());
-              case RS, LS, MS -> throw new IllegalArgumentException("what the fuck");
-            });
-      } catch (IOException | ParseException e) {
-        System.err.println(locations[i] + "-" + locations[i + 1]);
-        throw new RuntimeException(e);
-      }
+  public static Command getSegmentCommand(
+      Location starting, Location ending, boolean isFirstCommand) {
+    try {
+      var path = PathPlannerPath.fromChoreoTrajectory(starting + "-" + ending);
+      var pathCommand = AutoBuilder.followPath(path);
+
+      pathCommand =
+          isFirstCommand
+              ? Commands.runOnce(
+                      () ->
+                          Subsystems.drive.setPose(
+                              path.getStartingHolonomicPose().orElse(new Pose2d())))
+                  .andThen(pathCommand)
+              : pathCommand;
+
+      return switch (getPathType(ending)) {
+        case IN_CORAL -> (pathCommand
+                .andThen(
+                    switch (ending) {
+                      case LHP -> DriveCommands.coralStationAlignLeft(Subsystems.drive);
+                      case RHP -> DriveCommands.coralStationAlignRight(Subsystems.drive);
+                      default -> throw new IllegalArgumentException("what the fuck");
+                    })
+                .andThen(DriveCommands.stopWithX().withTimeout(0.5)))
+            .deadlineFor(SuperstructureCommands.hp());
+        case OUT_CORAL -> (pathCommand.deadlineFor(SuperstructureCommands.elevatorReady()))
+            .andThen(
+                switch (ending) {
+                  case A -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_A.getPose());
+                  case B -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_B.getPose());
+                  case C -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_C.getPose());
+                  case D -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_D.getPose());
+                  case E -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_E.getPose());
+                  case F -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_F.getPose());
+                  case G -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_G.getPose());
+                  case H -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_H.getPose());
+                  case I -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_I.getPose());
+                  case J -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_J.getPose());
+                  case K -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_K.getPose());
+                  case L -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_L.getPose());
+                  default -> throw new IllegalArgumentException("what the fuck");
+                });
+        case IN_ALGAE -> (pathCommand.deadlineFor(SuperstructureCommands.elevatorReady()))
+            .andThen(AutoCommands.algaeIntakeSequence());
+        case OUT_ALGAE -> (pathCommand.deadlineFor(SuperstructureCommands.algaeStow()))
+            .andThen(
+                switch (ending) {
+                  case ALGSC1 -> AutoCommands.scoreBarge(
+                      FieldConstants.TargetPositions.BARGE_FARCAGE.getPose());
+                  case ALGSC2 -> AutoCommands.scoreBarge(
+                      FieldConstants.TargetPositions.BARGE_MIDDLECAGE.getPose());
+                  case ALGSC3 -> AutoCommands.scoreBarge(
+                      FieldConstants.TargetPositions.BARGE_CLOSECAGE.getPose());
+                  default -> throw new IllegalArgumentException("what the fuck");
+                });
+      };
+    } catch (Exception e) {
+      e.printStackTrace();
+      return Commands.none();
     }
-    return Commands.sequence(commands.toArray(new Command[0]));
   }
 
   public static Command RS_F_E_D_C() {
     return compileAuto(
-        Locations.RS,
-        Locations.F,
-        Locations.RHP,
-        Locations.E,
-        Locations.RHP,
-        Locations.D,
-        Locations.RHP,
-        Locations.C);
+        Location.RS,
+        Location.F,
+        Location.RHP,
+        Location.E,
+        Location.RHP,
+        Location.D,
+        Location.RHP,
+        Location.C);
   }
 
   public static Command RS_F_E_D() {
-    return compileAuto(
-        Locations.RS, Locations.F, Locations.RHP, Locations.E, Locations.RHP, Locations.D);
+    return compileAuto(Location.RS, Location.F, Location.RHP, Location.E, Location.RHP, Location.D);
   }
 
   public static Command RS_E_D_C() {
-    return compileAuto(
-        Locations.RS, Locations.E, Locations.RHP, Locations.D, Locations.RHP, Locations.C);
+    return compileAuto(Location.RS, Location.E, Location.RHP, Location.D, Location.RHP, Location.C);
   }
 
   public static Command LS_I_J_K_L() {
     return compileAuto(
-        Locations.LS,
-        Locations.I,
-        Locations.LHP,
-        Locations.J,
-        Locations.LHP,
-        Locations.K,
-        Locations.LHP,
-        Locations.L);
+        Location.LS,
+        Location.I,
+        Location.LHP,
+        Location.J,
+        Location.LHP,
+        Location.K,
+        Location.LHP,
+        Location.L);
   }
 
   public static Command LS_I_J_K() {
-    return compileAuto(
-        Locations.LS, Locations.I, Locations.LHP, Locations.J, Locations.LHP, Locations.K);
+    return compileAuto(Location.LS, Location.I, Location.LHP, Location.J, Location.LHP, Location.K);
   }
 
   public static Command LS_J_K_L() {
-    return compileAuto(
-        Locations.LS, Locations.J, Locations.LHP, Locations.K, Locations.LHP, Locations.L);
+    return compileAuto(Location.LS, Location.J, Location.LHP, Location.K, Location.LHP, Location.L);
   }
 
   public static Command MS_G_ALGH_ALGSC1_ALIJ_ALGSC2() {
-    return compileAlgaeAuto(
-        Locations.MS,
-        Locations.G,
-        Locations.ALGH,
-        Locations.ALGSC1,
-        Locations.ALIJ,
-        Locations.ALGSC2);
+    return compileAuto(
+        Location.MS, Location.G, Location.ALGH, Location.ALGSC1, Location.ALIJ, Location.ALGSC2);
   }
 
   public static Command TEST_1MTR() {
