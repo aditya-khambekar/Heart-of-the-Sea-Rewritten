@@ -2,6 +2,7 @@ package org.team4639.robot.statemachine;
 
 import static edu.wpi.first.units.Units.Seconds;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team4639.lib.statebased.State;
 import org.team4639.robot.commands.AutoCommands;
 import org.team4639.robot.commands.DriveCommands;
@@ -284,7 +285,8 @@ public class States {
   public static State pathFindToReef(FieldConstants.TargetPositions reef) {
     var pose = reef.getPose();
     return new State("PATHFIND_TO_REEF")
-        .withDeadline(DriveCommands.pathFindToReef(Subsystems.drive, pose), () -> CHOOSE_CORAL_LEVEL)
+        .withDeadline(
+            DriveCommands.pathFindToReef(Subsystems.drive, pose), () -> CHOOSE_CORAL_LEVEL)
         .whileTrue(
             SuperstructureCommands.ELEVATOR_READY,
             Subsystems.dashboardOutputs.displayUpcomingReefLevel())
@@ -322,6 +324,12 @@ public class States {
   }
 
   public static State determineState() {
-    return Subsystems.wrist.hasCoral() ? CORAL_STOW : IDLE;
+    return switch (SmartDashboard.getString("Superstructure State", "")) {
+      case "IDLE" -> IDLE;
+      case "HP" -> HP_NODIR;
+      case "HP_LOWER" -> INTAKE_LOWER;
+      case "L4" -> L4_CORAL_SCORE;
+      default -> Subsystems.wrist.hasCoral() ? CORAL_STOW : IDLE;
+    };
   }
 }
