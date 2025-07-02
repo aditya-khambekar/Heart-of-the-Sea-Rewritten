@@ -1,8 +1,14 @@
 package org.team4639.robot.commands.pathfinding;
 
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.FileVersionException;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,6 +27,27 @@ public class TeleopPathGenerator {
     var starting = ReefPathLocations.getClosest(startingPose);
     var ending = ReefPathLocations.getClosest(endingPose);
 
+    if (starting == ending || starting.leftReef.get() == ending || starting.rightReef.get() == ending){
+        return (Subsystems.drive
+        .defer(
+            () ->
+                AutoBuilder.pathfindToPose(
+                    endingPose,
+                    new PathConstraints(
+                        MetersPerSecond.of(3),
+                        MetersPerSecondPerSecond.of(6),
+                        RotationsPerSecond.of(2),
+                        RotationsPerSecondPerSecond.of(4),
+                        Volts.of(12),
+                        true),
+                    MetersPerSecond.of(1)))
+        .until(() -> PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters) < 1.5)
+        .andThen(
+            Subsystems.drive.defer(
+                () -> DriveCommands.PIDtoReefWithVelocityReset(Subsystems.drive, Subsystems.drive.getPose(), endingPose))))
+    .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(endingPose));
+    }
+
     var alignDistanceMeters =
         PoseUtil.getDistance(ending.getPoseOfStartPath(), endingPose).in(Meters) * 1.5;
 
@@ -33,12 +60,32 @@ public class TeleopPathGenerator {
             Subsystems.drive.defer(
                 () ->
                     DriveCommands.PIDtoReefWithVelocityReset(
-                        Subsystems.drive, Subsystems.drive.getPose(), endingPose)));
+                        Subsystems.drive, Subsystems.drive.getPose(), endingPose))).beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(endingPose));
   }
 
   public static Command pathfindTo(Pose2d startingPose, Pose2d endingPose) {
     var starting = ReefPathLocations.getClosest(startingPose);
     var ending = ReefPathLocations.getClosest(endingPose);
+
+    if (starting == ending || starting.leftReef.get() == ending || starting.rightReef.get() == ending){
+        return (Subsystems.drive
+        .defer(
+            () ->
+                AutoBuilder.pathfindToPose(
+                    endingPose,
+                    new PathConstraints(
+                        MetersPerSecond.of(3),
+                        MetersPerSecondPerSecond.of(6),
+                        RotationsPerSecond.of(2),
+                        RotationsPerSecondPerSecond.of(4),
+                        Volts.of(12),
+                        true),
+                    MetersPerSecond.of(1)))
+        .until(() -> PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters) < 1.5)
+        .andThen(
+            Subsystems.drive.defer(
+                () -> DriveCommands.PIDtowithVelocityReset(Subsystems.drive, Subsystems.drive.getPose(), endingPose))));
+    }
 
     var alignDistanceMeters =
         PoseUtil.getDistance(ending.getPoseOfStartPath(), endingPose).in(Meters) * 1.5;

@@ -607,65 +607,15 @@ public class DriveCommands {
   }
 
   public static Command pathFindToReef(Drive drive, Pose2d pose) {
-    /*return (drive
-        .defer(
-            () ->
-                AutoBuilder.pathfindToPose(
-                    pose,
-                    new PathConstraints(
-                        MetersPerSecond.of(3),
-                        MetersPerSecondPerSecond.of(6),
-                        RotationsPerSecond.of(2),
-                        RotationsPerSecondPerSecond.of(4),
-                        Volts.of(12),
-                        true),
-                    MetersPerSecond.of(1)))
-        .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
-        .andThen(
-            Subsystems.drive.defer(
-                () -> PIDtoReefWithVelocityReset(drive, drive.getPose(), pose))))
-    .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(pose));*/
     return drive.defer(() -> TeleopPathGenerator.pathfindToReef(drive.getPose(), pose));
   }
 
   public static Command pathFindToHP(Drive drive, Pose2d pose) {
-    return (drive
-            .defer(
-                () ->
-                    AutoBuilder.pathfindToPose(
-                        pose,
-                        new PathConstraints(
-                            MetersPerSecond.of(3),
-                            MetersPerSecondPerSecond.of(6),
-                            RotationsPerSecond.of(2),
-                            RotationsPerSecondPerSecond.of(4),
-                            Volts.of(12),
-                            true),
-                        MetersPerSecond.of(1)))
-            .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
-            .andThen(
-                Subsystems.drive.defer(() -> PIDtowithVelocityReset(drive, drive.getPose(), pose))))
-        .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(pose));
+    return drive.defer(() -> TeleopPathGenerator.pathfindTo(drive.getPose(), pose));
   }
 
   public static Command pathFindToReefCenter(Drive drive, Pose2d pose) {
-    return (drive
-            .defer(
-                () ->
-                    AutoBuilder.pathfindToPose(
-                        pose,
-                        new PathConstraints(
-                            MetersPerSecond.of(3),
-                            MetersPerSecondPerSecond.of(6),
-                            RotationsPerSecond.of(2),
-                            RotationsPerSecondPerSecond.of(4),
-                            Volts.of(12),
-                            true),
-                        MetersPerSecond.of(1)))
-            .until(() -> PoseUtil.getDistance(drive.getPose(), pose).in(Meters) < 1.5)
-            .andThen(
-                Subsystems.drive.defer(() -> PIDtowithVelocityReset(drive, drive.getPose(), pose))))
-        .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(pose));
+    return drive.defer(() -> TeleopPathGenerator.pathfindTo(drive.getPose(), pose));
   }
 
   public static Command stopWithX() {
