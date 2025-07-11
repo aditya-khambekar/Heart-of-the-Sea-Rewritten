@@ -15,6 +15,7 @@ package org.team4639.robot.commands;
 
 import static org.team4639.robot.robot.Subsystems.drive;
 
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -36,6 +37,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.team4639.lib.control.PIDFController;
+import org.team4639.lib.control.PIDToPoseController;
+import org.team4639.lib.network.SmartDashboard2;
 import org.team4639.robot.constants.reefscape.FieldPoseUtil;
 import org.team4639.robot.constants.reefscape.FieldUtil;
 import org.team4639.robot.constants.reefscape.TargetPositions;
@@ -43,10 +48,13 @@ import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.drive.Drive;
 
 public final class DriveCommands {
-  public static final ProfiledPIDController ALIGN_PID_X =
-      new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 5));
-  public static final ProfiledPIDController ALIGN_PID_Y =
-      new ProfiledPIDController(16, 0, 0, new TrapezoidProfile.Constraints(3, 5));
+  private static final PIDToPoseController alignController = SmartDashboard2.putData("Align PID", new PIDToPoseController(
+          new PIDConstants(3, 0.1, 0),
+          new TrapezoidProfile.Constraints(3, 5),
+          new PIDConstants(8, 0, 0),
+          drive::getChassisSpeeds,
+          drive::getPose
+  ));
   private static final double DEADBAND = 0.1;
   private static final double ANGLE_KP = 24.0;
   private static final double ANGLE_KD = 0.4;
@@ -366,34 +374,19 @@ public final class DriveCommands {
           headingController.enableContinuousInput(-Math.PI, Math.PI);
           headingController.setSetpoint(destinationPose.getRotation().getRadians());
 
-          ALIGN_PID_X.reset(drive.getPose().getX(), drive.getSpeeds()[0]);
-          ALIGN_PID_X.setGoal(destinationPose.getX());
-
-          ALIGN_PID_Y.reset(drive.getPose().getY(), drive.getSpeeds()[1]);
-          ALIGN_PID_Y.setGoal(destinationPose.getY());
+          alignController.setGoal(destinationPose);
 
           drive.setpoint = destinationPose;
 
           return drive.run(
               () -> {
                 drive.runVelocity(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                        new ChassisSpeeds(
-                            ALIGN_PID_X.getSetpoint().velocity
-                                + ALIGN_PID_X.calculate(drive.getPose().getX()),
-                            ALIGN_PID_Y.getSetpoint().velocity
-                                + ALIGN_PID_Y.calculate(drive.getPose().getY()),
-                            headingController.calculate(
-                                drive.getPose().getRotation().getRadians())),
-                        drive.getPose().getRotation()));
+                    alignController.calculateOutput());
                 drive
                     .getField()
                     .getObject("PID Setpoint")
                     .setPose(
-                        new Pose2d(
-                            ALIGN_PID_X.getSetpoint().position,
-                            ALIGN_PID_Y.getSetpoint().position,
-                            Rotation2d.fromRadians(headingController.getSetpoint())));
+                        alignController.getSetpoint());
               });
         });
   }
@@ -405,11 +398,7 @@ public final class DriveCommands {
           headingController.enableContinuousInput(-Math.PI, Math.PI);
           headingController.setSetpoint(destinationPose.getRotation().getRadians());
 
-          ALIGN_PID_X.reset(drive.getPose().getX(), drive.getSpeeds()[0]);
-          ALIGN_PID_X.setGoal(destinationPose.getX());
-
-          ALIGN_PID_Y.reset(drive.getPose().getY(), drive.getSpeeds()[1]);
-          ALIGN_PID_Y.setGoal(destinationPose.getY());
+          alignController.setGoal(destinationPose);
 
           drive.setpoint = destinationPose;
 
@@ -423,23 +412,12 @@ public final class DriveCommands {
                     headingController.setSetpoint(
                         FieldUtil.getRotationToClosestBranchPosition(drive.getPose()).getRadians());
                     drive.runVelocity(
-                        ChassisSpeeds.fromFieldRelativeSpeeds(
-                            new ChassisSpeeds(
-                                ALIGN_PID_X.getSetpoint().velocity
-                                    + ALIGN_PID_X.calculate(drive.getPose().getX()),
-                                ALIGN_PID_Y.getSetpoint().velocity
-                                    + ALIGN_PID_Y.calculate(drive.getPose().getY()),
-                                headingController.calculate(
-                                    drive.getPose().getRotation().getRadians())),
-                            drive.getPose().getRotation()));
+                        alignController.calculateOutput());
                     drive
                         .getField()
                         .getObject("PID Setpoint")
                         .setPose(
-                            new Pose2d(
-                                ALIGN_PID_X.getSetpoint().position,
-                                ALIGN_PID_Y.getSetpoint().position,
-                                Rotation2d.fromRadians(headingController.getSetpoint())));
+                            alignController.getSetpoint());
                   })
               .until(drive::atSetpointTranslation);
         });
