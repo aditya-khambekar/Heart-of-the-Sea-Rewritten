@@ -42,8 +42,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #button(int, EventLoop)
    */
   @Override
-  public Trigger button(int button) {
-    return super.button(button);
+  public RSTrigger button(int button) {
+    return RSTrigger.of(super.button(button));
   }
 
   /**
@@ -54,8 +54,8 @@ public class RSXboxController extends CommandXboxController {
    * @return an event instance representing the button's digital signal attached to the given loop.
    */
   @Override
-  public Trigger button(int button, EventLoop loop) {
-    return super.button(button, loop);
+  public RSTrigger button(int button, EventLoop loop) {
+    return RSTrigger.of(super.button(button, loop));
   }
 
   /**
@@ -70,8 +70,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around this angle of a POV on the HID.
    */
   @Override
-  public Trigger pov(int angle) {
-    return super.pov(angle);
+  public RSTrigger pov(int angle) {
+    return RSTrigger.of(super.pov(angle));
   }
 
   /**
@@ -87,8 +87,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around this angle of a POV on the HID.
    */
   @Override
-  public Trigger pov(int pov, int angle, EventLoop loop) {
-    return super.pov(pov, angle, loop);
+  public RSTrigger pov(int pov, int angle, EventLoop loop) {
+    return RSTrigger.of(super.pov(pov, angle, loop));
   }
 
   /**
@@ -99,8 +99,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 0 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povUp() {
-    return super.povUp();
+  public RSTrigger povUp() {
+    return RSTrigger.of(super.povUp());
   }
 
   /**
@@ -111,8 +111,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 45 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povUpRight() {
-    return super.povUpRight();
+  public RSTrigger povUpRight() {
+    return RSTrigger.of(super.povUpRight());
   }
 
   /**
@@ -123,8 +123,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 90 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povRight() {
-    return super.povRight();
+  public RSTrigger povRight() {
+    return RSTrigger.of(super.povRight());
   }
 
   /**
@@ -135,8 +135,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 135 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povDownRight() {
-    return super.povDownRight();
+  public RSTrigger povDownRight() {
+    return RSTrigger.of(super.povDownRight());
   }
 
   /**
@@ -147,8 +147,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 180 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povDown() {
-    return super.povDown();
+  public RSTrigger povDown() {
+    return RSTrigger.of(super.povDown());
   }
 
   /**
@@ -159,8 +159,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 225 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povDownLeft() {
-    return super.povDownLeft();
+  public RSTrigger povDownLeft() {
+    return RSTrigger.of(super.povDownLeft());
   }
 
   /**
@@ -171,8 +171,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 270 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povLeft() {
-    return super.povLeft();
+  public RSTrigger povLeft() {
+    return RSTrigger.of(super.povLeft());
   }
 
   /**
@@ -183,8 +183,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the 315 degree angle of a POV on the HID.
    */
   @Override
-  public Trigger povUpLeft() {
-    return super.povUpLeft();
+  public RSTrigger povUpLeft() {
+    return RSTrigger.of(super.povUpLeft());
   }
 
   /**
@@ -195,8 +195,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance based around the center position of a POV on the HID.
    */
   @Override
-  public Trigger povCenter() {
-    return super.povCenter();
+  public RSTrigger povCenter() {
+    return RSTrigger.of(super.povCenter());
   }
 
   /**
@@ -210,8 +210,8 @@ public class RSXboxController extends CommandXboxController {
    *     threshold.
    */
   @Override
-  public Trigger axisLessThan(int axis, double threshold) {
-    return super.axisLessThan(axis, threshold);
+  public RSTrigger axisLessThan(int axis, double threshold) {
+    return RSTrigger.of(super.axisLessThan(axis, threshold));
   }
 
   /**
@@ -225,8 +225,8 @@ public class RSXboxController extends CommandXboxController {
    *     threshold.
    */
   @Override
-  public Trigger axisLessThan(int axis, double threshold, EventLoop loop) {
-    return super.axisLessThan(axis, threshold, loop);
+  public RSTrigger axisLessThan(int axis, double threshold, EventLoop loop) {
+    return RSTrigger.of(super.axisLessThan(axis, threshold, loop));
   }
 
   /**
@@ -240,8 +240,8 @@ public class RSXboxController extends CommandXboxController {
    *     threshold.
    */
   @Override
-  public Trigger axisGreaterThan(int axis, double threshold) {
-    return super.axisGreaterThan(axis, threshold);
+  public RSTrigger axisGreaterThan(int axis, double threshold) {
+    return RSTrigger.of(super.axisGreaterThan(axis, threshold));
   }
 
   /**
@@ -255,8 +255,8 @@ public class RSXboxController extends CommandXboxController {
    *     threshold.
    */
   @Override
-  public Trigger axisGreaterThan(int axis, double threshold, EventLoop loop) {
-    return super.axisGreaterThan(axis, threshold, loop);
+  public RSTrigger axisGreaterThan(int axis, double threshold, EventLoop loop) {
+    return RSTrigger.of(super.axisGreaterThan(axis, threshold, loop));
   }
 
   /**
@@ -270,8 +270,8 @@ public class RSXboxController extends CommandXboxController {
    *     provided threshold.
    */
   @Override
-  public Trigger axisMagnitudeGreaterThan(int axis, double threshold, EventLoop loop) {
-    return super.axisMagnitudeGreaterThan(axis, threshold, loop);
+  public RSTrigger axisMagnitudeGreaterThan(int axis, double threshold, EventLoop loop) {
+    return RSTrigger.of(super.axisMagnitudeGreaterThan(axis, threshold, loop));
   }
 
   /**
@@ -284,8 +284,8 @@ public class RSXboxController extends CommandXboxController {
    * @return a Trigger instance that is true when the deadbanded axis value is active (non-zero).
    */
   @Override
-  public Trigger axisMagnitudeGreaterThan(int axis, double threshold) {
-    return super.axisMagnitudeGreaterThan(axis, threshold);
+  public RSTrigger axisMagnitudeGreaterThan(int axis, double threshold) {
+    return RSTrigger.of(super.axisMagnitudeGreaterThan(axis, threshold));
   }
 
   /**
@@ -329,8 +329,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #a(EventLoop)
    */
   @Override
-  public Trigger a() {
-    return super.a();
+  public RSTrigger a() {
+    return RSTrigger.of(super.a());
   }
 
   /**
@@ -341,8 +341,8 @@ public class RSXboxController extends CommandXboxController {
    *     loop.
    */
   @Override
-  public Trigger a(EventLoop loop) {
-    return super.a(loop);
+  public RSTrigger a(EventLoop loop) {
+    return RSTrigger.of(super.a(loop));
   }
 
   /**
@@ -353,8 +353,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #b(EventLoop)
    */
   @Override
-  public Trigger b() {
-    return super.b();
+  public RSTrigger b() {
+    return RSTrigger.of(super.b());
   }
 
   /**
@@ -365,8 +365,8 @@ public class RSXboxController extends CommandXboxController {
    *     loop.
    */
   @Override
-  public Trigger b(EventLoop loop) {
-    return super.b(loop);
+  public RSTrigger b(EventLoop loop) {
+    return RSTrigger.of(super.b(loop));
   }
 
   /**
@@ -377,8 +377,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #x(EventLoop)
    */
   @Override
-  public Trigger x() {
-    return super.x();
+  public RSTrigger x() {
+    return RSTrigger.of(super.x());
   }
 
   /**
@@ -389,8 +389,8 @@ public class RSXboxController extends CommandXboxController {
    *     loop.
    */
   @Override
-  public Trigger x(EventLoop loop) {
-    return super.x(loop);
+  public RSTrigger x(EventLoop loop) {
+    return RSTrigger.of(super.x(loop));
   }
 
   /**
@@ -401,8 +401,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #y(EventLoop)
    */
   @Override
-  public Trigger y() {
-    return super.y();
+  public RSTrigger y() {
+    return RSTrigger.of(super.y());
   }
 
   /**
@@ -413,8 +413,8 @@ public class RSXboxController extends CommandXboxController {
    *     loop.
    */
   @Override
-  public Trigger y(EventLoop loop) {
-    return super.y(loop);
+  public RSTrigger y(EventLoop loop) {
+    return RSTrigger.of(super.y(loop));
   }
 
   /**
@@ -425,8 +425,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #leftBumper(EventLoop)
    */
   @Override
-  public Trigger leftBumper() {
-    return super.leftBumper();
+  public RSTrigger leftBumper() {
+    return RSTrigger.of(super.leftBumper());
   }
 
   /**
@@ -437,8 +437,8 @@ public class RSXboxController extends CommandXboxController {
    *     given loop.
    */
   @Override
-  public Trigger leftBumper(EventLoop loop) {
-    return super.leftBumper(loop);
+  public RSTrigger leftBumper(EventLoop loop) {
+    return RSTrigger.of(super.leftBumper(loop));
   }
 
   /**
@@ -449,8 +449,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #rightBumper(EventLoop)
    */
   @Override
-  public Trigger rightBumper() {
-    return super.rightBumper();
+  public RSTrigger rightBumper() {
+    return RSTrigger.of(super.rightBumper());
   }
 
   /**
@@ -461,8 +461,8 @@ public class RSXboxController extends CommandXboxController {
    *     the given loop.
    */
   @Override
-  public Trigger rightBumper(EventLoop loop) {
-    return super.rightBumper(loop);
+  public RSTrigger rightBumper(EventLoop loop) {
+    return RSTrigger.of(super.rightBumper(loop));
   }
 
   /**
@@ -473,8 +473,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #back(EventLoop)
    */
   @Override
-  public Trigger back() {
-    return super.back();
+  public RSTrigger back() {
+    return RSTrigger.of(super.back());
   }
 
   /**
@@ -485,8 +485,8 @@ public class RSXboxController extends CommandXboxController {
    *     loop.
    */
   @Override
-  public Trigger back(EventLoop loop) {
-    return super.back(loop);
+  public RSTrigger back(EventLoop loop) {
+    return RSTrigger.of(super.back(loop));
   }
 
   /**
@@ -497,8 +497,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #start(EventLoop)
    */
   @Override
-  public Trigger start() {
-    return super.start();
+  public RSTrigger start() {
+    return RSTrigger.of(super.start());
   }
 
   /**
@@ -509,8 +509,8 @@ public class RSXboxController extends CommandXboxController {
    *     loop.
    */
   @Override
-  public Trigger start(EventLoop loop) {
-    return super.start(loop);
+  public RSTrigger start(EventLoop loop) {
+    return RSTrigger.of(super.start(loop));
   }
 
   /**
@@ -521,8 +521,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #leftStick(EventLoop)
    */
   @Override
-  public Trigger leftStick() {
-    return super.leftStick();
+  public RSTrigger leftStick() {
+    return RSTrigger.of(super.leftStick());
   }
 
   /**
@@ -533,8 +533,8 @@ public class RSXboxController extends CommandXboxController {
    *     given loop.
    */
   @Override
-  public Trigger leftStick(EventLoop loop) {
-    return super.leftStick(loop);
+  public RSTrigger leftStick(EventLoop loop) {
+    return RSTrigger.of(super.leftStick(loop));
   }
 
   /**
@@ -545,8 +545,8 @@ public class RSXboxController extends CommandXboxController {
    * @see #rightStick(EventLoop)
    */
   @Override
-  public Trigger rightStick() {
-    return super.rightStick();
+  public RSTrigger rightStick() {
+    return RSTrigger.of(super.rightStick());
   }
 
   /**
@@ -557,8 +557,8 @@ public class RSXboxController extends CommandXboxController {
    *     given loop.
    */
   @Override
-  public Trigger rightStick(EventLoop loop) {
-    return super.rightStick(loop);
+  public RSTrigger rightStick(EventLoop loop) {
+    return RSTrigger.of(super.rightStick(loop));
   }
 
   /**
@@ -572,8 +572,8 @@ public class RSXboxController extends CommandXboxController {
    *     threshold, attached to the given event loop
    */
   @Override
-  public Trigger leftTrigger(double threshold, EventLoop loop) {
-    return super.leftTrigger(threshold, loop);
+  public RSTrigger leftTrigger(double threshold, EventLoop loop) {
+    return RSTrigger.of(super.leftTrigger(threshold, loop));
   }
 
   /**
@@ -587,8 +587,8 @@ public class RSXboxController extends CommandXboxController {
    *     button loop}.
    */
   @Override
-  public Trigger leftTrigger(double threshold) {
-    return super.leftTrigger(threshold);
+  public RSTrigger leftTrigger(double threshold) {
+    return RSTrigger.of(super.leftTrigger(threshold));
   }
 
   /**
@@ -599,8 +599,8 @@ public class RSXboxController extends CommandXboxController {
    *     the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    */
   @Override
-  public Trigger leftTrigger() {
-    return super.leftTrigger();
+  public RSTrigger leftTrigger() {
+    return RSTrigger.of(super.leftTrigger());
   }
 
   /**
@@ -614,8 +614,8 @@ public class RSXboxController extends CommandXboxController {
    *     threshold, attached to the given event loop
    */
   @Override
-  public Trigger rightTrigger(double threshold, EventLoop loop) {
-    return super.rightTrigger(threshold, loop);
+  public RSTrigger rightTrigger(double threshold, EventLoop loop) {
+    return RSTrigger.of(super.rightTrigger(threshold, loop));
   }
 
   /**
@@ -629,8 +629,8 @@ public class RSXboxController extends CommandXboxController {
    *     button loop}.
    */
   @Override
-  public Trigger rightTrigger(double threshold) {
-    return super.rightTrigger(threshold);
+  public RSTrigger rightTrigger(double threshold) {
+    return RSTrigger.of(super.rightTrigger(threshold));
   }
 
   /**
@@ -641,8 +641,8 @@ public class RSXboxController extends CommandXboxController {
    *     the {@link CommandScheduler#getDefaultButtonLoop() default scheduler button loop}.
    */
   @Override
-  public Trigger rightTrigger() {
-    return super.rightTrigger();
+  public RSTrigger rightTrigger() {
+    return RSTrigger.of(super.rightTrigger());
   }
 
   /**
@@ -711,15 +711,15 @@ public class RSXboxController extends CommandXboxController {
     return Math.signum(value) * Math.max((Math.abs(value) - DEFAULT_DEADZONE), 0);
   }
 
-  private Trigger ab = a().and(b());
-  private Trigger xy = x().and(y());
+  private RSTrigger ab = RSTrigger.of(a().and(b()));
+  private RSTrigger xy = RSTrigger.of(x().and(y()));
 
   /**
    * Functionally equivalent to a().and(b())
    *
    * @return a trigger representing both a and b buttons being pressed.
    */
-  public Trigger ab() {
+  public RSTrigger ab() {
     return ab;
   }
 
@@ -728,7 +728,7 @@ public class RSXboxController extends CommandXboxController {
    *
    * @return a trigger representing both x and y buttons being pressed.
    */
-  public Trigger xy() {
+  public RSTrigger xy() {
     return xy;
   }
 }

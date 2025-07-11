@@ -7,6 +7,8 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.team4639.lib.oi.RSTrigger;
+
 import java.util.*;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -103,11 +105,11 @@ public class State {
     return name;
   }
 
-  public Trigger getTrigger() {
-    return new Trigger(() -> StateMachine.getState() == this);
+  public RSTrigger getTrigger() {
+    return new RSTrigger(() -> StateMachine.getState() == this);
   }
 
-  public Trigger and(BooleanSupplier trigger) {
+  public RSTrigger and(BooleanSupplier trigger) {
     return getTrigger().and(trigger);
   }
 }
