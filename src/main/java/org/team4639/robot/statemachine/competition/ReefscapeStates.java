@@ -19,13 +19,13 @@ import org.team4639.robot.modaltriggers.IOTriggers;
 import org.team4639.robot.robot.RobotContainer;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.statemachine.StatesBase;
+import org.team4639.robot.statemachine.states.CoralCycleState;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
 
 /** State machine used in competition */
 public final class ReefscapeStates implements StatesBase {
   public State IDLE;
-  public State NONE = StateFactory.none();
   public State HP_LEFT;
   public State HP_RIGHT;
   public State HP_NODIR;
@@ -59,7 +59,7 @@ public final class ReefscapeStates implements StatesBase {
 
   public void init() {
     IDLE =
-        new State("IDLE")
+        new CoralCycleState("IDLE")
             .whileTrue(SuperstructureCommands.IDLE)
             .onTrigger(DriveTriggers.CLOSE_TO_RIGHT_STATION, () -> HP_RIGHT)
             .onTrigger(DriveTriggers.CLOSE_TO_LEFT_STATION, () -> HP_LEFT)
@@ -69,29 +69,29 @@ public final class ReefscapeStates implements StatesBase {
             .withEndCondition(Controls.RIGHT_HP, this::pathFindToHPRight);
 
     HP_LEFT =
-        new State("HP_LEFT")
+        new CoralCycleState("HP_LEFT")
             .whileTrue(DriveCommands.HPStationAlignLeft(), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.CLOSE_TO_LEFT_STATION.negate(), () -> INTAKE_LOWER)
             .onTrigger(IOTriggers.JOYSTICK_MOVEMENT, () -> IDLE)
             .onEmergency(() -> IDLE);
 
     HP_RIGHT =
-        new State("HP_RIGHT")
+        new CoralCycleState("HP_RIGHT")
             .whileTrue(DriveCommands.HPStationAlignRight(), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.CLOSE_TO_RIGHT_STATION.negate(), () -> INTAKE_LOWER)
             .onTrigger(IOTriggers.JOYSTICK_MOVEMENT, () -> IDLE)
             .onEmergency(() -> IDLE);
 
-    HP_NODIR = new State("INTAKE_NODIR").whileTrue(SuperstructureCommands.HP);
+    HP_NODIR = new CoralCycleState("INTAKE_NODIR").whileTrue(SuperstructureCommands.HP);
 
     INTAKE_LOWER =
-        new State("INTAKE_LOWER")
+        new CoralCycleState("INTAKE_LOWER")
             .whileTrue(SuperstructureCommands.HP_LOWER, Subsystems.controllerRumble.rumbleOnDone())
             .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW)
             .onEmergency(() -> IDLE);
 
     CORAL_STOW =
-        new State("CORAL_STOW")
+        new CoralCycleState("CORAL_STOW")
             .whileTrue(
                 SuperstructureCommands.CORAL_STOW,
                 DriveCommands.Evergreen.joystickDriveAtAngle(
@@ -105,7 +105,7 @@ public final class ReefscapeStates implements StatesBase {
             .onEmergency(() -> REJECT_CORAL);
 
     CORAL_SCORE_ALIGN_LEFT =
-        new State("CORAL_SCORE_ALIGN_LEFT")
+        new CoralCycleState("CORAL_SCORE_ALIGN_LEFT")
             .withDeadline(DriveCommands.reefAlignLeft(), () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(SuperstructureCommands.ELEVATOR_READY, LEDCommands.aligning())
             .onTrigger(Controls.ALIGN_RIGHT, () -> this.CORAL_SCORE_ALIGN_RIGHT)
@@ -115,7 +115,7 @@ public final class ReefscapeStates implements StatesBase {
             .onAccelerationLimit(() -> CORAL_STOW);
 
     CORAL_SCORE_ALIGN_RIGHT =
-        new State("CORAL_SCORE_ALIGN_RIGHT")
+        new CoralCycleState("CORAL_SCORE_ALIGN_RIGHT")
             .withDeadline(DriveCommands.reefAlignRight(), () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(SuperstructureCommands.ELEVATOR_READY, LEDCommands.aligning())
             .onTrigger(Controls.ALIGN_LEFT, () -> this.CORAL_SCORE_ALIGN_LEFT)
@@ -151,7 +151,7 @@ public final class ReefscapeStates implements StatesBase {
             .onAccelerationLimit(() -> ALGAE_STOW);
 
     CHOOSE_CORAL_LEVEL =
-        new State("CHOOSE_CORAL_LEVEL")
+        new CoralCycleState("CHOOSE_CORAL_LEVEL")
             .whileTrue(
                 SuperstructureCommands.HOLD, Subsystems.drive.run(() -> Subsystems.drive.stop()))
             .withEndCondition(Controls.ALIGN_LEFT, () -> CORAL_SCORE_ALIGN_LEFT)
@@ -167,35 +167,35 @@ public final class ReefscapeStates implements StatesBase {
                 () -> Subsystems.dashboardOutputs.upcomingReefLevel() == 4, () -> L4_CORAL_SCORE);
 
     L1_CORAL_SCORE =
-        new State("L1_CORAL_SCORE")
+        new CoralCycleState("L1_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L1)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L2_CORAL_SCORE =
-        new State("L2_CORAL_SCORE")
+        new CoralCycleState("L2_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L2)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L3_CORAL_SCORE =
-        new State("L3_CORAL_SCORE")
+        new CoralCycleState("L3_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L3)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L4_CORAL_SCORE =
-        new State("L4_CORAL_SCORE")
+        new CoralCycleState("L4_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L4)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     HOMING_READY =
-        new State("HOMING_READY")
+        new CoralCycleState("HOMING_READY")
             .whileTrue(SuperstructureCommands.HOMING_READY)
             .withEndCondition(
                 () ->
@@ -206,7 +206,7 @@ public final class ReefscapeStates implements StatesBase {
             .onEmergency(() -> IDLE);
 
     HOMING =
-        new State("HOMING")
+        new CoralCycleState("HOMING")
             .withDeadline(SuperstructureCommands.HOMING, () -> IDLE)
             .whileTrue(Subsystems.controllerRumble.rumbleOnDone())
             .onEmergency(() -> IDLE);
@@ -243,6 +243,15 @@ public final class ReefscapeStates implements StatesBase {
   @Override
   public State getTeleopStartState() {
     return determineState();
+  }
+
+  /**
+   * Binds buttons that will be used when this state machine is running. When it is not running,
+   * the buttons will not be bound.
+   */
+  @Override
+  public void initButtonBindings() {
+
   }
 
   public State pathFindToReef(TargetPositions reef) {

@@ -53,4 +53,13 @@ public final class VisionDemo implements StatesBase {
   public State getTeleopStartState() {
     return DEMO_OFF;
   }
+
+  /**
+   * Binds buttons that will be used when this state machine is running. When it is not running,
+   * the buttons will not be bound.
+   */
+  @Override
+  public void initButtonBindings() {
+
+  }
 }

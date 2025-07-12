@@ -11,4 +11,10 @@ public interface StatesBase {
 
   /** Gets the state at the start of teleop */
   public State getTeleopStartState();
+
+  /**
+   * Binds buttons that will be used when this state machine is running. When it is not running,
+   * the buttons will not be bound.
+   */
+  public void initButtonBindings();
 }
