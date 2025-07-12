@@ -79,44 +79,36 @@ public final class SuperstructureCommands {
                 Subsystems.superstructure));
     L1 =
         Commands.defer(
-                () ->
-                    new MotionSuperstructureCommand(SuperstructureSetpoints.L1, "L1").flashOnDone(),
-                Set.of(
-                    Subsystems.elevator,
-                    Subsystems.wrist,
-                    Subsystems.roller,
-                    Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL1Raw);
+            () -> new MotionSuperstructureCommand(SuperstructureSetpoints.L1, "L1").flashOnDone(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure));
     L2 =
         Commands.defer(
-                () ->
-                    new MotionSuperstructureCommand(SuperstructureSetpoints.L2, "L2").flashOnDone(),
-                Set.of(
-                    Subsystems.elevator,
-                    Subsystems.wrist,
-                    Subsystems.roller,
-                    Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL2Raw);
+            () -> new MotionSuperstructureCommand(SuperstructureSetpoints.L2, "L2").flashOnDone(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure));
     L3 =
         Commands.defer(
-                () ->
-                    new MotionSuperstructureCommand(SuperstructureSetpoints.L3, "L3").flashOnDone(),
-                Set.of(
-                    Subsystems.elevator,
-                    Subsystems.wrist,
-                    Subsystems.roller,
-                    Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL3Raw);
+            () -> new MotionSuperstructureCommand(SuperstructureSetpoints.L3, "L3").flashOnDone(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure));
     L4 =
         Commands.defer(
-                () ->
-                    new MotionSuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone(),
-                Set.of(
-                    Subsystems.elevator,
-                    Subsystems.wrist,
-                    Subsystems.roller,
-                    Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL4Raw);
+            () -> new MotionSuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure));
     L2_ALGAE =
         Commands.defer(
             () -> new MotionSuperstructureCommand(SuperstructureSetpoints.L2_ALGAE, "L2_ALGAE"),

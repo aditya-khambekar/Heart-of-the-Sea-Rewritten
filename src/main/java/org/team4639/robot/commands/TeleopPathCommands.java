@@ -35,23 +35,21 @@ public final class TeleopPathCommands {
         || starting.leftReef.get() == ending
         || starting.rightReef.get() == ending) {
       return (Subsystems.drive
-              .defer(
-                  () ->
-                      AutoBuilder.pathfindToPose(
-                          endingPose,
-                          new PathConstraints(
-                              MetersPerSecond.of(3),
-                              MetersPerSecondPerSecond.of(6),
-                              RotationsPerSecond.of(2),
-                              RotationsPerSecondPerSecond.of(4),
-                              Volts.of(12),
-                              true),
-                          MetersPerSecond.of(1)))
-              .until(
-                  () ->
-                      PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters) < 2.5)
-              .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToReef(endingPose))))
-          .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(endingPose));
+          .defer(
+              () ->
+                  AutoBuilder.pathfindToPose(
+                      endingPose,
+                      new PathConstraints(
+                          MetersPerSecond.of(3),
+                          MetersPerSecondPerSecond.of(6),
+                          RotationsPerSecond.of(2),
+                          RotationsPerSecondPerSecond.of(4),
+                          Volts.of(12),
+                          true),
+                      MetersPerSecond.of(1)))
+          .until(
+              () -> PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters) < 2.5)
+          .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToReef(endingPose))));
     }
 
     var alignDistanceMeters =
@@ -62,8 +60,7 @@ public final class TeleopPathCommands {
             () ->
                 PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters)
                     < alignDistanceMeters)
-        .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToReef(endingPose)))
-        .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(endingPose));
+        .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToReef(endingPose)));
   }
 
   public static Command pathfindTo(Pose2d startingPose, Pose2d endingPose) {
@@ -88,7 +85,7 @@ public final class TeleopPathCommands {
                       MetersPerSecond.of(1)))
           .until(
               () -> PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters) < 1.5)
-          .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDTo(endingPose))));
+          .andThen(Subsystems.drive.defer(() -> DriveCommands.Evergreen.PIDTo(endingPose))));
     }
 
     var alignDistanceMeters =
@@ -99,7 +96,7 @@ public final class TeleopPathCommands {
             () ->
                 PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters)
                     < alignDistanceMeters)
-        .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDTo(endingPose)));
+        .andThen(Subsystems.drive.defer(() -> DriveCommands.Evergreen.PIDTo(endingPose)));
   }
 
   public static Command getPathCommand(ReefPathLocations starting, ReefPathLocations ending) {

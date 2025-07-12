@@ -50,9 +50,9 @@ import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.reefscape.FieldConstants;
 import org.team4639.robot.constants.robot.IDs;
 import org.team4639.robot.statemachine.StateControls;
+import org.team4639.robot.subsystems.ControllerRumble;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.LimelightFlash;
-import org.team4639.robot.subsystems.ReefTracker;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
@@ -180,9 +180,9 @@ public final class RobotContainer {
     }
 
     Subsystems.dashboardOutputs = new DashboardOutputs();
-    Subsystems.reefTracker = new ReefTracker();
     Subsystems.superstructure = new Superstructure();
     Subsystems.limelightFlash = new LimelightFlash(VisionConstants.cameraBackName);
+    Subsystems.controllerRumble = new ControllerRumble();
     Subsystems.leds = new PhysicalLEDStrip(9, 96);
 
     // Configure the button bindings
@@ -210,9 +210,10 @@ public final class RobotContainer {
     autoChooser.addOption("(L3-2) LS-J4-K4-L4", AutoFactory.LS_J4_K4_L4());
     autoChooser.addOption("(1678L) LS-I4-K4-L4-J4", AutoFactory.LS_I4_K4_L4_J4());
     autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization());
+        "Drive Wheel Radius Characterization",
+        DriveCommands.Evergreen.wheelRadiusCharacterization());
     autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization());
+        "Drive Simple FF Characterization", DriveCommands.Evergreen.feedforwardCharacterization());
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
         Subsystems.drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
@@ -232,7 +233,6 @@ public final class RobotContainer {
     VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
     SuperstructureCommands.initCommands();
     FieldConstants.init();
-    Subsystems.reefTracker.resetReefTracker();
   }
 
   /**
@@ -254,7 +254,7 @@ public final class RobotContainer {
 
     // Default command, normal field-relative drive
     Subsystems.drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
+        DriveCommands.Evergreen.joystickDrive(
                 () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX())
             .withName("Drive Joystick"));
 

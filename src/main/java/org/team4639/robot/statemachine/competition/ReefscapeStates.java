@@ -86,7 +86,7 @@ public final class ReefscapeStates implements StatesBase {
 
     INTAKE_LOWER =
         new State("INTAKE_LOWER")
-            .whileTrue(SuperstructureCommands.HP_LOWER)
+            .whileTrue(SuperstructureCommands.HP_LOWER, Subsystems.controllerRumble.rumbleOnDone())
             .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW)
             .onEmergency(() -> IDLE);
 
@@ -94,7 +94,7 @@ public final class ReefscapeStates implements StatesBase {
         new State("CORAL_STOW")
             .whileTrue(
                 SuperstructureCommands.CORAL_STOW,
-                DriveCommands.joystickDriveAtAngle(
+                DriveCommands.Evergreen.joystickDriveAtAngle(
                     () -> -RobotContainer.driver.getLeftY(),
                     () -> -RobotContainer.driver.getLeftX(),
                     () -> FieldUtil.getRotationToClosestBranchPosition(Subsystems.drive.getPose())),
@@ -107,10 +107,7 @@ public final class ReefscapeStates implements StatesBase {
     CORAL_SCORE_ALIGN_LEFT =
         new State("CORAL_SCORE_ALIGN_LEFT")
             .withDeadline(DriveCommands.reefAlignLeft(), () -> CHOOSE_CORAL_LEVEL)
-            .whileTrue(
-                SuperstructureCommands.ELEVATOR_READY,
-                Subsystems.dashboardOutputs.displayUpcomingReefLevel(),
-                LEDCommands.aligning())
+            .whileTrue(SuperstructureCommands.ELEVATOR_READY, LEDCommands.aligning())
             .onTrigger(Controls.ALIGN_RIGHT, () -> this.CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onTrigger(IOTriggers.JOYSTICK_MOVEMENT, () -> CORAL_STOW)
@@ -120,10 +117,7 @@ public final class ReefscapeStates implements StatesBase {
     CORAL_SCORE_ALIGN_RIGHT =
         new State("CORAL_SCORE_ALIGN_RIGHT")
             .withDeadline(DriveCommands.reefAlignRight(), () -> CHOOSE_CORAL_LEVEL)
-            .whileTrue(
-                SuperstructureCommands.ELEVATOR_READY,
-                Subsystems.dashboardOutputs.displayUpcomingReefLevel(),
-                LEDCommands.aligning())
+            .whileTrue(SuperstructureCommands.ELEVATOR_READY, LEDCommands.aligning())
             .onTrigger(Controls.ALIGN_LEFT, () -> this.CORAL_SCORE_ALIGN_LEFT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onTrigger(IOTriggers.JOYSTICK_MOVEMENT, () -> CORAL_STOW)
@@ -214,6 +208,7 @@ public final class ReefscapeStates implements StatesBase {
     HOMING =
         new State("HOMING")
             .withDeadline(SuperstructureCommands.HOMING, () -> IDLE)
+            .whileTrue(Subsystems.controllerRumble.rumbleOnDone())
             .onEmergency(() -> IDLE);
 
     REJECT_CORAL =
@@ -228,7 +223,7 @@ public final class ReefscapeStates implements StatesBase {
 
     MICROADJUSTMENTS =
         new State("MICROADJUSTMENTS")
-            .whileTrue(new MicroAdjustmentCommand(), DriveCommands.stopWithX())
+            .whileTrue(new MicroAdjustmentCommand(), DriveCommands.Evergreen.stopWithX())
             .onEmergency(() -> CORAL_STOW);
 
     DEFENSE =
@@ -254,9 +249,7 @@ public final class ReefscapeStates implements StatesBase {
     var pose = reef.getPose();
     return new State("PATHFIND_TO_REEF")
         .withDeadline(DriveCommands.pathFindToReef(pose), () -> CHOOSE_CORAL_LEVEL)
-        .whileTrue(
-            SuperstructureCommands.ELEVATOR_READY,
-            Subsystems.dashboardOutputs.displayUpcomingReefLevel())
+        .whileTrue(SuperstructureCommands.ELEVATOR_READY)
         .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
         .onEmergency(() -> CORAL_STOW);
   }

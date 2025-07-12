@@ -91,6 +91,7 @@ public class PIDToPoseController implements Sendable {
 
   /**
    * Sets a new goal for the controller and resets the underlying controllers
+   *
    * @param pose the new goal
    */
   public void setGoal(Pose2d pose) {
@@ -104,9 +105,7 @@ public class PIDToPoseController implements Sendable {
     headingController.setSetpoint(pose.getRotation().getRadians());
   }
 
-  /**
-   * Calculates the robot-relative ChassisSpeeds output from the controller.
-   */
+  /** Calculates the robot-relative ChassisSpeeds output from the controller. */
   public ChassisSpeeds calculateOutput() {
     return ChassisSpeeds.fromFieldRelativeSpeeds(
         xController.getSetpoint().velocity + xController.calculate(drivetrainPose.get().getX()),

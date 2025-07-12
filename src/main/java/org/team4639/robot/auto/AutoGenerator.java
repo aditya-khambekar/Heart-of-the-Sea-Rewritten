@@ -164,7 +164,7 @@ public final class AutoGenerator {
                       case RHP -> DriveCommands.HPStationAlignRight();
                       default -> throw new IllegalArgumentException("what the fuck");
                     })
-                .andThen(DriveCommands.stopWithX().withTimeout(0.5)))
+                .andThen(DriveCommands.Evergreen.stopWithX().withTimeout(0.5)))
             .deadlineFor(SuperstructureCommands.hp());
         case OUT_CORAL -> (pathCommand.deadlineFor(SuperstructureCommands.elevatorReady()))
             .andThen(
