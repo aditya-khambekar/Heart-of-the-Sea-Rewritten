@@ -61,7 +61,7 @@ public class ElevatorConstants {
           .then(DoubleToPercentage);
 
   public static TunableNumber elevatorKp =
-      new TunableNumber().withDefaultValue(3.596).send("Scoring PIDs/Elevator kI");
+      new TunableNumber().withDefaultValue(3.596).send("Scoring PIDs/Elevator kp");
   public static TunableNumber elevatorKi =
       new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator kI");
   public static TunableNumber elevatorKd =
@@ -69,17 +69,17 @@ public class ElevatorConstants {
   public static TunableNumber elevatorVelocity =
       new TunableNumber().withDefaultValue(300.0).send("Scoring PIDs/Elevator Velocity");
   public static TunableNumber elevatorAcceleration =
-      new TunableNumber().withDefaultValue(190).send("Scoring PIDs/Elevator Acceleration");
+      new TunableNumber().withDefaultValue(900).send("Scoring PIDs/Elevator Acceleration");
   public static TunableNumber elevatorKs =
       new TunableNumber().withDefaultValue(0.27919).send("Scoring PIDs/Elevator Ks");
   public static TunableNumber elevatorKg =
-      new TunableNumber().withDefaultValue(2).send("Scoring PIDs/Elevator Kg");
+      new TunableNumber().withDefaultValue(0.2).send("Scoring PIDs/Elevator Kg");
   public static TunableNumber elevatorKv =
       new TunableNumber().withDefaultValue(0.11358).send("Scoring PIDs/Elevator Kv");
   public static TunableNumber elevatorKa =
       new TunableNumber().withDefaultValue(0.0).send("Scoring PIDs/Elevator Ka");
 
-  public static final Dimensionless elevatorTolerance = Percent.of(1);
+  public static final Dimensionless elevatorTolerance = Percent.of(0.5);
 
   /**
    * The point at which we can expand the wrist safe zone to include the full exterior range of

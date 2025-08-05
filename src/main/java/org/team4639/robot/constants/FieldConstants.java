@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -44,7 +45,11 @@ public class FieldConstants {
       try {
         layout =
             new AprilTagFieldLayout(
-                Path.of("src", "main", "deploy", "apriltags", "andymark", "2025-official.json"));
+                Path.of(
+                    Filesystem.getDeployDirectory().getPath(),
+                    "apriltags",
+                    "andymark",
+                    name + ".json"));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -122,7 +127,7 @@ public class FieldConstants {
 
   public static final double aprilTagWidth = Units.inchesToMeters(6.50);
   public static final int aprilTagCount = 22;
-  public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.NO_BARGE;
+  public static final AprilTagLayoutType defaultAprilTagType = AprilTagLayoutType.OFFICIAL;
 
   public static class Reef {
     public static final double faceLength = Units.inchesToMeters(36.792600);

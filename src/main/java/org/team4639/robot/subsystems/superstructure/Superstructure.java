@@ -87,6 +87,13 @@ public class Superstructure extends SubsystemBase implements Sendable {
             Math.abs(WristConstants.wristTolerance.in(Rotations)));
   }
 
+  public static boolean wristAtSetpoint(SuperstructureState current, SuperstructureState target) {
+    return MathUtil.isNear(
+        current.wristRotation().getRotations(),
+        target.wristRotation().getRotations(),
+        Math.abs(WristConstants.wristTolerance.in(Rotations)));
+  }
+
   public static boolean atPosition(SuperstructureState target) {
     var current = getSuperstructureState();
     return MathUtil.isNear(
@@ -111,6 +118,14 @@ public class Superstructure extends SubsystemBase implements Sendable {
     var zone = getEffectiveExteriorSafeZone();
     var ret =
         RotationUtil.boundedBy(Subsystems.wrist.getWristAngle(), zone.getFirst(), zone.getSecond());
+    SmartDashboard.putBoolean("Wrist Safe", ret);
+    return ret;
+  }
+
+  /** Determines if the wrist is at a safe angle to move the elevator. */
+  public static boolean isWristAtSafeAngle(Rotation2d wristRotation) {
+    var zone = getEffectiveExteriorSafeZone();
+    var ret = RotationUtil.boundedBy(wristRotation, zone.getFirst(), zone.getSecond());
     SmartDashboard.putBoolean("Wrist Safe", ret);
     return ret;
   }

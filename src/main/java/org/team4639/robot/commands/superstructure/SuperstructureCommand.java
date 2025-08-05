@@ -1,9 +1,11 @@
 package org.team4639.robot.commands.superstructure;
 
 import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Value;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
@@ -11,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.BooleanSupplier;
 import org.team4639.lib.util.RotationUtil;
@@ -30,6 +33,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   private String name;
   private boolean flash;
   private boolean wristSupposedToBeStopped = true;
+  private Voltage whileRunningRollerVolts = Volts.of(0.0);
 
   /**
    * Commands the superstructure to go to a specific state
@@ -65,14 +69,17 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   @Override
   public void execute() {
+    SmartDashboard.putNumber("Wrist Setpoint", setpoint.wristRotation().getDegrees());
     super.execute();
     SmartDashboard.putBoolean("Elevator At Setpoint", elevatorAtSetpoint());
+    SmartDashboard.putNumber("Elevator Setpoint", setpoint.elevatorProportion().in(Value));
+    SmartDashboard.putNumber("Elevator Position", Subsystems.elevator.getPercentage().in(Value));
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
     switch (state) {
       case TO_SAFE_ANGLE -> {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
-        if (Superstructure.isWristAtSafeAngle())
+        if (Superstructure.isWristAtSafeAngle() || willWristBeSafe())
           setState(SuperstructureCommandState.TO_ELEVATOR_SETPOINT);
         if (RotationUtil.boundedBy(
                 Subsystems.wrist.getWristAngle(),
@@ -94,7 +101,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
                 RotationUtil.max(safeTransitionRange.getFirst(), safeTransitionRange.getSecond())
                     .minus(Rotation2d.fromDegrees(2))));
         Subsystems.elevator.setPercentageRaw(holdPosition);
-        Subsystems.roller.setVelocity(RotationsPerSecond.zero());
+        Subsystems.roller.setVoltage(whileRunningRollerVolts);
       }
       case TO_ELEVATOR_SETPOINT -> {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
@@ -106,7 +113,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
           wristSupposedToBeStopped = true;
         }
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
-        Subsystems.roller.setVelocity(RotationsPerSecond.zero());
+        Subsystems.roller.setVoltage(whileRunningRollerVolts);
       }
       case TO_WRIST_SETPOINT -> {
         wristSupposedToBeStopped = false;
@@ -116,7 +123,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
         ;
-        Subsystems.roller.setVelocity(RotationsPerSecond.zero());
+        Subsystems.roller.setVoltage(whileRunningRollerVolts);
       }
       case EXECUTING_ACTION -> {
         wristSupposedToBeStopped = true;
@@ -148,6 +155,21 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   public SuperstructureCommand flashOnDone() {
     this.flash = true;
+    return this;
+  }
+
+  public SuperstructureCommand withCoral() {
+    this.whileRunningRollerVolts = Volts.of(0.0);
+    return this;
+  }
+
+  public SuperstructureCommand withAlgae() {
+    this.whileRunningRollerVolts = Volts.of(-1.0);
+    return this;
+  }
+
+  public SuperstructureCommand withNone() {
+    this.whileRunningRollerVolts = Volts.of(0.0);
     return this;
   }
 
@@ -190,5 +212,13 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   @Override
   public String getName() {
     return name;
+  }
+
+  public boolean willWristBeSafe() {
+    var lookahead =
+        WristConstants.RotationToPosition.convertBackwards(
+                Rotations.of(Subsystems.wrist.getEncoderVelocity().in(RotationsPerSecond)))
+            .times(0.1);
+    return Superstructure.isWristAtSafeAngle(Subsystems.wrist.getWristAngle().plus(lookahead));
   }
 }

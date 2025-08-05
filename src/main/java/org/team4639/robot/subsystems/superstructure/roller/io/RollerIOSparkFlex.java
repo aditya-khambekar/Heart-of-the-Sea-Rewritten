@@ -49,9 +49,7 @@ public class RollerIOSparkFlex extends RollerIO {
 
   @Override
   public void setVelocity(AngularVelocity velocity) {
-    sparkFlex
-        .getClosedLoopController()
-        .setReference(velocity.in(Rotations.per(Minute)), SparkBase.ControlType.kVelocity);
+    sparkFlex.set(velocity.in(RotationsPerSecond) / 20);
   }
 
   @Override

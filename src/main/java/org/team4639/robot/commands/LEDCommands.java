@@ -3,10 +3,9 @@ package org.team4639.robot.commands;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.team4639.lib.led.pattern.CycleBetweenLEDPattern;
-import org.team4639.lib.led.pattern.MovingWaveLEDPattern;
+import org.team4639.lib.led.pattern.MovingLEDPattern;
 import org.team4639.lib.led.pattern.SolidLEDPattern;
 import org.team4639.lib.led.pattern.TwoSegmentLEDPattern;
-import org.team4639.lib.util.DriverStationUtil;
 import org.team4639.robot.robot.Subsystems;
 
 public class LEDCommands {
@@ -16,18 +15,44 @@ public class LEDCommands {
             () ->
                 Subsystems.leds.usePattern(
                     new TwoSegmentLEDPattern(
-                        new MovingWaveLEDPattern(
-                            Color.kWhite,
-                            DriverStationUtil.isBlueAlliance() ? Color.kFirstBlue : Color.kFirstRed,
-                            3),
-                        new MovingWaveLEDPattern(
-                            Color.kWhite,
-                            DriverStationUtil.isBlueAlliance() ? Color.kFirstBlue : Color.kFirstRed,
-                            3),
-                        0,
-                        48,
-                        48,
-                        96,
+                        new MovingLEDPattern(Color.kBlack, new Color(255, 125, 125), -3, 0.2, 1),
+                        new MovingLEDPattern(Color.kBlack, new Color(255, 125, 125), -3, 0.2, 1),
+                        4,
+                        32,
+                        65,
+                        94,
+                        true)))
+        .ignoringDisable(true);
+  }
+
+  public static Command enabledDefault() {
+    return Subsystems.leds
+        .defer(
+            () ->
+                Subsystems.leds.usePattern(
+                    new TwoSegmentLEDPattern(
+                        new MovingLEDPattern(Color.kBlack, new Color(255, 35, 0), -3, 0.2, 1),
+                        new MovingLEDPattern(Color.kBlack, new Color(255, 35, 0), -3, 0.2, 1),
+                        4,
+                        32,
+                        65,
+                        94,
+                        true)))
+        .ignoringDisable(true);
+  }
+
+  public static Command manual() {
+    return Subsystems.leds
+        .defer(
+            () ->
+                Subsystems.leds.usePattern(
+                    new TwoSegmentLEDPattern(
+                        new MovingLEDPattern(Color.kBlack, new Color(255, 25, 50), -3, 0.2, 1),
+                        new MovingLEDPattern(Color.kBlack, new Color(255, 25, 50), -3, 0.2, 1),
+                        4,
+                        32,
+                        65,
+                        94,
                         true)))
         .ignoringDisable(true);
   }

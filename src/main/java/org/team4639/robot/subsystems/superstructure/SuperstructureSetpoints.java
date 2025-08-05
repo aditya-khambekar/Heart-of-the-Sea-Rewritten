@@ -40,7 +40,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState ELEVATOR_READY =
       new SuperstructureState(
-          Value.of(0.496), Rotation2d.fromDegrees(200), RotationsPerSecond.of(0));
+          Value.of(0.40), Rotation2d.fromDegrees(110), RotationsPerSecond.of(0));
 
   public static final SuperstructureState AUTO_ELEVATOR_L4_READY =
       new SuperstructureState(Value.of(0.7), Rotation2d.fromDegrees(230), RotationsPerSecond.of(0));
@@ -74,7 +74,7 @@ public class SuperstructureSetpoints {
       new SuperstructureState(
           Value.of(0.85635), // L4_Proportion
           Rotation2d.fromDegrees(230), // Wrist_L4_Proportion: 30 - 230 * 1.0 = -200.0 degrees
-          RotationsPerSecond.of(-9) // Intake_L4_Speed: -0.875 * 20 = -17.5 RPS
+          RotationsPerSecond.of(-18) // Intake_L4_Speed: -0.875 * 20 = -17.5 RPS
           );
 
   // L2_ALGAE State

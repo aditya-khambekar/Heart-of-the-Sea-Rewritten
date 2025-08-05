@@ -45,6 +45,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void setPercentageRaw(Dimensionless percentage) {
     setMotionMagicSetpoint(ElevatorConstants.rotationsToPercentage.convertBackwards(percentage));
+    SmartDashboard.putNumber(
+        "Motion Magic Setpoint",
+        ElevatorConstants.rotationsToPercentage.convertBackwards(percentage).in(Rotations));
   }
 
   @Override

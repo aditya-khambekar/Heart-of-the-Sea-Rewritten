@@ -36,121 +36,137 @@ public class SuperstructureCommands {
   public static void initCommands() {
     IDLE =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.IDLE, "IDLE"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.IDLE, "IDLE").withNone(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("IDLE");
     HP =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.HP, "HP").flashOnDone(),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.HP, "HP").flashOnDone().withNone(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("HP");
     HP_LOWER =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER, "HP_LOWER"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER, "HP_LOWER").withNone(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("HP_LOWER");
     CORAL_STOW =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.CORAL_STOW, "CORAL_STOW"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.CORAL_STOW, "CORAL_STOW").withCoral(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("CORAL_STOW");
     ELEVATOR_READY =
         Commands.defer(
-            () ->
-                new SuperstructureCommand(SuperstructureSetpoints.ELEVATOR_READY, "ELEVATOR_READY"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () ->
+                    new SuperstructureCommand(
+                        SuperstructureSetpoints.ELEVATOR_READY, "ELEVATOR_READY").withCoral(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("ELEVATOR_READY");
     L1 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L1, "L1").flashOnDone(),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L1, "L1").flashOnDone().withCoral(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL1Raw);
+            .finallyDo(Subsystems.reefTracker::scoreL1Raw)
+            .withName("L1");
     L2 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L2, "L2").flashOnDone(),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L2, "L2").flashOnDone().withCoral(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL2Raw);
+            .finallyDo(Subsystems.reefTracker::scoreL2Raw)
+            .withName("L2");
     L3 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L3, "L3").flashOnDone(),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L3, "L3").flashOnDone().withCoral(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL3Raw);
+            .finallyDo(Subsystems.reefTracker::scoreL3Raw)
+            .withName("L3");
     L4 =
         Commands.defer(
-                () -> new SuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone(),
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone().withCoral(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
-            .finallyDo(Subsystems.reefTracker::scoreL4Raw);
+            .finallyDo(Subsystems.reefTracker::scoreL4Raw)
+            .withName("L4");
     L2_ALGAE =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.L2_ALGAE, "L2_ALGAE"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L2_ALGAE, "L2_ALGAE").withAlgae(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("L2_ALGAE");
     L3_ALGAE =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.L3_ALGAE, "L3_ALGAE"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.L3_ALGAE, "L3_ALGAE").withAlgae(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("L3_ALGAE");
     BARGE =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.BARGE, "BARGE"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.BARGE, "BARGE").withAlgae(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("BARGE");
     ALGAE_STOW =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW, "ALGAE_STOW"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () -> new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW, "ALGAE_STOW").withAlgae(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("ALGAE_STOW");
     HOMING_READY =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.HOMING_READY, "HOMING_READY"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.HOMING_READY, "HOMING_READY").withNone(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("HOMING_READY");
     HOMING =
         Commands.defer(
                 () -> new HomingCommand(),
@@ -163,29 +179,34 @@ public class SuperstructureCommands {
 
     HOLD =
         Commands.defer(
-            () -> new SuperstructureCommand(Superstructure.getSuperstructureState(), "HOLD"),
-            Set.of(
-                Subsystems.superstructure,
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller));
+                () -> new SuperstructureCommand(Superstructure.getSuperstructureState(), "HOLD"),
+                Set.of(
+                    Subsystems.superstructure,
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller))
+            .withName("HOLD");
 
     REJECT_CORAL =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.REJECT_CORAL, "REJECT_CORAL"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.REJECT_CORAL, "REJECT_CORAL"),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("REJECT_CORAL");
     REJECT_ALGAE =
         Commands.defer(
-            () -> new SuperstructureCommand(SuperstructureSetpoints.REJECT_ALGAE, "REJECT_ALGAE"),
-            Set.of(
-                Subsystems.elevator,
-                Subsystems.wrist,
-                Subsystems.roller,
-                Subsystems.superstructure));
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.REJECT_ALGAE, "REJECT_ALGAE"),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("REJECT_ALGAE");
 
     ALGAE_INTAKE =
         Commands.select(

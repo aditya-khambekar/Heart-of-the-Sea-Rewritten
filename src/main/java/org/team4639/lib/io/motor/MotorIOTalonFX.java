@@ -93,7 +93,7 @@ public class MotorIOTalonFX extends MotorIO {
 
   @Override
   protected void setMotionMagicSetpoint(Angle mechanismPosition) {
-    setControl(requestGetter.getMotionMagicRequest(mechanismPosition));
+    setControl(requestGetter.getMotionMagicRequestSlot0(mechanismPosition));
   }
 
   @Override
@@ -243,8 +243,12 @@ public class MotorIOTalonFX extends MotorIO {
       return new DutyCycleOut(percent.in(Units.Percent));
     }
 
-    public ControlRequest getMotionMagicRequest(Angle mechanismPosition) {
+    public ControlRequest getMotionMagicRequestSlot0(Angle mechanismPosition) {
       return new MotionMagicVoltage(mechanismPosition.in(Units.Rotations)).withSlot(0);
+    }
+
+    public ControlRequest getMotionMagicRequestSlot1(Angle mechanismPosition) {
+      return new MotionMagicVoltage(mechanismPosition.in(Units.Rotations)).withSlot(1);
     }
 
     public ControlRequest getVelocityRequest(AngularVelocity mechanismVelocity) {

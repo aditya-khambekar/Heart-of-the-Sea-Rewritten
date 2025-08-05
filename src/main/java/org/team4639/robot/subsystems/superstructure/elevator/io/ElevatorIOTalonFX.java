@@ -30,10 +30,6 @@ public class ElevatorIOTalonFX extends ElevatorIO {
 
     TalonFXConfiguration configuration =
         new TalonFXConfiguration()
-            .withMotionMagic(
-                new MotionMagicConfigs()
-                    .withMotionMagicAcceleration(elevatorAcceleration.get())
-                    .withMotionMagicCruiseVelocity(elevatorVelocity.get()))
             .withSlot0(
                 new Slot0Configs()
                     .withKP(elevatorKp.get() / 2.)
@@ -44,7 +40,11 @@ public class ElevatorIOTalonFX extends ElevatorIO {
                     .withKV(elevatorKv.get())
                     .withKG(elevatorKg.get())
                     .withGravityType(GravityTypeValue.Elevator_Static))
-            .withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(30));
+            .withMotionMagic(
+                new MotionMagicConfigs()
+                    .withMotionMagicAcceleration(elevatorAcceleration.get())
+                    .withMotionMagicCruiseVelocity(elevatorVelocity.get()));
+    configuration.withCurrentLimits(new CurrentLimitsConfigs().withStatorCurrentLimit(80));
 
     leftTalon.getConfigurator().apply(configuration);
     rightTalon.getConfigurator().apply(configuration);
@@ -55,6 +55,9 @@ public class ElevatorIOTalonFX extends ElevatorIO {
     // set left motor to follow right motor
     leftTalon.setControl(new Follower(rightMotorID, true));
     requestGetter = new MotorIOTalonFX.ControlRequestGetter();
+
+    leftTalon.setPosition(0);
+    rightTalon.setPosition(0);
   }
 
   @Override
@@ -95,7 +98,22 @@ public class ElevatorIOTalonFX extends ElevatorIO {
 
   @Override
   public void setMotionMagicSetpoint(Angle mechanismPosition) {
-    setControl(requestGetter.getMotionMagicRequest(mechanismPosition));
+    if (mechanismPosition.gte(rightTalon.getPosition().getValue())) {
+      rightTalon
+          .getConfigurator()
+          .apply(
+              new MotionMagicConfigs()
+                  .withMotionMagicAcceleration(elevatorAcceleration.get())
+                  .withMotionMagicCruiseVelocity(elevatorVelocity.get()));
+    } else {
+      rightTalon
+          .getConfigurator()
+          .apply(
+              new MotionMagicConfigs()
+                  .withMotionMagicAcceleration(elevatorAcceleration.get() / 6)
+                  .withMotionMagicCruiseVelocity(elevatorVelocity.get() / 1.5));
+    }
+    setControl(requestGetter.getMotionMagicRequestSlot0(mechanismPosition));
   }
 
   @Override

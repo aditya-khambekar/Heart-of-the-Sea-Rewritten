@@ -8,8 +8,12 @@ import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIO;
@@ -22,6 +26,12 @@ public class WristSubsystem extends SubsystemBase {
   LaserCanIO LaserCanIO;
   private Debouncer wristStoppedDebouncer = new Debouncer(0.5, DebounceType.kRising);
 
+  private AngularVelocity lastVelocity = RotationsPerSecond.zero();
+  private AngularVelocity currVelocity = RotationsPerSecond.mutable(0);
+  private double lastTimestamp = Timer.getFPGATimestamp();
+
+  private AngularAcceleration acceleration = RotationsPerSecondPerSecond.zero();
+
   public WristSubsystem(WristIO WristIO, LaserCanIO laserCanIO) {
     wristIOInputs = new WristIO.WristIOInputs();
     laserCanIOInputs = new LaserCanIO.LaserCanIOInputs();
@@ -29,7 +39,6 @@ public class WristSubsystem extends SubsystemBase {
     this.LaserCanIO = laserCanIO;
 
     SmartDashboard.putData("Wrist", wristIOInputs);
-    SmartDashboard.putBoolean("Algae", false);
   }
 
   @Override
@@ -38,6 +47,20 @@ public class WristSubsystem extends SubsystemBase {
     LaserCanIO.updateInputs(laserCanIOInputs);
 
     SmartDashboard.putNumber("Wrist Angle", this.getWristAngle().getDegrees());
+    SmartDashboard.putBoolean("LaserCAN Coral", hasCoral());
+
+    SmartDashboard.putNumber("LaserCAN Measurement", laserCanIOInputs.measurement.magnitude());
+
+    lastVelocity = currVelocity;
+    currVelocity = wristIOInputs.motorVelocity.copy();
+
+    acceleration =
+        (currVelocity.minus(lastVelocity))
+            .div(Seconds.of(Timer.getFPGATimestamp() - lastTimestamp));
+
+    lastTimestamp = Timer.getFPGATimestamp();
+    SmartDashboard.putNumber("Wrist Encoder Velo", currVelocity.in(RotationsPerSecond));
+    SmartDashboard.putNumber("Wrist Encoder Accel", acceleration.in(RotationsPerSecondPerSecond));
   }
 
   public void wristForward() {
@@ -60,12 +83,16 @@ public class WristSubsystem extends SubsystemBase {
     WristIO.setPosition(setpoint);
   }
 
+  public void setVoltage(Voltage voltage) {
+    WristIO.setVoltage(voltage);
+  }
+
   public Rotation2d getWristAngle() {
     return WristConstants.RotationToPosition.convertBackwards(wristIOInputs.motorPosition);
   }
 
   public boolean hasCoral() {
-    return laserCanIOInputs.measurement.in(Millimeter) < 20
+    return laserCanIOInputs.measurement.in(Millimeter) < 35
         && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT;
   }
 
@@ -82,5 +109,21 @@ public class WristSubsystem extends SubsystemBase {
   public boolean isWristStopped() {
     return wristStoppedDebouncer.calculate(
         MathUtil.isNear(0, wristIOInputs.motorVelocity.in(RotationsPerSecond), 0.3));
+  }
+
+  public AngularVelocity getEncoderVelocity() {
+    return currVelocity;
+  }
+
+  public AngularAcceleration getEncoderAcceleration() {
+    return acceleration;
+  }
+
+  public Angle getEncoderPosition() {
+    return wristIOInputs.motorPosition;
+  }
+
+  public Voltage getBusVoltage() {
+    return wristIOInputs.motorVoltage;
   }
 }

@@ -16,19 +16,19 @@ public class ReefTracker extends SubsystemBase {
   public ReefTracker() {}
 
   public void scoreL1Raw() {
-    reefs.get(currentReefPose)[0] = true;
+    // reefs.get(currentReefPose)[0] = true;
   }
 
   public void scoreL2Raw() {
-    reefs.get(currentReefPose)[1] = true;
+    // reefs.get(currentReefPose)[1] = true;
   }
 
   public void scoreL3Raw() {
-    reefs.get(currentReefPose)[2] = true;
+    // reefs.get(currentReefPose)[2] = true;
   }
 
   public void scoreL4Raw() {
-    reefs.get(currentReefPose)[3] = true;
+    // reefs.get(currentReefPose)[3] = true;
   }
 
   public int getRecommendedLevel() {

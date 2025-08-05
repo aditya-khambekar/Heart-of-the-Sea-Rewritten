@@ -1,9 +1,11 @@
 package org.team4639.lib.io.sensor.lasercan;
 
+import static edu.wpi.first.units.Units.Millimeter;
+
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface;
-import edu.wpi.first.units.Units;
+import java.util.Optional;
 
 public class LaserCanIOHardware extends LaserCanIO {
   private LaserCan sensor;
@@ -22,8 +24,14 @@ public class LaserCanIOHardware extends LaserCanIO {
   @Override
   public void updateInputs(LaserCanIOInputs inputs) {
     this.measurement = sensor.getMeasurement();
-    inputs.measurement = Units.Millimeter.of(measurement.distance_mm);
-    inputs.status = measurement.status;
+    inputs.measurement =
+        Optional.ofNullable(measurement)
+            .map(x -> Millimeter.of(x.distance_mm))
+            .orElse(Millimeter.zero());
+    inputs.status =
+        Optional.ofNullable(measurement)
+            .map(x -> x.status)
+            .orElse(LaserCan.LASERCAN_STATUS_WEAK_SIGNAL);
   }
 
   @Override

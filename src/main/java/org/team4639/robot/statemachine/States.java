@@ -1,8 +1,11 @@
 package org.team4639.robot.statemachine;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Commands;
 import org.team4639.lib.statebased.State;
 import org.team4639.robot.commands.AutoCommands;
 import org.team4639.robot.commands.DriveCommands;
@@ -42,6 +45,10 @@ public class States {
   public static State REJECT_CORAL;
   public static State REJECT_ALGAE;
   public static State MICROADJUSTMENTS;
+
+  public static State TEST_IDLE;
+  public static State TEST_INTAKE;
+  public static State TEST_L4;
 
   public static void initStaticStates() {
     IDLE =
@@ -280,6 +287,23 @@ public class States {
         new State("MICROADJUSTMENTS")
             .whileTrue(new MicroAdjustmentCommand(), DriveCommands.stopWithX())
             .onEmergency(() -> CORAL_STOW);
+
+    TEST_IDLE = new State("TEST_IDLE");
+
+    /*TEST_IDLE
+        .trigger()
+        .and(RobotContainer.driver.a())
+        .whileTrue(SuperstructureCommands.ELEVATOR_READY);
+    TEST_IDLE.trigger().and(RobotContainer.driver.b()).whileTrue(SuperstructureCommands.L4);*/
+    SmartDashboard.putNumber("Roller Voltage", 0);
+
+    TEST_IDLE
+        .trigger()
+        .and(RobotContainer.driver.a())
+        .onTrue(
+            Commands.run(() -> Subsystems.roller.setVoltage(Volts.of(-5)))
+                .until(() -> Subsystems.roller.getInputs().motorCurrent.gte(Amps.of(78)))
+                .andThen(Commands.run(() -> Subsystems.roller.setVoltage(Volts.of(-1)))));
   }
 
   public static State pathFindToReef(FieldConstants.TargetPositions reef) {

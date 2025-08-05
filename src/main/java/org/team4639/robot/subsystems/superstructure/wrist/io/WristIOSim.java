@@ -10,6 +10,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -92,5 +93,10 @@ public class WristIOSim extends WristIO {
                 wristPIDController.getSetpoint().position,
                 wristPIDController.getSetpoint().velocity));
     pivotSim.update(0.02);
+  }
+
+  @Override
+  public void setVoltage(Voltage voltage) {
+    pivotSim.setInputVoltage(voltage.in(Volts));
   }
 }

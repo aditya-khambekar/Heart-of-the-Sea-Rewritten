@@ -102,4 +102,8 @@ public class State {
   public String toString() {
     return name;
   }
+
+  public Trigger trigger() {
+    return new Trigger(() -> StateMachine.getState() == this);
+  }
 }

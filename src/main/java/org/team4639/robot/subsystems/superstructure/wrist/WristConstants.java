@@ -13,8 +13,8 @@ public class WristConstants {
   public static final Rotation2d MAX_ROTATION = Rotation2d.fromDegrees(230);
   public static final Rotation2d IDLE_ROTATION = Rotation2d.fromDegrees(30);
 
-  @Untuned public static final Angle MAX_POSITION = Rotations.of(-31.846);
-  @Untuned public static final Angle MIN_POSITION = Rotations.of(0);
+  @Untuned public static final Angle MAX_POSITION = Rotations.of(0.047);
+  @Untuned public static final Angle MIN_POSITION = Rotations.of(0.960);
 
   public static final Rotation2d TRANSITION_ROTATION = Rotation2d.fromDegrees(145);
 
@@ -22,13 +22,11 @@ public class WristConstants {
 
   @Untuned
   public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_LOW =
-      new Pair<>(
-          TRANSITION_ROTATION.plus(Rotation2d.fromDegrees(25)),
-          TRANSITION_ROTATION.minus(Rotation2d.fromDegrees(25)));
+      new Pair<>(Rotation2d.fromDegrees(145), Rotation2d.fromDegrees(95));
 
   @Untuned
   public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_HIGH =
-      new Pair<>(MAX_ROTATION, TRANSITION_ROTATION.minus(Rotation2d.fromDegrees(25)));
+      new Pair<>(MAX_ROTATION, Rotation2d.fromDegrees(95));
 
   @Untuned
   public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_INTERIOR =

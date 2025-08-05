@@ -14,6 +14,7 @@ public abstract class WristIO {
     public MutAngularVelocity motorVelocity = RadiansPerSecond.mutable(0);
     public MutTemperature motorTemperature = Celsius.mutable(0);
     public MutCurrent motorCurrent = Amps.mutable(0);
+    public MutVoltage motorVoltage = Volts.mutable(0);
 
     @Override
     public void initSendable(SendableBuilder builder) {
@@ -47,4 +48,6 @@ public abstract class WristIO {
   public abstract void setDutyCycleOutput(Dimensionless percent);
 
   public abstract void setPosition(Angle position);
+
+  public abstract void setVoltage(Voltage voltage);
 }

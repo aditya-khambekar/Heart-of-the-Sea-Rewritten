@@ -2,27 +2,59 @@ package org.team4639.robot.subsystems.superstructure.wrist.io;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
+import com.revrobotics.spark.config.AbsoluteEncoderConfig;
+import com.revrobotics.spark.config.SoftLimitConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.team4639.robot.robot.Subsystems;
+import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
 
 public class WristIOSparkFlex extends WristIO {
   SparkFlex sparkFlex;
   ProfiledPIDController wristPIDController;
 
+  ArmFeedforward withoutCoral;
+  ArmFeedforward withCoral;
+
   public WristIOSparkFlex(int ID) {
     sparkFlex = new SparkFlex(ID, SparkLowLevel.MotorType.kBrushless);
 
     wristPIDController =
-        new ProfiledPIDController(40, 0, 0, new TrapezoidProfile.Constraints(60, 180));
+        new ProfiledPIDController(48, 0, 0, new TrapezoidProfile.Constraints(60, 180));
 
     SmartDashboard.putData("Wrist PID Controller", wristPIDController);
 
-    // TODO: reset PID
+    sparkFlex.configure(
+        new SparkFlexConfig()
+            .apply(
+                new SoftLimitConfig()
+                    .forwardSoftLimit(
+                        WristConstants.RotationToPosition.convert(Rotation2d.fromDegrees(31))
+                            .in(Rotation))
+                    .reverseSoftLimit(
+                        WristConstants.RotationToPosition.convert(Rotation2d.fromDegrees(229))
+                            .in(Rotation))),
+        ResetMode.kNoResetSafeParameters,
+        PersistMode.kNoPersistParameters);
+
+    sparkFlex.configure(
+        new SparkFlexConfig().apply(new AbsoluteEncoderConfig().zeroOffset(0.4)),
+        ResetMode.kNoResetSafeParameters,
+        PersistMode.kPersistParameters);
+
+    withoutCoral = new ArmFeedforward(0, 0.22, 0);
+    withCoral = new ArmFeedforward(0, 0.28, 0);
   }
 
   @Override
@@ -32,6 +64,7 @@ public class WristIOSparkFlex extends WristIO {
     inputs.motorTemperature.mut_replace(Celsius.of(sparkFlex.getMotorTemperature()));
     inputs.motorVelocity.mut_replace(
         RotationsPerSecond.of(sparkFlex.getAbsoluteEncoder().getVelocity() / 60.));
+    inputs.motorVoltage.mut_replace(Volts.of(sparkFlex.getBusVoltage()));
   }
 
   @Override
@@ -42,6 +75,16 @@ public class WristIOSparkFlex extends WristIO {
   @Override
   public void setPosition(Angle position) {
     wristPIDController.setGoal(position.in(Rotations));
-    sparkFlex.set(wristPIDController.calculate(sparkFlex.getAbsoluteEncoder().getPosition()));
+    sparkFlex.setVoltage(
+        (Subsystems.wrist.hasCoral() ? withCoral : withoutCoral)
+                .calculate(
+                    Subsystems.wrist.getWristAngle().minus(Rotation2d.fromDegrees(35)).getRadians(),
+                    0)
+            + wristPIDController.calculate(sparkFlex.getAbsoluteEncoder().getPosition()));
+  }
+
+  @Override
+  public void setVoltage(Voltage voltage) {
+    sparkFlex.setVoltage(voltage);
   }
 }
