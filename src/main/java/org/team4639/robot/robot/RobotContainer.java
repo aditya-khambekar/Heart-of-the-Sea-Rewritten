@@ -47,7 +47,6 @@ import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.constants.IDs;
 import org.team4639.robot.statemachine.States;
-import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.LimelightFlash;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;

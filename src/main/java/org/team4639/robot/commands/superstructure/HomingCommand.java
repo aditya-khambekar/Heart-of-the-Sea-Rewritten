@@ -1,11 +1,11 @@
 package org.team4639.robot.commands.superstructure;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.RobotBase;
 import org.team4639.robot.robot.Subsystems;
-
-import static edu.wpi.first.units.Units.*;
 
 public class HomingCommand extends SuperstructureCommandBase {
   private Debouncer stoppedDebouncer = new Debouncer(0.5, Debouncer.DebounceType.kRising);
@@ -25,7 +25,9 @@ public class HomingCommand extends SuperstructureCommandBase {
   public boolean isFinished() {
     return stoppedDebouncer.calculate(
         RobotBase.isReal()
-            ? Subsystems.elevator.getInputs().leftMotorTorqueCurrent.abs(Amps) > 5 && MathUtil.isNear(0, Subsystems.elevator.getMotorSpeed().in(RotationsPerSecond), 0.2)
+            ? Subsystems.elevator.getInputs().leftMotorTorqueCurrent.abs(Amps) > 5
+                && MathUtil.isNear(
+                    0, Subsystems.elevator.getMotorSpeed().in(RotationsPerSecond), 0.2)
             : Subsystems.elevator.getPercentage().in(Value) <= 0);
   }
 

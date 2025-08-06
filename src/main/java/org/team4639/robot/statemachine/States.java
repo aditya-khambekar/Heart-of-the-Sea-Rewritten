@@ -17,6 +17,7 @@ import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.modaltriggers.DriveTriggers;
 import org.team4639.robot.robot.RobotContainer;
 import org.team4639.robot.robot.Subsystems;
+import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
 
@@ -107,7 +108,7 @@ public class States {
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
-                Subsystems.dashboardOutputs.displayUpcomingReefLevel(),
+                DashboardOutputs.getInstance().displayUpcomingReefLevel(),
                 LEDCommands.aligning())
             .onTrigger(Controls.alignRight, () -> States.CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
@@ -121,7 +122,7 @@ public class States {
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
-                Subsystems.dashboardOutputs.displayUpcomingReefLevel(),
+                DashboardOutputs.getInstance().displayUpcomingReefLevel(),
                 LEDCommands.aligning())
             .onTrigger(Controls.alignLeft, () -> States.CORAL_SCORE_ALIGN_LEFT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
@@ -162,13 +163,13 @@ public class States {
             .withEndCondition(Controls.alignRight, () -> CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .withEndCondition(
-                () -> Subsystems.dashboardOutputs.upcomingReefLevel() == 1, () -> L1_CORAL_SCORE)
+                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 1, () -> L1_CORAL_SCORE)
             .withEndCondition(
-                () -> Subsystems.dashboardOutputs.upcomingReefLevel() == 2, () -> L2_CORAL_SCORE)
+                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 2, () -> L2_CORAL_SCORE)
             .withEndCondition(
-                () -> Subsystems.dashboardOutputs.upcomingReefLevel() == 3, () -> L3_CORAL_SCORE)
+                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 3, () -> L3_CORAL_SCORE)
             .withEndCondition(
-                () -> Subsystems.dashboardOutputs.upcomingReefLevel() == 4, () -> L4_CORAL_SCORE);
+                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 4, () -> L4_CORAL_SCORE);
 
     L1_CORAL_SCORE =
         new State("L1_CORAL_SCORE")
