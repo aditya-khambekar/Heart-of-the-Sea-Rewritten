@@ -8,8 +8,6 @@ import org.team4639.lib.led.pattern.LEDPattern;
 public abstract class LEDStrip extends SubsystemBase {
   public abstract void setPattern(LEDPattern pattern);
 
-  public abstract void doResetTime();
-
   public abstract void update();
 
   @Override
@@ -19,10 +17,6 @@ public abstract class LEDStrip extends SubsystemBase {
 
   public void resetToBlank() {
     setPattern(LEDPattern.BLANK);
-  }
-
-  public Command resetTime() {
-    return runOnce(this::doResetTime).ignoringDisable(true);
   }
 
   public Command usePattern(LEDPattern pattern) {

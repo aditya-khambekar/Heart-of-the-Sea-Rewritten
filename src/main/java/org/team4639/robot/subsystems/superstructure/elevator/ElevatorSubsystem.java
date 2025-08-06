@@ -31,7 +31,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void elevatorDown() {
-    io.setDutyCycleSetpoint(Percent.of(-0.1));
+    io.setDutyCycleSetpoint(Percent.of(-0.05));
   }
 
   public void elevatorStop() {
@@ -77,5 +77,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   public boolean isElevatorPhysicallyStopped() {
     return stoppedDebouncer.calculate(
         MathUtil.isNear(0, Subsystems.elevator.getMotorSpeed().in(RotationsPerSecond), 0.1));
+  }
+
+  public ElevatorIO.ElevatorIOInputs getInputs() {
+    return elevatorIOInputs;
   }
 }

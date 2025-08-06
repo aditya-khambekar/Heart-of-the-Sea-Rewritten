@@ -84,8 +84,8 @@ public class AutoGenerator {
         case IN_CORAL -> (pathCommand
                 .andThen(
                     switch (ending) {
-                      case LHP -> DriveCommands.coralStationAlignLeft(Subsystems.drive);
-                      case RHP -> DriveCommands.coralStationAlignRight(Subsystems.drive);
+                      case LHP -> DriveCommands.HPLeftAlign(Subsystems.drive);
+                      case RHP -> DriveCommands.HPRightAlign(Subsystems.drive);
                       default -> throw new IllegalArgumentException("what the fuck");
                     })
                 .andThen(DriveCommands.stopWithX().withTimeout(0.5)))

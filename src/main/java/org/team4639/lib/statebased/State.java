@@ -19,6 +19,7 @@ public class State {
   Supplier<State> onTimeout;
   Map<BooleanSupplier, Supplier<State>> endConditions;
   private final MutTime timeout;
+  private Trigger trigger;
 
   public State(String name) {
     this.name = name;
@@ -105,5 +106,34 @@ public class State {
 
   public Trigger trigger() {
     return new Trigger(() -> StateMachine.getState() == this);
+  }
+
+  public Trigger getTrigger() {
+    return trigger =
+        Objects.requireNonNullElse(trigger, new Trigger(() -> StateMachine.getState() == this));
+  }
+
+  public Trigger and(BooleanSupplier other) {
+    return getTrigger().and(other);
+  }
+
+  public State mapEndConditions(Map<BooleanSupplier, Supplier<State>> endConditions) {
+    endConditions.forEach(this::withEndCondition);
+    return this;
+  }
+
+  public State mapTriggerEndConditions(Map<Trigger, Supplier<State>> endConditions) {
+    endConditions.forEach(this::onTrigger);
+    return this;
+  }
+
+  public State mapTriggerCommandsWhileTrue(Map<Trigger, Command> triggerCommandMap) {
+    triggerCommandMap.forEach((t, c) -> this.and(t).whileTrue(c));
+    return this;
+  }
+
+  public State mapTriggerCommandsOnTrue(Map<Trigger, Command> triggerCommandMap) {
+    triggerCommandMap.forEach((t, c) -> this.and(t).onTrue(c));
+    return this;
   }
 }

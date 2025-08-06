@@ -49,7 +49,6 @@ import org.team4639.robot.constants.IDs;
 import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.LimelightFlash;
-import org.team4639.robot.subsystems.ReefTracker;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
@@ -171,8 +170,6 @@ public class RobotContainer {
         break;
     }
 
-    Subsystems.dashboardOutputs = new DashboardOutputs();
-    Subsystems.reefTracker = new ReefTracker();
     Subsystems.superstructure = new Superstructure();
     Subsystems.limelightFlash = new LimelightFlash(VisionConstants.cameraBackName);
     Subsystems.leds = new PhysicalLEDStrip(9, 96);
@@ -185,7 +182,6 @@ public class RobotContainer {
     SuperstructureCommands.initCommands();
     FieldConstants.init();
     FieldConstants.initAlgaeLocations();
-    Subsystems.reefTracker.resetReefTracker();
     States.initStaticStates();
     // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
     double x = FieldConstants.fieldLength;
@@ -195,6 +191,18 @@ public class RobotContainer {
 
     // Set up SysId routines
     autoChooser.addOption("TEST_1MTR", AutoFactory.TEST_1MTR());
+
+    /*autoChooser.addOption(
+        "(ALGAE_LEFT) MS_G4_ALGH_ALGSC1_ALIJ_ALGSC2", AutoFactory.MS_G4_ALGH_ALGSC1_ALIJ_ALGSC2());
+    autoChooser.addOption("(R4-A) RS-F4-E4-D4-C4", AutoFactory.RS_F4_E4_D4_C4());
+    autoChooser.addOption("(R4-B) RS-F4-D4-C4-E4", AutoFactory.RS_F4_D4_C4_E4());
+    autoChooser.addOption("(R3-A) RS-F4-E4-D4", AutoFactory.RS_F4_E4_D4());
+    autoChooser.addOption("(R3-B) RS-E4-D4-C4", AutoFactory.RS_E4_D4_C4());
+    autoChooser.addOption("(L4-A) LS-I4-J4-K4-L4", AutoFactory.LS_I4_J4_K4_L4());
+    autoChooser.addOption("(L4-B) LS-I4-K4-L4-J4", AutoFactory.LS_I4_K4_L4_J4());
+    autoChooser.addOption("(L3-A) LS-I4-J4-K4", AutoFactory.LS_I4_J4_K4());
+    autoChooser.addOption("(L3-B) LS-J4-K4-L4", AutoFactory.LS_J4_K4_L4());*/
+
     autoChooser.addOption(
         "MS_G_ALGH_ALGSC1_ALIJ_ALGSC2", AutoFactory.MS_G_ALGH_ALGSC1_ALIJ_ALGSC2());
     autoChooser.addOption("RS-F-E-D-C", AutoFactory.RS_F_E_D_C());
@@ -203,6 +211,7 @@ public class RobotContainer {
     autoChooser.addOption("LS-I-J-K-L", AutoFactory.LS_I_J_K_L());
     autoChooser.addOption("LS-I-J-K", AutoFactory.LS_I_J_K());
     autoChooser.addOption("LS-J-K-L", AutoFactory.LS_J_K_L());
+
     autoChooser.addOption(
         "Drive Wheel Radius Characterization",
         DriveCommands.wheelRadiusCharacterization(Subsystems.drive));
@@ -242,10 +251,7 @@ public class RobotContainer {
     // Default command, normal field-relative drive
     Subsystems.drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-                Subsystems.drive,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
-                () -> -driver.getRightX())
+                () -> -driver.getLeftY(), () -> -driver.getLeftX(), () -> -driver.getRightX())
             .withName("Drive Joystick"));
   }
 

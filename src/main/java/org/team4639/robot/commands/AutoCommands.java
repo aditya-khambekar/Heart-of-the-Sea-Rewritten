@@ -15,33 +15,52 @@ import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
 
-public class AutoCommands {
+public final class AutoCommands {
   public static Command scoreL4(Pose2d pose) {
-    return (Subsystems.reefTracker.setCurrentReefPoseCommand(pose))
+    return (((Subsystems.drive
+                .defer(() -> DriveCommands.PIDToReefPose(pose))
+                .deadlineFor(SuperstructureCommands.elevatorReady()))
+            .andThen(
+                Subsystems.drive
+                    .defer(DriveCommands::stopWithX)
+                    .alongWith(SuperstructureCommands.l4()))
+            .until(Subsystems.wrist::doesNotHaveCoral))
         .andThen(
-            ((Subsystems.drive
-                        .defer(
-                            () ->
-                                DriveCommands.PIDtoReefWithVelocityReset(
-                                    Subsystems.drive, Subsystems.drive.getPose(), pose))
-                        .deadlineFor(SuperstructureCommands.elevatorReady()))
-                    .andThen(
-                        Subsystems.drive
-                            .defer(DriveCommands::stopWithX)
-                            .alongWith(SuperstructureCommands.l4()))
-                    .until(Subsystems.wrist::doesNotHaveCoral))
-                .andThen(
-                    SuperstructureCommands.idle()
-                        .until(() -> Subsystems.elevator.getPercentage().lte(Value.of(0.5)))))
-        .finallyDo(Subsystems.reefTracker::scoreL4Raw);
+            SuperstructureCommands.idle()
+                .until(() -> Subsystems.elevator.getPercentage().lte(Value.of(0.5)))));
+  }
+
+  public static Command scoreL3(Pose2d pose) {
+    return (((Subsystems.drive
+                .defer(() -> DriveCommands.PIDToReefPose(pose))
+                .deadlineFor(SuperstructureCommands.elevatorReady()))
+            .andThen(
+                Subsystems.drive
+                    .defer(DriveCommands::stopWithX)
+                    .alongWith(SuperstructureCommands.l3()))
+            .until(Subsystems.wrist::doesNotHaveCoral))
+        .andThen(
+            SuperstructureCommands.idle()
+                .until(() -> Subsystems.elevator.getPercentage().lte(Value.of(0.5)))));
+  }
+
+  public static Command scoreL2(Pose2d pose) {
+    return (((Subsystems.drive
+                .defer(() -> DriveCommands.PIDToReefPose(pose))
+                .deadlineFor(SuperstructureCommands.coralStow()))
+            .andThen(
+                Subsystems.drive
+                    .defer(DriveCommands::stopWithX)
+                    .alongWith(SuperstructureCommands.l2()))
+            .until(Subsystems.wrist::doesNotHaveCoral))
+        .andThen(
+            SuperstructureCommands.idle()
+                .until(() -> Subsystems.elevator.getPercentage().lte(Value.of(0.5)))));
   }
 
   public static Command scoreBarge(Pose2d pose) {
     return (Subsystems.drive
-            .defer(
-                () ->
-                    DriveCommands.PIDtowithVelocityReset(
-                        Subsystems.drive, Subsystems.drive.getPose(), pose))
+            .defer(() -> DriveCommands.PIDToPose(pose))
             .deadlineFor(SuperstructureCommands.algaeStow()))
         .andThen(
             (SuperstructureCommands.barge().withExecutionTimeout(Seconds.of(0.75)).flashOnDone())
@@ -54,18 +73,13 @@ public class AutoCommands {
         .flashOnDone();
   }
 
-  /**
-   * Intended to be used after reef center align
-   *
-   * @return
-   */
+  /** Intended to be used after reef center align */
+  // TODO: move this somewhere more appropriate since its used in teleop too
   public static Command algaeIntakeSequence() {
     return Subsystems.drive
         .defer(
             () ->
-                DriveCommands.PIDtowithVelocityReset(
-                    Subsystems.drive,
-                    Subsystems.drive.getPose(),
+                DriveCommands.PIDToPose(
                     Subsystems.drive
                         .getPose()
                         .nearest(
@@ -83,9 +97,7 @@ public class AutoCommands {
             Subsystems.drive
                 .defer(
                     () ->
-                        DriveCommands.PIDtowithVelocityReset(
-                            Subsystems.drive,
-                            Subsystems.drive.getPose(),
+                        DriveCommands.PIDToPose(
                             Subsystems.drive
                                 .getPose()
                                 .nearest(

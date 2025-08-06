@@ -57,40 +57,18 @@ public class States {
             .onTrigger(DriveTriggers.closeToRightStation, () -> HP_RIGHT)
             .onTrigger(DriveTriggers.closeToLeftStation, () -> HP_LEFT)
             .withEndCondition(Controls.intake, () -> HP_NODIR)
-            .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW)
-            .withEndCondition(Controls.LEFT_HP, States::pathFindToHPLeft)
-            .withEndCondition(Controls.RIGHT_HP, States::pathFindToHPRight)
-            .withEndCondition(
-                Controls.REEF_AB,
-                () -> States.pathFindToReefAlgae(FieldConstants.TargetPositions.REEF_AB))
-            .withEndCondition(
-                Controls.REEF_CD,
-                () -> States.pathFindToReefAlgae(FieldConstants.TargetPositions.REEF_CD))
-            .withEndCondition(
-                Controls.REEF_EF,
-                () -> States.pathFindToReefAlgae(FieldConstants.TargetPositions.REEF_EF))
-            .withEndCondition(
-                Controls.REEF_GH,
-                () -> States.pathFindToReefAlgae(FieldConstants.TargetPositions.REEF_GH))
-            .withEndCondition(
-                Controls.REEF_IJ,
-                () -> States.pathFindToReefAlgae(FieldConstants.TargetPositions.REEF_IJ))
-            .withEndCondition(
-                Controls.REEF_KL,
-                () -> States.pathFindToReefAlgae(FieldConstants.TargetPositions.REEF_KL));
+            .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW);
 
     HP_LEFT =
         new State("HP_LEFT")
-            .whileTrue(
-                DriveCommands.coralStationAlignLeft(Subsystems.drive), SuperstructureCommands.HP)
+            .whileTrue(DriveCommands.HPLeftAlign(Subsystems.drive), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER)
             .onTrigger(Controls.secondIntake, () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
 
     HP_RIGHT =
         new State("HP_RIGHT")
-            .whileTrue(
-                DriveCommands.coralStationAlignRight(Subsystems.drive), SuperstructureCommands.HP)
+            .whileTrue(DriveCommands.HPRightAlign(Subsystems.drive), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER)
             .onTrigger(Controls.secondIntake, () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
@@ -111,7 +89,6 @@ public class States {
             .whileTrue(
                 SuperstructureCommands.CORAL_STOW,
                 DriveCommands.joystickDriveAtAngle(
-                    Subsystems.drive,
                     () -> -RobotContainer.driver.getLeftY(),
                     () -> -RobotContainer.driver.getLeftX(),
                     () ->
@@ -120,43 +97,19 @@ public class States {
                 LEDCommands.hasCoral())
             .onTrigger(Controls.alignLeft, () -> CORAL_SCORE_ALIGN_LEFT)
             .onTrigger(Controls.alignRight, () -> CORAL_SCORE_ALIGN_RIGHT)
-            .onTrigger(Controls.REEF_A, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_A))
-            .onTrigger(Controls.REEF_B, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_B))
-            .onTrigger(Controls.REEF_C, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_C))
-            .onTrigger(Controls.REEF_D, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_D))
-            .onTrigger(Controls.REEF_E, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_E))
-            .onTrigger(Controls.REEF_F, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_F))
-            .onTrigger(Controls.REEF_G, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_G))
-            .onTrigger(Controls.REEF_H, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_H))
-            .onTrigger(Controls.REEF_I, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_I))
-            .onTrigger(Controls.REEF_J, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_J))
-            .onTrigger(Controls.REEF_K, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_K))
-            .onTrigger(Controls.REEF_L, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_L))
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> REJECT_CORAL);
 
     CORAL_SCORE_ALIGN_LEFT =
         new State("CORAL_SCORE_ALIGN_LEFT")
             .withDeadline(
-                Subsystems.drive.defer(() -> DriveCommands.reefAlignLeft(Subsystems.drive)),
+                Subsystems.drive.defer(() -> DriveCommands.alignToNearestReefLeft()),
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
                 Subsystems.dashboardOutputs.displayUpcomingReefLevel(),
                 LEDCommands.aligning())
             .onTrigger(Controls.alignRight, () -> States.CORAL_SCORE_ALIGN_RIGHT)
-            .onTrigger(Controls.REEF_A, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_A))
-            .onTrigger(Controls.REEF_B, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_B))
-            .onTrigger(Controls.REEF_C, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_C))
-            .onTrigger(Controls.REEF_D, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_D))
-            .onTrigger(Controls.REEF_E, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_E))
-            .onTrigger(Controls.REEF_F, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_F))
-            .onTrigger(Controls.REEF_G, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_G))
-            .onTrigger(Controls.REEF_H, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_H))
-            .onTrigger(Controls.REEF_I, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_I))
-            .onTrigger(Controls.REEF_J, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_J))
-            .onTrigger(Controls.REEF_K, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_K))
-            .onTrigger(Controls.REEF_L, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_L))
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
@@ -164,25 +117,13 @@ public class States {
     CORAL_SCORE_ALIGN_RIGHT =
         new State("CORAL_SCORE_ALIGN_RIGHT")
             .withDeadline(
-                Subsystems.drive.defer(() -> DriveCommands.reefAlignRight(Subsystems.drive)),
+                Subsystems.drive.defer(() -> DriveCommands.alignToNearestReefRight()),
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
                 SuperstructureCommands.ELEVATOR_READY,
                 Subsystems.dashboardOutputs.displayUpcomingReefLevel(),
                 LEDCommands.aligning())
             .onTrigger(Controls.alignLeft, () -> States.CORAL_SCORE_ALIGN_LEFT)
-            .onTrigger(Controls.REEF_A, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_A))
-            .onTrigger(Controls.REEF_B, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_B))
-            .onTrigger(Controls.REEF_C, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_C))
-            .onTrigger(Controls.REEF_D, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_D))
-            .onTrigger(Controls.REEF_E, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_E))
-            .onTrigger(Controls.REEF_F, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_F))
-            .onTrigger(Controls.REEF_G, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_G))
-            .onTrigger(Controls.REEF_H, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_H))
-            .onTrigger(Controls.REEF_I, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_I))
-            .onTrigger(Controls.REEF_J, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_J))
-            .onTrigger(Controls.REEF_K, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_K))
-            .onTrigger(Controls.REEF_L, () -> pathFindToReef(FieldConstants.TargetPositions.REEF_L))
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW);
@@ -190,7 +131,7 @@ public class States {
     ALIGN_ALGAE =
         new State("ALIGN_ALGAE")
             .withDeadline(
-                Subsystems.drive.defer(() -> DriveCommands.reefAlign(Subsystems.drive)),
+                Subsystems.drive.defer(() -> DriveCommands.alignToNearestReef()),
                 () -> ALGAE_INTAKE)
             .whileTrue(SuperstructureCommands.ALGAE_INTAKE)
             .onEmergency(() -> IDLE)
@@ -304,47 +245,6 @@ public class States {
             Commands.run(() -> Subsystems.roller.setVoltage(Volts.of(-5)))
                 .until(() -> Subsystems.roller.getInputs().motorCurrent.gte(Amps.of(78)))
                 .andThen(Commands.run(() -> Subsystems.roller.setVoltage(Volts.of(-1)))));
-  }
-
-  public static State pathFindToReef(FieldConstants.TargetPositions reef) {
-    var pose = reef.getPose();
-    return new State("PATHFIND_TO_REEF")
-        .withDeadline(
-            DriveCommands.pathFindToReef(Subsystems.drive, pose), () -> CHOOSE_CORAL_LEVEL)
-        .whileTrue(
-            SuperstructureCommands.ELEVATOR_READY,
-            Subsystems.dashboardOutputs.displayUpcomingReefLevel())
-        .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
-        .onEmergency(() -> CORAL_STOW);
-  }
-
-  public static State pathFindToHPLeft() {
-    return new State("PATHFIND_TO_HP_LEFT")
-        .withDeadline(
-            DriveCommands.pathFindToHP(
-                Subsystems.drive, FieldConstants.TargetPositions.CORALSTATION_LEFT.getPose()),
-            () -> HP_LEFT)
-        .whileTrue(SuperstructureCommands.HP)
-        .onEmergency(() -> IDLE);
-  }
-
-  public static State pathFindToHPRight() {
-    return new State("PATHFIND_TO_HP_RIGHT")
-        .withDeadline(
-            DriveCommands.pathFindToHP(
-                Subsystems.drive, FieldConstants.TargetPositions.CORALSTATION_RIGHT.getPose()),
-            () -> HP_RIGHT)
-        .whileTrue(SuperstructureCommands.HP)
-        .onEmergency(() -> IDLE);
-  }
-
-  public static State pathFindToReefAlgae(FieldConstants.TargetPositions reefCenter) {
-    return new State("PATHFIND_TO_REEF_CENTER")
-        .withDeadline(
-            DriveCommands.pathFindToReefCenter(Subsystems.drive, reefCenter.getPose()),
-            () -> ALGAE_INTAKE)
-        .whileTrue(SuperstructureCommands.algaeIntake(reefCenter.getPose()))
-        .onEmergency(() -> IDLE);
   }
 
   public static State determineState() {

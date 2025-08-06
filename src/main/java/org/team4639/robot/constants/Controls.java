@@ -8,15 +8,15 @@ public class Controls {
   public static final Trigger secondIntake = RobotContainer.driver.a();
   public static final Trigger emergency = RobotContainer.driver.y();
 
-  public static final Trigger alignLeft = RobotContainer.driver.leftBumper();
-  public static final Trigger alignRight = RobotContainer.driver.rightBumper();
+  public static final Trigger alignLeft = RobotContainer.driver.povLeft();
+  public static final Trigger alignRight = RobotContainer.driver.povRight();
 
   public static final Trigger resetGyro = RobotContainer.driver.leftStick();
 
-  public static final Trigger L1Coral = RobotContainer.operator.leftTrigger();
-  public static final Trigger L2Coral = RobotContainer.operator.leftBumper();
-  public static final Trigger L3Coral = RobotContainer.operator.rightBumper();
-  public static final Trigger L4Coral = RobotContainer.operator.rightTrigger();
+  public static final Trigger L1CoralScore = RobotContainer.driver.leftTrigger();
+  public static final Trigger L2CoralScore = RobotContainer.driver.leftBumper();
+  public static final Trigger L3CoralScore = RobotContainer.driver.rightBumper();
+  public static final Trigger L4CoralScore = RobotContainer.driver.rightTrigger();
 
   public static final Trigger outtake = RobotContainer.driver.a();
 

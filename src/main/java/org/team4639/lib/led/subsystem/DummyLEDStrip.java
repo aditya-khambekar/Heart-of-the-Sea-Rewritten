@@ -17,8 +17,5 @@ public class DummyLEDStrip extends LEDStrip {
   public void setPattern(LEDPattern pattern) {}
 
   @Override
-  public void doResetTime() {}
-
-  @Override
   public void update() {}
 }

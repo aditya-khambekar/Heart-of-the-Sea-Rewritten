@@ -46,11 +46,7 @@ public class TeleopPathGenerator {
               .until(
                   () ->
                       PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters) < 2.5)
-              .andThen(
-                  Subsystems.drive.defer(
-                      () ->
-                          DriveCommands.PIDtoReefWithVelocityReset(
-                              Subsystems.drive, Subsystems.drive.getPose(), endingPose))))
+              .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToReefPose(endingPose))))
           .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(endingPose));
     }
 
@@ -62,11 +58,7 @@ public class TeleopPathGenerator {
             () ->
                 PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters)
                     < alignDistanceMeters)
-        .andThen(
-            Subsystems.drive.defer(
-                () ->
-                    DriveCommands.PIDtoReefWithVelocityReset(
-                        Subsystems.drive, Subsystems.drive.getPose(), endingPose)))
+        .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToReefPose(endingPose)))
         .beforeStarting(Subsystems.reefTracker.setCurrentReefPoseCommand(endingPose));
   }
 
@@ -92,11 +84,7 @@ public class TeleopPathGenerator {
                       MetersPerSecond.of(1)))
           .until(
               () -> PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters) < 1.5)
-          .andThen(
-              Subsystems.drive.defer(
-                  () ->
-                      DriveCommands.PIDtowithVelocityReset(
-                          Subsystems.drive, Subsystems.drive.getPose(), endingPose))));
+          .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToPose(endingPose))));
     }
 
     var alignDistanceMeters =
@@ -107,11 +95,7 @@ public class TeleopPathGenerator {
             () ->
                 PoseUtil.getDistance(Subsystems.drive.getPose(), endingPose).in(Meters)
                     < alignDistanceMeters)
-        .andThen(
-            Subsystems.drive.defer(
-                () ->
-                    DriveCommands.PIDtowithVelocityReset(
-                        Subsystems.drive, Subsystems.drive.getPose(), endingPose)));
+        .andThen(Subsystems.drive.defer(() -> DriveCommands.PIDToPose(endingPose)));
   }
 
   public static Command getPathCommand(ReefPathLocations starting, ReefPathLocations ending) {

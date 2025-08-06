@@ -262,9 +262,9 @@ public class FieldConstants {
 
     PROCESSOR(FieldConstants.Processor.centerFace.transformBy(FieldConstants.fromProcessor)),
 
-    CORALSTATION_LEFT(
+    HP_LEFT(
         FieldConstants.CoralStation.leftCenterFace.transformBy(FieldConstants.fromCoralStation)),
-    CORALSTATION_RIGHT(
+    HP_RIGHT(
         FieldConstants.CoralStation.rightCenterFace.transformBy(FieldConstants.fromCoralStation)),
 
     BARGE_FARCAGE(

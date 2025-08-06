@@ -7,7 +7,6 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.config.AbsoluteEncoderConfig;
-import com.revrobotics.spark.config.SoftLimitConfig;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -18,7 +17,6 @@ import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team4639.robot.robot.Subsystems;
-import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
 
 public class WristIOSparkFlex extends WristIO {
   SparkFlex sparkFlex;
@@ -34,19 +32,6 @@ public class WristIOSparkFlex extends WristIO {
         new ProfiledPIDController(48, 0, 0, new TrapezoidProfile.Constraints(60, 180));
 
     SmartDashboard.putData("Wrist PID Controller", wristPIDController);
-
-    sparkFlex.configure(
-        new SparkFlexConfig()
-            .apply(
-                new SoftLimitConfig()
-                    .forwardSoftLimit(
-                        WristConstants.RotationToPosition.convert(Rotation2d.fromDegrees(31))
-                            .in(Rotation))
-                    .reverseSoftLimit(
-                        WristConstants.RotationToPosition.convert(Rotation2d.fromDegrees(229))
-                            .in(Rotation))),
-        ResetMode.kNoResetSafeParameters,
-        PersistMode.kNoPersistParameters);
 
     sparkFlex.configure(
         new SparkFlexConfig().apply(new AbsoluteEncoderConfig().zeroOffset(0.4)),
