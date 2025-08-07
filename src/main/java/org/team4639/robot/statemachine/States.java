@@ -5,13 +5,14 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.team4639.lib.statebased.State;
 import org.team4639.robot.commands.AutoCommands;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.commands.LEDCommands;
 import org.team4639.robot.commands.SuperstructureCommands;
-import org.team4639.robot.commands.superstructure.MicroAdjustmentCommand;
 import org.team4639.robot.constants.Controls;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.modaltriggers.DriveTriggers;
@@ -20,6 +21,8 @@ import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.DashboardOutputs;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
+
+import java.util.Map;
 
 public class States {
 
@@ -45,11 +48,26 @@ public class States {
   public static State HOMING;
   public static State REJECT_CORAL;
   public static State REJECT_ALGAE;
-  public static State MICROADJUSTMENTS;
 
   public static State TEST_IDLE;
   public static State TEST_INTAKE;
   public static State TEST_L4;
+
+  private static Map<Trigger, Command> dashboardOutputToSuperstructurePrep =
+          Map.ofEntries(
+                  Map.entry(DashboardOutputs.getInstance().getSelectedL4(), SuperstructureCommands.L4_PREP),
+                  Map.entry(DashboardOutputs.getInstance().getSelectedL3(), SuperstructureCommands.L3_PREP),
+                  Map.entry(DashboardOutputs.getInstance().getSelectedL2(), SuperstructureCommands.L2_PREP),
+                  Map.entry(DashboardOutputs.getInstance().getSelectedL1(), SuperstructureCommands.L1_PREP)
+          );
+
+  private static Map<Trigger, Command> driverInputToDashboardOutputSelector =
+          Map.ofEntries(
+                  Map.entry(Controls.L4_CORAL_SCORE, DashboardOutputs.getInstance().selectL4()),
+                  Map.entry(Controls.L3_CORAL_SCORE, DashboardOutputs.getInstance().selectL3()),
+                  Map.entry(Controls.L2_CORAL_SCORE, DashboardOutputs.getInstance().selectL2()),
+                  Map.entry(Controls.L1_CORAL_SCORE, DashboardOutputs.getInstance().selectL1())
+          );
 
   public static void initStaticStates() {
     IDLE =
@@ -57,27 +75,19 @@ public class States {
             .whileTrue(SuperstructureCommands.IDLE)
             .onTrigger(DriveTriggers.closeToRightStation, () -> HP_RIGHT)
             .onTrigger(DriveTriggers.closeToLeftStation, () -> HP_LEFT)
-            .withEndCondition(Controls.intake, () -> HP_NODIR)
             .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW);
 
     HP_LEFT =
         new State("HP_LEFT")
             .whileTrue(DriveCommands.HPLeftAlign(Subsystems.drive), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER)
-            .onTrigger(Controls.secondIntake, () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
 
     HP_RIGHT =
         new State("HP_RIGHT")
             .whileTrue(DriveCommands.HPRightAlign(Subsystems.drive), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER)
-            .onTrigger(Controls.secondIntake, () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
-
-    HP_NODIR =
-        new State("INTAKE_NODIR")
-            .whileTrue(SuperstructureCommands.HP)
-            .onTrigger(Controls.secondIntake, () -> INTAKE_LOWER);
 
     INTAKE_LOWER =
         new State("INTAKE_LOWER")
@@ -96,43 +106,47 @@ public class States {
                         FieldConstants.getRotationToClosestBranchPosition(
                             Subsystems.drive.getPose())),
                 LEDCommands.hasCoral())
-            .onTrigger(Controls.alignLeft, () -> CORAL_SCORE_ALIGN_LEFT)
-            .onTrigger(Controls.alignRight, () -> CORAL_SCORE_ALIGN_RIGHT)
+            .onTrigger(Controls.ALIGN_LEFT, () -> CORAL_SCORE_ALIGN_LEFT)
+            .onTrigger(Controls.ALIGN_RIGHT, () -> CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> REJECT_CORAL);
 
     CORAL_SCORE_ALIGN_LEFT =
         new State("CORAL_SCORE_ALIGN_LEFT")
             .withDeadline(
-                Subsystems.drive.defer(() -> DriveCommands.alignToNearestReefLeft()),
+                Subsystems.drive.defer(DriveCommands::alignToNearestReefLeft),
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
-                SuperstructureCommands.ELEVATOR_READY,
+                SuperstructureCommands.CORAL_STOW,
                 DashboardOutputs.getInstance().displayUpcomingReefLevel(),
                 LEDCommands.aligning())
-            .onTrigger(Controls.alignRight, () -> States.CORAL_SCORE_ALIGN_RIGHT)
+            .onTrigger(Controls.ALIGN_RIGHT, () -> States.CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> CORAL_STOW)
-            .onAccelerationLimit(() -> CORAL_STOW);
+            .onAccelerationLimit(() -> CORAL_STOW)
+                .mapTriggerCommandsWhileTrue(dashboardOutputToSuperstructurePrep)
+                .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector);
 
     CORAL_SCORE_ALIGN_RIGHT =
         new State("CORAL_SCORE_ALIGN_RIGHT")
             .withDeadline(
-                Subsystems.drive.defer(() -> DriveCommands.alignToNearestReefRight()),
+                Subsystems.drive.defer(DriveCommands::alignToNearestReefRight),
                 () -> CHOOSE_CORAL_LEVEL)
             .whileTrue(
-                SuperstructureCommands.ELEVATOR_READY,
+                    SuperstructureCommands.CORAL_STOW,
                 DashboardOutputs.getInstance().displayUpcomingReefLevel(),
                 LEDCommands.aligning())
-            .onTrigger(Controls.alignLeft, () -> States.CORAL_SCORE_ALIGN_LEFT)
+            .onTrigger(Controls.ALIGN_LEFT, () -> States.CORAL_SCORE_ALIGN_LEFT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> CORAL_STOW)
-            .onAccelerationLimit(() -> CORAL_STOW);
+            .onAccelerationLimit(() -> CORAL_STOW)
+                .mapTriggerCommandsWhileTrue(dashboardOutputToSuperstructurePrep)
+                .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector);
 
     ALIGN_ALGAE =
         new State("ALIGN_ALGAE")
             .withDeadline(
-                Subsystems.drive.defer(() -> DriveCommands.alignToNearestReef()),
+                Subsystems.drive.defer(DriveCommands::alignToNearestReef),
                 () -> ALGAE_INTAKE)
             .whileTrue(SuperstructureCommands.ALGAE_INTAKE)
             .onEmergency(() -> IDLE)
@@ -159,17 +173,18 @@ public class States {
         new State("CHOOSE_CORAL_LEVEL")
             .whileTrue(
                 SuperstructureCommands.HOLD, Subsystems.drive.run(() -> Subsystems.drive.stop()))
-            .withEndCondition(Controls.alignLeft, () -> CORAL_SCORE_ALIGN_LEFT)
-            .withEndCondition(Controls.alignRight, () -> CORAL_SCORE_ALIGN_RIGHT)
+            .withEndCondition(Controls.ALIGN_LEFT, () -> CORAL_SCORE_ALIGN_LEFT)
+            .withEndCondition(Controls.ALIGN_RIGHT, () -> CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .withEndCondition(
-                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 1, () -> L1_CORAL_SCORE)
+                () -> DashboardOutputs.getInstance().getUpcomingReefLevel() == 1, () -> L1_CORAL_SCORE)
             .withEndCondition(
-                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 2, () -> L2_CORAL_SCORE)
+                () -> DashboardOutputs.getInstance().getUpcomingReefLevel() == 2, () -> L2_CORAL_SCORE)
             .withEndCondition(
-                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 3, () -> L3_CORAL_SCORE)
+                () -> DashboardOutputs.getInstance().getUpcomingReefLevel() == 3, () -> L3_CORAL_SCORE)
             .withEndCondition(
-                () -> DashboardOutputs.getInstance().upcomingReefLevel() == 4, () -> L4_CORAL_SCORE);
+                () -> DashboardOutputs.getInstance().getUpcomingReefLevel() == 4,
+                () -> L4_CORAL_SCORE);
 
     L1_CORAL_SCORE =
         new State("L1_CORAL_SCORE")
@@ -225,19 +240,13 @@ public class States {
             .whileTrue(SuperstructureCommands.REJECT_ALGAE)
             .withTimeout(Seconds.of(0.5), () -> IDLE);
 
-    MICROADJUSTMENTS =
-        new State("MICROADJUSTMENTS")
-            .whileTrue(new MicroAdjustmentCommand(), DriveCommands.stopWithX())
-            .onEmergency(() -> CORAL_STOW);
-
     TEST_IDLE = new State("TEST_IDLE");
 
     /*TEST_IDLE
         .trigger()
         .and(RobotContainer.driver.a())
-        .whileTrue(SuperstructureCommands.ELEVATOR_READY);
+        .whileTrue(SuperstructureCommands.L4_PREP);
     TEST_IDLE.trigger().and(RobotContainer.driver.b()).whileTrue(SuperstructureCommands.L4);*/
-    SmartDashboard.putNumber("Roller Voltage", 0);
 
     TEST_IDLE
         .trigger()

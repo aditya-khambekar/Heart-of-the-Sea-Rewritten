@@ -465,8 +465,6 @@ public class DriveCommands {
 
     drive.setpoint = destinationPose;
 
-    Subsystems.reefTracker.setCurrentReefPose(destinationPose);
-
     double kp = 6;
 
     return drive

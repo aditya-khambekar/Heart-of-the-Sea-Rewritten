@@ -7,6 +7,7 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import java.util.Optional;
+import lombok.Getter;
 import org.littletonrobotics.junction.AutoLog;
 
 public abstract class ElevatorIO {
@@ -26,14 +27,14 @@ public abstract class ElevatorIO {
 
   @AutoLog
   public static class ElevatorIOInputs implements Sendable {
-    public MutAngle leftMotorPosition = Degrees.mutable(0);
-    public MutAngle rightMotorPosition = Degrees.mutable(0);
-    public MutAngularVelocity leftMotorSpeed = RadiansPerSecond.mutable(0);
-    public MutAngularVelocity rightMotorSpeed = RadiansPerSecond.mutable(0);
-    public MutTemperature leftMotorTemperature = Celsius.mutable(0);
-    public MutTemperature rightMotorTemperature = Celsius.mutable(0);
-    public MutCurrent leftMotorTorqueCurrent = Amps.mutable(0);
-    public MutCurrent rightMotorTorqueCurrent = Amps.mutable(0);
+    @Getter public MutAngle leftMotorPosition = Degrees.mutable(0);
+    @Getter public MutAngle rightMotorPosition = Degrees.mutable(0);
+    @Getter public MutAngularVelocity leftMotorSpeed = RadiansPerSecond.mutable(0);
+    @Getter public MutAngularVelocity rightMotorSpeed = RadiansPerSecond.mutable(0);
+    @Getter public MutTemperature leftMotorTemperature = Celsius.mutable(0);
+    @Getter public MutTemperature rightMotorTemperature = Celsius.mutable(0);
+    @Getter public MutCurrent leftMotorTorqueCurrent = Amps.mutable(0);
+    @Getter public MutCurrent rightMotorTorqueCurrent = Amps.mutable(0);
 
     @Override
     public void initSendable(SendableBuilder sendableBuilder) {

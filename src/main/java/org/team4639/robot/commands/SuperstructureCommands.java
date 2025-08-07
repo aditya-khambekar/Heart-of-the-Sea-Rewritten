@@ -17,7 +17,10 @@ public class SuperstructureCommands {
   public static Command HP;
   public static Command HP_LOWER;
   public static Command CORAL_STOW;
-  public static Command ELEVATOR_READY;
+  public static Command L4_PREP;
+  public static Command L3_PREP;
+  public static Command L2_PREP;
+  public static Command L1_PREP;
   public static Command L1;
   public static Command L2;
   public static Command L3;
@@ -77,18 +80,60 @@ public class SuperstructureCommands {
                     Subsystems.roller,
                     Subsystems.superstructure))
             .withName("CORAL_STOW");
-    ELEVATOR_READY =
+
+    L4_PREP =
         Commands.defer(
                 () ->
                     new SuperstructureCommand(
-                            SuperstructureSetpoints.ELEVATOR_READY, "ELEVATOR_READY")
+                            SuperstructureSetpoints.L4_PREP, "L4_PREP")
                         .withCoral(),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
                     Subsystems.roller,
                     Subsystems.superstructure))
-            .withName("ELEVATOR_READY");
+            .withName("L4_PREP");
+
+    L3_PREP =
+            Commands.defer(
+                            () ->
+                                    new SuperstructureCommand(
+                                            SuperstructureSetpoints.L3_PREP, "L3_PREP")
+                                            .withCoral(),
+                            Set.of(
+                                    Subsystems.elevator,
+                                    Subsystems.wrist,
+                                    Subsystems.roller,
+                                    Subsystems.superstructure))
+                    .withName("L3_PREP");
+
+    L2_PREP =
+            Commands.defer(
+                            () ->
+                                    new SuperstructureCommand(
+                                            SuperstructureSetpoints.L2_PREP, "L2_PREP")
+                                            .withCoral(),
+                            Set.of(
+                                    Subsystems.elevator,
+                                    Subsystems.wrist,
+                                    Subsystems.roller,
+                                    Subsystems.superstructure))
+                    .withName("L2_PREP");
+
+    L1_PREP =
+            Commands.defer(
+                            () ->
+                                    new SuperstructureCommand(
+                                            SuperstructureSetpoints.L2_PREP, "L1_PREP")
+                                            .withCoral(),
+                            Set.of(
+                                    Subsystems.elevator,
+                                    Subsystems.wrist,
+                                    Subsystems.roller,
+                                    Subsystems.superstructure))
+                    .withName("L1_PREP");
+
+
     L1 =
         Commands.defer(
                 () ->
@@ -267,7 +312,7 @@ public class SuperstructureCommands {
   }
 
   public static SuperstructureCommand elevatorReady() {
-    return new SuperstructureCommand(SuperstructureSetpoints.ELEVATOR_READY, "ELEVATOR_READY");
+    return new SuperstructureCommand(SuperstructureSetpoints.L4_PREP, "L4_PREP");
   }
 
   public static SuperstructureCommand l1() {

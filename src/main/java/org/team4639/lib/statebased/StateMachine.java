@@ -24,7 +24,7 @@ public class StateMachine {
   private StateMachine() {
     state = States.NONE;
     timeOfLastStateChange = Seconds.mutable(0);
-    Controls.emergency.onTrue(Commands.runOnce(() -> setState(state.onEmergency.get())));
+    Controls.EMERGENCY.onTrue(Commands.runOnce(() -> setState(state.onEmergency.get())));
 
     new Notifier(this::periodic).startPeriodic(0.1);
   }

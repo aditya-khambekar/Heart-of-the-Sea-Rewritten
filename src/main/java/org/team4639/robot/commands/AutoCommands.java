@@ -69,7 +69,7 @@ public final class AutoCommands {
 
   public static Command elevatorReady() {
     return new SuperstructureCommand(
-            SuperstructureSetpoints.AUTO_ELEVATOR_L4_READY, "AUTO_ELEVATOR_L4_READY")
+            SuperstructureSetpoints.AUTO_ELEVATOR_L4_PREP, "AUTO_ELEVATOR_L4_READY")
         .flashOnDone();
   }
 

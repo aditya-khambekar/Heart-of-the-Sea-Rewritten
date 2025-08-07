@@ -7,14 +7,15 @@ import edu.wpi.first.units.measure.*;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import java.util.Optional;
+import lombok.Getter;
 
 public abstract class WristIO {
   public static class WristIOInputs implements Sendable {
-    public MutAngle motorPosition = Degrees.mutable(0);
-    public MutAngularVelocity motorVelocity = RadiansPerSecond.mutable(0);
-    public MutTemperature motorTemperature = Celsius.mutable(0);
-    public MutCurrent motorCurrent = Amps.mutable(0);
-    public MutVoltage motorVoltage = Volts.mutable(0);
+    @Getter public MutAngle motorPosition = Degrees.mutable(0);
+    @Getter public MutAngularVelocity motorVelocity = RadiansPerSecond.mutable(0);
+    @Getter public MutTemperature motorTemperature = Celsius.mutable(0);
+    @Getter public MutCurrent motorCurrent = Amps.mutable(0);
+    @Getter public MutVoltage motorVoltage = Volts.mutable(0);
 
     @Override
     public void initSendable(SendableBuilder builder) {
