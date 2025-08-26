@@ -15,7 +15,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState HP =
       new SuperstructureState(
-          Value.of(0.048), Rotation2d.fromDegrees(55), RotationsPerSecond.of(5));
+          Value.of(0.048), Rotation2d.fromDegrees(77.6), RotationsPerSecond.of(5));
 
   public static final SuperstructureState PROCESSOR =
       new SuperstructureState(
@@ -35,7 +35,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState L1_PREP =
       new SuperstructureState(
-          Value.of(0.15), Rotation2d.fromDegrees(220), RotationsPerSecond.of(-4));
+          Value.of(0.15), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
 
   public static final SuperstructureState AUTO_ELEVATOR_L4_PREP = L4_PREP;
 
@@ -84,7 +84,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState HP_LOWER =
       new SuperstructureState(
-          Value.of(0.048), Rotation2d.fromDegrees(40), RotationsPerSecond.of(13));
+          Value.of(0.048), Rotation2d.fromDegrees(58), RotationsPerSecond.of(13));
 
   public static final SuperstructureState HOMING_READY =
       new SuperstructureState(
