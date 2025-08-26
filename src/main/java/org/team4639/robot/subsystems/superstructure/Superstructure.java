@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
+import org.team4639.lib.unit.Units2;
 import org.team4639.lib.util.RotationUtil;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
@@ -167,8 +169,9 @@ public class Superstructure extends SubsystemBase implements Sendable {
           new MechanismLigament2d(
               "Current Elevator Ligament",
               ElevatorConstants.heightToPercentage
-                  .convertBackwards(Subsystems.elevator.getPercentage())
-                  .in(Meters),
+                      .convertBackwards(Subsystems.elevator.getPercentage())
+                      .in(Meters)
+                  + Units2.inchesToMeters.convert(4),
               90,
               4,
               new Color8Bit(
@@ -190,7 +193,10 @@ public class Superstructure extends SubsystemBase implements Sendable {
         ElevatorConstants.heightToPercentage
             .convertBackwards(Subsystems.elevator.getPercentage())
             .in(Meters));
-    currentHopperLigament.setAngle(Subsystems.wrist.getWristAngle().minus(Rotation2d.kCCW_90deg));
+    currentHopperLigament.setAngle(
+        Optional.of(Subsystems.wrist.getWristAngle().minus(Rotation2d.kCCW_90deg))
+            .map(x -> Rotation2d.kZero.minus(x.minus(Rotation2d.kZero)))
+            .get());
     SmartDashboard.putData("Superstructure", mechanismView);
   }
 }

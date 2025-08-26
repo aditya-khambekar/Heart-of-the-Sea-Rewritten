@@ -28,6 +28,7 @@ public class SuperstructureCommands {
   public static Command L2_ALGAE;
   public static Command L3_ALGAE;
   public static Command BARGE;
+  public static Command BARGE_NO_OUTTAKE;
   public static Command ALGAE_STOW;
   public static Command HOMING_READY;
   public static Command HOMING;
@@ -84,8 +85,7 @@ public class SuperstructureCommands {
     L4_PREP =
         Commands.defer(
                 () ->
-                    new SuperstructureCommand(
-                            SuperstructureSetpoints.L4_PREP, "L4_PREP")
+                    new SuperstructureCommand(SuperstructureSetpoints.L4_PREP, "L4_PREP")
                         .withCoral(),
                 Set.of(
                     Subsystems.elevator,
@@ -95,44 +95,40 @@ public class SuperstructureCommands {
             .withName("L4_PREP");
 
     L3_PREP =
-            Commands.defer(
-                            () ->
-                                    new SuperstructureCommand(
-                                            SuperstructureSetpoints.L3_PREP, "L3_PREP")
-                                            .withCoral(),
-                            Set.of(
-                                    Subsystems.elevator,
-                                    Subsystems.wrist,
-                                    Subsystems.roller,
-                                    Subsystems.superstructure))
-                    .withName("L3_PREP");
+        Commands.defer(
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.L3_PREP, "L3_PREP")
+                        .withCoral(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("L3_PREP");
 
     L2_PREP =
-            Commands.defer(
-                            () ->
-                                    new SuperstructureCommand(
-                                            SuperstructureSetpoints.L2_PREP, "L2_PREP")
-                                            .withCoral(),
-                            Set.of(
-                                    Subsystems.elevator,
-                                    Subsystems.wrist,
-                                    Subsystems.roller,
-                                    Subsystems.superstructure))
-                    .withName("L2_PREP");
+        Commands.defer(
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.L2_PREP, "L2_PREP")
+                        .withCoral(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("L2_PREP");
 
     L1_PREP =
-            Commands.defer(
-                            () ->
-                                    new SuperstructureCommand(
-                                            SuperstructureSetpoints.L2_PREP, "L1_PREP")
-                                            .withCoral(),
-                            Set.of(
-                                    Subsystems.elevator,
-                                    Subsystems.wrist,
-                                    Subsystems.roller,
-                                    Subsystems.superstructure))
-                    .withName("L1_PREP");
-
+        Commands.defer(
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.L2_PREP, "L1_PREP")
+                        .withCoral(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("L1_PREP");
 
     L1 =
         Commands.defer(
@@ -213,6 +209,20 @@ public class SuperstructureCommands {
                     Subsystems.roller,
                     Subsystems.superstructure))
             .withName("BARGE");
+
+    BARGE_NO_OUTTAKE =
+        Commands.defer(
+                () ->
+                    new SuperstructureCommand(
+                            SuperstructureSetpoints.BARGE_NO_OUTTAKE, "BARGE_NO_OUTTAKE")
+                        .withAlgae(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("BARGE");
+
     ALGAE_STOW =
         Commands.defer(
                 () ->
