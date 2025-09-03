@@ -10,5 +10,5 @@ public class IDs {
   @Untuned public static final int ROLLER = 23;
   @Untuned public static final int WRIST = 55;
 
-  @Untuned public static final int WRIST_LASERCAN = 56;
+  @Untuned public static final int WRIST_LASERCAN = 0;
 }

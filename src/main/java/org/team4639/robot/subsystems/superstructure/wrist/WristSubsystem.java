@@ -92,7 +92,7 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return laserCanIOInputs.measurement.in(Millimeter) < 35
+    return laserCanIOInputs.measurement.in(Millimeter) < 23
         && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT;
   }
 

@@ -13,8 +13,8 @@ public class WristConstants {
   public static final Rotation2d MAX_ROTATION = Rotation2d.fromDegrees(230);
   public static final Rotation2d IDLE_ROTATION = Rotation2d.fromDegrees(30);
 
-  @Untuned public static final Angle MAX_POSITION = Rotations.of(0.047);
-  @Untuned public static final Angle MIN_POSITION = Rotations.of(0.960);
+  @Untuned public static final Angle MAX_POSITION = Rotations.of(0.075);
+  @Untuned public static final Angle MIN_POSITION = Rotations.of(0.988);
 
   public static final Rotation2d TRANSITION_ROTATION = Rotation2d.fromDegrees(145);
 

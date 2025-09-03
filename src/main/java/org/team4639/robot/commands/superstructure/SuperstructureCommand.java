@@ -34,6 +34,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   private boolean flash;
   private boolean wristSupposedToBeStopped = true;
   private Voltage whileRunningRollerVolts = Volts.of(0.0);
+  boolean coral = false;
 
   /**
    * Commands the superstructure to go to a specific state
@@ -132,9 +133,14 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
         if (timeOfExecutingAction.gte(executingActionTimeout))
           setState(SuperstructureCommandState.DONE);
         if (flash) Subsystems.limelightFlash.flash();
+
+        if (true) {
+          if (timeOfExecutingAction.gte(Seconds.of(0.2))) {
+            Subsystems.roller.setVelocity(setpoint.wheelSpeed());
+          }
+        }
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
-        Subsystems.roller.setVelocity(setpoint.wheelSpeed());
       }
       case DONE -> {
         // at this point the command will be ended, but we do these just to make sure nothing
@@ -159,7 +165,8 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   }
 
   public SuperstructureCommand withCoral() {
-    this.whileRunningRollerVolts = Volts.of(0.0);
+    this.whileRunningRollerVolts = Volts.of(-0.5);
+    coral = true;
     return this;
   }
 
