@@ -32,6 +32,8 @@ public class WristSubsystem extends SubsystemBase {
 
   private AngularAcceleration acceleration = RotationsPerSecondPerSecond.zero();
 
+  private Debouncer hasCoralDebouncer = new Debouncer(0.2, DebounceType.kFalling);
+
   public WristSubsystem(WristIO WristIO, LaserCanIO laserCanIO) {
     wristIOInputs = new WristIO.WristIOInputs();
     laserCanIOInputs = new LaserCanIO.LaserCanIOInputs();
@@ -92,8 +94,10 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public boolean hasCoral() {
-    return laserCanIOInputs.measurement.in(Millimeter) < 23
-        && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT;
+
+    return hasCoralDebouncer.calculate(
+        laserCanIOInputs.measurement.in(Millimeter) < 23
+            && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT);
   }
 
   public boolean doesNotHaveCoral() {

@@ -20,6 +20,7 @@ public class RollerIOSparkFlex extends RollerIO {
     SparkFlexConfig config = new SparkFlexConfig();
 
     config
+        .smartCurrentLimit(90)
         .closedLoop
         .feedbackSensor(ClosedLoopConfig.FeedbackSensor.kPrimaryEncoder)
         .p(0.1)
@@ -49,7 +50,7 @@ public class RollerIOSparkFlex extends RollerIO {
 
   @Override
   public void setVelocity(AngularVelocity velocity) {
-    sparkFlex.set(velocity.in(RotationsPerSecond) / 20);
+    sparkFlex.setVoltage(12 * velocity.in(RotationsPerSecond) / 20);
   }
 
   @Override

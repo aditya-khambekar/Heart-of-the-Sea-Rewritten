@@ -19,12 +19,13 @@ public final class AutoCommands {
   public static Command scoreL4(Pose2d pose) {
     return (((Subsystems.drive
                 .defer(() -> DriveCommands.PIDToReefPose(pose))
-                .deadlineFor(SuperstructureCommands.elevatorReady()))
+                .deadlineFor((SuperstructureCommands.elevatorReady())))
             .andThen(
                 Subsystems.drive
                     .defer(DriveCommands::stopWithX)
                     .alongWith(SuperstructureCommands.l4()))
             .until(Subsystems.wrist::doesNotHaveCoral))
+        .withTimeout(Seconds.of(5))
         .andThen(
             SuperstructureCommands.idle()
                 .until(() -> Subsystems.elevator.getPercentage().lte(Value.of(0.5)))));

@@ -22,7 +22,7 @@ public class WristConstants {
 
   @Untuned
   public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_LOW =
-      new Pair<>(Rotation2d.fromDegrees(145), Rotation2d.fromDegrees(95));
+      new Pair<>(Rotation2d.fromDegrees(145), Rotation2d.fromDegrees(110));
 
   @Untuned
   public static final Pair<Rotation2d, Rotation2d> SAFE_TRANSITION_RANGE_HIGH =

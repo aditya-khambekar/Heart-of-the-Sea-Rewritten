@@ -186,8 +186,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   }
 
   public boolean atSetpointTranslation() {
-    return Math.abs(Subsystems.drive.getPose().getX() - setpoint.getX()) < 0.03
-        && Math.abs(Subsystems.drive.getPose().getY() - setpoint.getY()) < 0.03;
+    return Math.abs(Subsystems.drive.getPose().getX() - setpoint.getX()) < 0.06
+        && Math.abs(Subsystems.drive.getPose().getY() - setpoint.getY()) < 0.06;
   }
 
   @Override

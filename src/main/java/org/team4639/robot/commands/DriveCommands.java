@@ -448,9 +448,9 @@ public class DriveCommands {
 
   public static Command PIDToReefPose(Pose2d destinationPose) {
     ProfiledPIDController pidX =
-        new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 5));
+        new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
     ProfiledPIDController pidY =
-        new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 5));
+        new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
     PIDController headingController = new PIDController(16, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());

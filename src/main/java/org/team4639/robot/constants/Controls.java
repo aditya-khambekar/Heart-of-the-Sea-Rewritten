@@ -12,6 +12,8 @@ public class Controls {
    */
   public static final Trigger EMERGENCY = RobotContainer.driver.y();
 
+  public static final Trigger IDLE_PATHWAY = RobotContainer.driver.x();
+
   // Align commands start the process of scoring. If a scoring location has already been selected,
   // then scoring will be done automatically
 

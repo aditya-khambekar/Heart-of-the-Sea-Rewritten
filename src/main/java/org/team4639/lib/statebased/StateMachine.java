@@ -3,7 +3,6 @@ package org.team4639.lib.statebased;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.units.measure.MutTime;
-import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,8 +24,7 @@ public class StateMachine {
     state = States.NONE;
     timeOfLastStateChange = Seconds.mutable(0);
     Controls.EMERGENCY.onTrue(Commands.runOnce(() -> setState(state.onEmergency.get())));
-
-    new Notifier(this::periodic).startPeriodic(0.1);
+    Controls.IDLE_PATHWAY.onTrue(Commands.runOnce(() -> setState(States.IDLE_PATHWAY)));
   }
 
   public static State getState() {

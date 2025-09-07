@@ -1,13 +1,12 @@
 package org.team4639.robot.statemachine;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Map;
 import org.team4639.lib.statebased.State;
@@ -46,12 +45,16 @@ public class States {
   public static State L4_CORAL_SCORE;
   public static State HOMING_READY;
   public static State HOMING;
+  public static State HOMING_READYCR;
+  public static State HOMINGCR;
   public static State REJECT_CORAL;
   public static State REJECT_ALGAE;
 
   public static State TEST_IDLE;
   public static State TEST_INTAKE;
   public static State TEST_L4;
+
+  public static State IDLE_PATHWAY;
 
   private static Map<Trigger, Command> dashboardOutputToSuperstructurePrep =
       Map.ofEntries(
@@ -71,7 +74,13 @@ public class States {
   public static void initStaticStates() {
     IDLE =
         new State("IDLE")
-            .whileTrue(SuperstructureCommands.IDLE)
+            .whileTrue(
+                SuperstructureCommands.IDLE,
+                DriveCommands.joystickDrive(
+                        () -> -RobotContainer.driver.getLeftY(),
+                        () -> -RobotContainer.driver.getLeftX(),
+                        () -> -RobotContainer.driver.getRightX())
+                    .withName("Drive Joystick"))
             .onTrigger(DriveTriggers.closeToRightStation, () -> HP_RIGHT)
             .onTrigger(DriveTriggers.closeToLeftStation, () -> HP_LEFT)
             .onTrigger(Controls.ALGAE_INTAKE_AUTO, () -> ALGAE_INTAKE)
@@ -79,20 +88,30 @@ public class States {
 
     HP_LEFT =
         new State("HP_LEFT")
-            .whileTrue(DriveCommands.HPLeftAlign(Subsystems.drive), SuperstructureCommands.HP)
+            .whileTrue(
+                DriveCommands.HPLeftAlign(Subsystems.drive).withTimeout(2),
+                SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
 
     HP_RIGHT =
         new State("HP_RIGHT")
-            .whileTrue(DriveCommands.HPRightAlign(Subsystems.drive), SuperstructureCommands.HP)
+            .whileTrue(
+                DriveCommands.HPRightAlign(Subsystems.drive).withTimeout(2),
+                SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER)
             .onEmergency(() -> IDLE);
 
+    Debouncer hasCoralDebouncer = new Debouncer(0.5, DebounceType.kRising);
+
     INTAKE_LOWER =
         new State("INTAKE_LOWER")
-            .whileTrue(SuperstructureCommands.HP_LOWER)
-            .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW)
+            .whileTrue(
+                SuperstructureCommands.hpLower()
+                    .until(Subsystems.wrist::hasCoral)
+                    .andThen(SuperstructureCommands.hp()))
+            .withEndCondition(
+                () -> hasCoralDebouncer.calculate(Subsystems.wrist.hasCoral()), () -> CORAL_STOW)
             .onEmergency(() -> IDLE);
 
     CORAL_STOW =
@@ -193,34 +212,35 @@ public class States {
             .withEndCondition(
                 () -> DashboardOutputs.getInstance().getUpcomingReefLevel() == 4,
                 () -> L4_CORAL_SCORE)
+            .onEmergency(() -> CORAL_STOW)
             .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector);
 
     L1_CORAL_SCORE =
         new State("L1_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L1)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
-            .onEmergency(() -> CORAL_STOW)
+            .onEmergency(() -> HOMING_READY)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L2_CORAL_SCORE =
         new State("L2_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L2)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
-            .onEmergency(() -> CORAL_STOW)
+            .onEmergency(() -> HOMING_READY)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L3_CORAL_SCORE =
         new State("L3_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L3)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
-            .onEmergency(() -> CORAL_STOW)
+            .onEmergency(() -> HOMING_READY)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L4_CORAL_SCORE =
         new State("L4_CORAL_SCORE")
             .whileTrue(SuperstructureCommands.L4)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
-            .onEmergency(() -> CORAL_STOW)
+            .onEmergency(() -> HOMING_READY)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     HOMING_READY =
@@ -237,7 +257,25 @@ public class States {
     HOMING =
         new State("HOMING")
             .withDeadline(SuperstructureCommands.HOMING, () -> IDLE)
+            .onEmergency(() -> IDLE)
+            .withTimeout(Seconds.of(1), () -> IDLE);
+
+    HOMING_READYCR =
+        new State("HOMING_READY")
+            .whileTrue(SuperstructureCommands.HOMING_READY)
+            .withEndCondition(
+                () ->
+                    Superstructure.atPosition(
+                        Superstructure.getSuperstructureState(),
+                        SuperstructureSetpoints.HOMING_READY),
+                () -> HOMINGCR)
             .onEmergency(() -> IDLE);
+
+    HOMINGCR =
+        new State("HOMING")
+            .withDeadline(SuperstructureCommands.HOMING, () -> CORAL_STOW)
+            .onEmergency(() -> CORAL_STOW)
+            .withTimeout(Seconds.of(1), () -> CORAL_STOW);
 
     REJECT_CORAL =
         new State("REJECT_CORAL")
@@ -251,19 +289,25 @@ public class States {
 
     TEST_IDLE = new State("TEST_IDLE");
 
-    /*TEST_IDLE
-        .trigger()
-        .and(RobotContainer.driver.a())
-        .whileTrue(SuperstructureCommands.L4_PREP);
-    TEST_IDLE.trigger().and(RobotContainer.driver.b()).whileTrue(SuperstructureCommands.L4);*/
-
     TEST_IDLE
-        .trigger()
         .and(RobotContainer.driver.a())
         .onTrue(
-            Commands.run(() -> Subsystems.roller.setVoltage(Volts.of(-5)))
-                .until(() -> Subsystems.roller.getInputs().motorCurrent.gte(Amps.of(78)))
-                .andThen(Commands.run(() -> Subsystems.roller.setVoltage(Volts.of(-1)))));
+            SuperstructureCommands.hpLower()
+                .until(Subsystems.wrist::hasCoral)
+                .andThen(SuperstructureCommands.coralStow()));
+    TEST_IDLE.and(Controls.L4_CORAL_SCORE).onTrue(SuperstructureCommands.L4);
+    TEST_IDLE.and(Controls.EMERGENCY).onTrue(SuperstructureCommands.IDLE);
+
+    IDLE_PATHWAY =
+        new State("IDLE_PATHWAY")
+            .whileTrue(
+                SuperstructureCommands.IDLE,
+                DriveCommands.joystickDrive(
+                        () -> -RobotContainer.driver.getLeftY(),
+                        () -> -RobotContainer.driver.getLeftX(),
+                        () -> -RobotContainer.driver.getRightX())
+                    .withName("Drive Joystick"))
+            .withTimeout(Seconds.of(1), () -> IDLE);
   }
 
   public static State determineState() {

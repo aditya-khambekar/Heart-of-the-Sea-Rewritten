@@ -58,7 +58,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState L4 =
       new SuperstructureState(
-          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(-5));
+          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(-10));
 
   public static final SuperstructureState L2_ALGAE =
       new SuperstructureState(
@@ -89,7 +89,11 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState HP_LOWER =
       new SuperstructureState(
-          Value.of(0.048), Rotation2d.fromDegrees(58), RotationsPerSecond.of(13));
+          Value.of(0.048), Rotation2d.fromDegrees(58), RotationsPerSecond.of(20));
+
+  public static final SuperstructureState HP_LOWER_AUTO =
+      new SuperstructureState(
+          Value.of(0.048), Rotation2d.fromDegrees(54), RotationsPerSecond.of(8));
 
   public static final SuperstructureState HOMING_READY =
       new SuperstructureState(

@@ -1,5 +1,6 @@
 package org.team4639.robot.subsystems;
 
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
+import org.team4639.robot.robot.RobotContainer;
 
 public class DashboardOutputs {
 
@@ -36,18 +38,30 @@ public class DashboardOutputs {
   }
 
   public Command selectL4() {
-    return Commands.runOnce(() -> setUpcomingReefLevel(4));
+    return Commands.runOnce(() -> setUpcomingReefLevel(4))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 1))
+        .andThen(Commands.waitSeconds(0.2))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 0));
   }
 
   public Command selectL3() {
-    return Commands.runOnce(() -> setUpcomingReefLevel(3));
+    return Commands.runOnce(() -> setUpcomingReefLevel(3))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 1))
+        .andThen(Commands.waitSeconds(0.2))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 0));
   }
 
   public Command selectL2() {
-    return Commands.runOnce(() -> setUpcomingReefLevel(2));
+    return Commands.runOnce(() -> setUpcomingReefLevel(2))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 1))
+        .andThen(Commands.waitSeconds(0.2))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 0));
   }
 
   public Command selectL1() {
-    return Commands.runOnce(() -> setUpcomingReefLevel(1));
+    return Commands.runOnce(() -> setUpcomingReefLevel(1))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 1))
+        .andThen(Commands.waitSeconds(0.2))
+        .andThen(() -> RobotContainer.driver.setRumble(RumbleType.kBothRumble, 0));
   }
 }

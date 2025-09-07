@@ -236,7 +236,7 @@ public class FieldConstants {
       new Transform2d(Units.inchesToMeters(25), 0, Rotation2d.k180deg);
   // change this to tune how far the align tries to go from the forceIntake station
   static Transform2d fromCoralStation =
-      new Transform2d(Units.inchesToMeters(19), 0, Rotation2d.kZero);
+      new Transform2d(Units.inchesToMeters(9), 0, Rotation2d.kZero);
   static Transform2d fromBarge = new Transform2d(Units.inchesToMeters(-39), 0, Rotation2d.kZero);
 
   public static enum TargetPositions {

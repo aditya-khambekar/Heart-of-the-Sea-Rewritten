@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.BooleanSupplier;
 import org.team4639.lib.util.RotationUtil;
+import org.team4639.robot.robot.RobotContainer;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureState;
@@ -66,6 +67,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
     setState(SuperstructureCommandState.TO_SAFE_ANGLE);
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
+    timeOfExecutingAction = Seconds.mutable(0);
   }
 
   @Override
@@ -134,10 +136,12 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
           setState(SuperstructureCommandState.DONE);
         if (flash) Subsystems.limelightFlash.flash();
 
-        if (true) {
+        if (coral) {
           if (timeOfExecutingAction.gte(Seconds.of(0.2))) {
-            Subsystems.roller.setVelocity(setpoint.wheelSpeed());
+            runRollerVelo();
           }
+        } else {
+          runRollerVelo();
         }
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
@@ -165,7 +169,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   }
 
   public SuperstructureCommand withCoral() {
-    this.whileRunningRollerVolts = Volts.of(-0.5);
+    this.whileRunningRollerVolts = Volts.of(-0.1);
     coral = true;
     return this;
   }
@@ -227,5 +231,12 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
                 Rotations.of(Subsystems.wrist.getEncoderVelocity().in(RotationsPerSecond)))
             .times(0.1);
     return Superstructure.isWristAtSafeAngle(Subsystems.wrist.getWristAngle().plus(lookahead));
+  }
+
+  public void runRollerVelo() {
+    if (RobotContainer.driver.a().getAsBoolean()) {
+      Subsystems.roller.setVelocity(
+          RotationsPerSecond.of(20).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+    }
   }
 }

@@ -317,6 +317,11 @@ public class SuperstructureCommands {
     return new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER, "HP_LOWER").flashOnDone();
   }
 
+  public static SuperstructureCommand hpLowerAuto() {
+    return new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER_AUTO, "HP_LOWER")
+        .flashOnDone();
+  }
+
   public static SuperstructureCommand coralStow() {
     return new SuperstructureCommand(SuperstructureSetpoints.CORAL_STOW, "CORAL_STOW");
   }
@@ -337,8 +342,18 @@ public class SuperstructureCommands {
     return new SuperstructureCommand(SuperstructureSetpoints.L3, "L3").flashOnDone();
   }
 
-  public static SuperstructureCommand l4() {
-    return new SuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone();
+  public static Command l4() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L4, "L4")
+                    .flashOnDone()
+                    .withCoral(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4");
   }
 
   public static SuperstructureCommand l2Algae() {
