@@ -361,7 +361,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return (poseEstimator.getEstimatedPosition());
   }
 
   /** Returns the current odometry rotation. */

@@ -27,8 +27,14 @@ public class SuperstructureSetpoints {
           Value.of(0.23), Rotation2d.fromDegrees(100), RotationsPerSecond.of(8));
 
   public static final SuperstructureState L4_PREP =
+      /*new SuperstructureState(
+      Value.of(0.48 + offset), Rotation2d.fromDegrees(130), RotationsPerSecond.of(0));*/
       new SuperstructureState(
-          Value.of(0.48 + offset), Rotation2d.fromDegrees(130), RotationsPerSecond.of(0));
+          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(0));
+
+  public static final SuperstructureState AUTO_L4_PREP =
+      new SuperstructureState(
+          Value.of(0.30), Rotation2d.fromDegrees(130), RotationsPerSecond.zero());
 
   public static final SuperstructureState L3_PREP =
       new SuperstructureState(
@@ -41,8 +47,6 @@ public class SuperstructureSetpoints {
   public static final SuperstructureState L1_PREP =
       new SuperstructureState(
           Value.of(0.23 + offset * 0), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
-
-  public static final SuperstructureState AUTO_ELEVATOR_L4_PREP = L4_PREP;
 
   public static final SuperstructureState L1 =
       new SuperstructureState(
@@ -58,23 +62,31 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState L4 =
       new SuperstructureState(
-          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(-10));
+          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(-5));
+
+  public static final SuperstructureState L4_AUTO =
+      new SuperstructureState(
+          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(-20));
 
   public static final SuperstructureState L2_ALGAE =
       new SuperstructureState(
-          Value.of(0.32), Rotation2d.fromDegrees(135), RotationsPerSecond.of(10));
+          Value.of(0.2), Rotation2d.fromDegrees(135), RotationsPerSecond.of(-10));
 
   public static final SuperstructureState L3_ALGAE =
       new SuperstructureState(
-          Value.of(0.8), Rotation2d.fromDegrees(135), RotationsPerSecond.of(10));
+          Value.of(0.40), Rotation2d.fromDegrees(135), RotationsPerSecond.of(-10));
 
   public static final SuperstructureState ALGAE_STOW =
       new SuperstructureState(
-          Value.of(0.32), Rotation2d.fromDegrees(135), RotationsPerSecond.of(0));
+          Value.of(0.32), Rotation2d.fromDegrees(135), RotationsPerSecond.of(-10));
 
   public static final SuperstructureState BARGE =
       new SuperstructureState(
-          Value.of(0.95), Rotation2d.fromDegrees(150), RotationsPerSecond.of(3));
+          Value.of(0.95), Rotation2d.fromDegrees(110), RotationsPerSecond.of(0));
+
+  public static final SuperstructureState BARGE_SCORE =
+      new SuperstructureState(
+          Value.of(0.95), Rotation2d.fromDegrees(110), RotationsPerSecond.of(10));
 
   public static final SuperstructureState BARGE_NO_OUTTAKE =
       new SuperstructureState(

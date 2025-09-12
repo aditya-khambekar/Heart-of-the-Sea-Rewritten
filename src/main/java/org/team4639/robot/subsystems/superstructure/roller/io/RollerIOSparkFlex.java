@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class RollerIOSparkFlex extends RollerIO {
   SparkFlex sparkFlex;
@@ -30,6 +31,8 @@ public class RollerIOSparkFlex extends RollerIO {
 
     sparkFlex.configure(
         config, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
+    SmartDashboard.putNumber("Roller Requested Voltage", 0);
   }
 
   @Override
@@ -50,11 +53,16 @@ public class RollerIOSparkFlex extends RollerIO {
 
   @Override
   public void setVelocity(AngularVelocity velocity) {
-    sparkFlex.setVoltage(12 * velocity.in(RotationsPerSecond) / 20);
+    setVoltage(Volts.of(12 * velocity.in(RotationsPerSecond) / 20));
   }
 
   @Override
   public void setInputVoltage(Voltage voltage) {
+    setVoltage(voltage);
+  }
+
+  private void setVoltage(Voltage voltage) {
+    SmartDashboard.putNumber("Roller Requested Voltage", voltage.in(Volts));
     sparkFlex.setVoltage(voltage);
   }
 }

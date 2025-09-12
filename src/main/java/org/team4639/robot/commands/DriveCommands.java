@@ -55,6 +55,7 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  private static final double ALIGN_FF = 1.0;
 
   private DriveCommands() {}
 
@@ -430,8 +431,10 @@ public class DriveCommands {
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       new ChassisSpeeds(
-                          pidX.getSetpoint().velocity + pidX.calculate(drive.getPose().getX()),
-                          pidY.getSetpoint().velocity + pidY.calculate(drive.getPose().getY()),
+                          ALIGN_FF * pidX.getSetpoint().velocity
+                              + pidX.calculate(drive.getPose().getX()),
+                          ALIGN_FF * pidY.getSetpoint().velocity
+                              + pidY.calculate(drive.getPose().getY()),
                           headingController.calculate(drive.getPose().getRotation().getRadians())),
                       drive.getPose().getRotation()));
               drive
@@ -475,8 +478,10 @@ public class DriveCommands {
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       new ChassisSpeeds(
-                          pidX.getSetpoint().velocity + pidX.calculate(drive.getPose().getX()),
-                          pidY.getSetpoint().velocity + pidY.calculate(drive.getPose().getY()),
+                          ALIGN_FF * pidX.getSetpoint().velocity
+                              + pidX.calculate(drive.getPose().getX()),
+                          ALIGN_FF * pidY.getSetpoint().velocity
+                              + pidY.calculate(drive.getPose().getY()),
                           headingController.calculate(drive.getPose().getRotation().getRadians())),
                       drive.getPose().getRotation()));
               drive

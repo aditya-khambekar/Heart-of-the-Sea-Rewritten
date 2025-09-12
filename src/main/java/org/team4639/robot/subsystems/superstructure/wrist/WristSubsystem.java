@@ -32,7 +32,7 @@ public class WristSubsystem extends SubsystemBase {
 
   private AngularAcceleration acceleration = RotationsPerSecondPerSecond.zero();
 
-  private Debouncer hasCoralDebouncer = new Debouncer(0.2, DebounceType.kFalling);
+  private Debouncer hasCoralDebouncer = new Debouncer(0.5, DebounceType.kFalling);
 
   public WristSubsystem(WristIO WristIO, LaserCanIO laserCanIO) {
     wristIOInputs = new WristIO.WristIOInputs();

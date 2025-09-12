@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import org.team4639.robot.commands.superstructure.HomingCommand;
 import org.team4639.robot.commands.superstructure.SuperstructureCommand;
+import org.team4639.robot.constants.Controls;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
@@ -28,6 +29,7 @@ public class SuperstructureCommands {
   public static Command L2_ALGAE;
   public static Command L3_ALGAE;
   public static Command BARGE;
+  public static Command BARGE_SCORE;
   public static Command BARGE_NO_OUTTAKE;
   public static Command ALGAE_STOW;
   public static Command HOMING_READY;
@@ -210,6 +212,18 @@ public class SuperstructureCommands {
                     Subsystems.superstructure))
             .withName("BARGE");
 
+    BARGE_SCORE =
+        Commands.defer(
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.BARGE_SCORE, "BARGE")
+                        .withAlgae(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("BARGE");
+
     BARGE_NO_OUTTAKE =
         Commands.defer(
                 () ->
@@ -365,7 +379,9 @@ public class SuperstructureCommands {
   }
 
   public static SuperstructureCommand barge() {
-    return new SuperstructureCommand(SuperstructureSetpoints.BARGE, "BARGE");
+    return new SuperstructureCommand(SuperstructureSetpoints.BARGE, "BARGE")
+        .flashOnDone()
+        .waitForRoller(Controls.ALGAE_BARGE.or(Controls.ALGAE_BARGE_MANUAL));
   }
 
   public static SuperstructureCommand algaeStow() {
@@ -425,5 +441,78 @@ public class SuperstructureCommands {
                   FieldConstants.TargetPositions.REEF_IJ.getPose(),
                   FieldConstants.TargetPositions.REEF_KL.getPose()));
         });
+  }
+
+  public static Command l4Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L4, "L4")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4");
+  }
+
+  public static Command l3Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L3, "L3")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L3");
+  }
+
+  public static Command l2Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L2, "L2")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L2");
+  }
+
+  public static Command l1Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L1, "L1")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L1");
+  }
+
+  public static Command autoL4Prep() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.AUTO_L4_PREP, "L4_PREP")
+                    .withCoral(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4_PREP");
   }
 }

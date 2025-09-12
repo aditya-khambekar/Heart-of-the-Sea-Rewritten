@@ -38,6 +38,7 @@ public class States {
   public static State CORAL_SCORE_ALIGN_RIGHT;
   public static State ALGAE_STOW;
   public static State ALGAE_SCORE;
+  public static State ALGAE_SCORE_2;
   public static State CHOOSE_CORAL_LEVEL;
   public static State L1_CORAL_SCORE;
   public static State L2_CORAL_SCORE;
@@ -180,12 +181,25 @@ public class States {
     ALGAE_STOW =
         new State("ALGAE_STOW")
             .whileTrue(SuperstructureCommands.ALGAE_STOW)
+            .onTrigger(Controls.ALGAE_BARGE, () -> ALGAE_SCORE)
             .onEmergency(() -> REJECT_ALGAE);
 
     ALGAE_SCORE =
         new State("ALGAE_SCORE")
             .whileTrue(
                 SuperstructureCommands.BARGE,
+                DriveCommands.joystickDriveAtAngle(
+                    () -> -RobotContainer.driver.getLeftY(),
+                    () -> -RobotContainer.driver.getLeftX(),
+                    () -> Rotation2d.kZero))
+            .onTrigger(Controls.L3_CORAL_SCORE, () -> ALGAE_SCORE_2)
+            .onEmergency(() -> ALGAE_STOW)
+            .onAccelerationLimit(() -> ALGAE_STOW);
+
+    ALGAE_SCORE_2 =
+        new State("ALGAE_SCORE_2")
+            .whileTrue(
+                SuperstructureCommands.BARGE_SCORE,
                 DriveCommands.joystickDriveAtAngle(
                     () -> -RobotContainer.driver.getLeftY(),
                     () -> -RobotContainer.driver.getLeftX(),
