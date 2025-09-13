@@ -24,7 +24,7 @@ public final class AutoCommands {
             .andThen(
                 Subsystems.drive
                     .defer(DriveCommands::stopWithX)
-                    .alongWith(SuperstructureCommands.l4()))
+                    .alongWith(SuperstructureCommands.l4Auto()))
             .until(Subsystems.wrist::doesNotHaveCoral))
         .andThen(
             SuperstructureCommands.idle()

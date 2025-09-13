@@ -19,16 +19,11 @@ public class SuperstructureSetpoints {
       new SuperstructureState(
           Value.of(0.048), Rotation2d.fromDegrees(50), RotationsPerSecond.of(0));
 
-  // new SuperstructureState(
-  // Value.of(0.048), Rotation2d.fromDegrees(80.6), RotationsPerSecond.of(5));
-
   public static final SuperstructureState PROCESSOR =
       new SuperstructureState(
           Value.of(0.23), Rotation2d.fromDegrees(100), RotationsPerSecond.of(8));
 
   public static final SuperstructureState L4_PREP =
-      /*new SuperstructureState(
-      Value.of(0.48 + offset), Rotation2d.fromDegrees(130), RotationsPerSecond.of(0));*/
       new SuperstructureState(
           Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(0));
 
@@ -77,6 +72,10 @@ public class SuperstructureSetpoints {
           Value.of(0.40), Rotation2d.fromDegrees(135), RotationsPerSecond.of(-10));
 
   public static final SuperstructureState ALGAE_STOW =
+      new SuperstructureState(
+          Value.of(0.12), Rotation2d.fromDegrees(135), RotationsPerSecond.of(-10));
+
+  public static final SuperstructureState ALGAE_STOW_LOWER =
       new SuperstructureState(
           Value.of(0.32), Rotation2d.fromDegrees(135), RotationsPerSecond.of(-10));
 

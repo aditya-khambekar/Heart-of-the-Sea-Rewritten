@@ -240,8 +240,13 @@ public class SuperstructureCommands {
     ALGAE_STOW =
         Commands.defer(
                 () ->
-                    new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW, "ALGAE_STOW")
-                        .withAlgae(),
+                    (new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW, "ALGAE_STOW")
+                            .withAlgae())
+                        .withTimeout(1)
+                        .andThen(
+                            (new SuperstructureCommand(
+                                    SuperstructureSetpoints.ALGAE_STOW_LOWER, "ALGAE_STOW")
+                                .withAlgae())),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
@@ -362,6 +367,23 @@ public class SuperstructureCommands {
                 new SuperstructureCommand(SuperstructureSetpoints.L4, "L4")
                     .flashOnDone()
                     .withCoral(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4");
+  }
+
+  private static Command l4AutoCreator() {
+    var command =
+        new SuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone().withCoral();
+    return command.alongWith(Commands.waitSeconds(1).finallyDo(command::forceRoller));
+  }
+
+  public static Command l4Auto() {
+    return Commands.defer(
+            SuperstructureCommands::l4AutoCreator,
             Set.of(
                 Subsystems.elevator,
                 Subsystems.wrist,

@@ -72,6 +72,18 @@ public class States {
           Map.entry(Controls.L2_CORAL_SCORE, DashboardOutputs.getInstance().selectL2()),
           Map.entry(Controls.L1_CORAL_SCORE, DashboardOutputs.getInstance().selectL1()));
 
+  private static Map<Trigger, Command> operatorControls =
+      Map.ofEntries(
+          Map.entry(Controls.L4_CORAL_MANUAL, SuperstructureCommands.l4Manual()),
+          Map.entry(Controls.L3_CORAL_MANUAL, SuperstructureCommands.l3Manual()),
+          Map.entry(Controls.L2_CORAL_MANUAL, SuperstructureCommands.l2Manual()),
+          Map.entry(Controls.L1_CORAL_MANUAL, SuperstructureCommands.l1Manual()),
+          Map.entry(Controls.ALGAE_BARGE_MANUAL, SuperstructureCommands.barge()),
+          Map.entry(Controls.INTAKE, SuperstructureCommands.hpLower()),
+          Map.entry(Controls.ALGAE_INTAKE_HIGH, SuperstructureCommands.l3Algae()),
+          Map.entry(Controls.ALGAE_INTAKE_LOW, SuperstructureCommands.l2Algae()),
+          Map.entry(Controls.FORCE_HOMING, SuperstructureCommands.homing()));
+
   public static void initStaticStates() {
     IDLE =
         new State("IDLE")
@@ -85,6 +97,7 @@ public class States {
             .onTrigger(DriveTriggers.closeToRightStation, () -> HP_RIGHT)
             .onTrigger(DriveTriggers.closeToLeftStation, () -> HP_LEFT)
             .onTrigger(Controls.ALGAE_INTAKE_AUTO, () -> ALGAE_INTAKE)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW);
 
     HP_LEFT =
@@ -93,6 +106,7 @@ public class States {
                 DriveCommands.HPLeftAlign(Subsystems.drive).withTimeout(2),
                 SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onEmergency(() -> IDLE);
 
     HP_RIGHT =
@@ -101,6 +115,7 @@ public class States {
                 DriveCommands.HPRightAlign(Subsystems.drive).withTimeout(2),
                 SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onEmergency(() -> IDLE);
 
     Debouncer hasCoralDebouncer = new Debouncer(0.5, DebounceType.kRising);
@@ -113,6 +128,7 @@ public class States {
                     .andThen(SuperstructureCommands.hp()))
             .withEndCondition(
                 () -> hasCoralDebouncer.calculate(Subsystems.wrist.hasCoral()), () -> CORAL_STOW)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onEmergency(() -> IDLE);
 
     CORAL_STOW =
@@ -130,6 +146,7 @@ public class States {
             .onTrigger(Controls.ALIGN_RIGHT, () -> CORAL_SCORE_ALIGN_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> REJECT_CORAL)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector);
 
     CORAL_SCORE_ALIGN_LEFT =
@@ -146,6 +163,7 @@ public class States {
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW)
             .mapTriggerCommandsWhileTrue(dashboardOutputToSuperstructurePrep)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector);
 
     CORAL_SCORE_ALIGN_RIGHT =
@@ -162,6 +180,7 @@ public class States {
             .onEmergency(() -> CORAL_STOW)
             .onAccelerationLimit(() -> CORAL_STOW)
             .mapTriggerCommandsWhileTrue(dashboardOutputToSuperstructurePrep)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector);
 
     ALIGN_ALGAE =
@@ -170,18 +189,21 @@ public class States {
                 Subsystems.drive.defer(DriveCommands::alignToNearestReef), () -> ALGAE_INTAKE)
             .whileTrue(SuperstructureCommands.ALGAE_INTAKE)
             .onEmergency(() -> IDLE)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> IDLE);
 
     ALGAE_INTAKE =
         new State("ALGAE_INTAKE")
             .withDeadline(AutoCommands.algaeIntakeSequence(), () -> ALGAE_STOW)
             .onEmergency(() -> IDLE)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> IDLE);
 
     ALGAE_STOW =
         new State("ALGAE_STOW")
             .whileTrue(SuperstructureCommands.ALGAE_STOW)
             .onTrigger(Controls.ALGAE_BARGE, () -> ALGAE_SCORE)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onEmergency(() -> REJECT_ALGAE);
 
     ALGAE_SCORE =
@@ -194,6 +216,7 @@ public class States {
                     () -> Rotation2d.kZero))
             .onTrigger(Controls.L3_CORAL_SCORE, () -> ALGAE_SCORE_2)
             .onEmergency(() -> ALGAE_STOW)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> ALGAE_STOW);
 
     ALGAE_SCORE_2 =
@@ -205,6 +228,7 @@ public class States {
                     () -> -RobotContainer.driver.getLeftX(),
                     () -> Rotation2d.kZero))
             .onEmergency(() -> ALGAE_STOW)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> ALGAE_STOW);
 
     CHOOSE_CORAL_LEVEL =
@@ -227,6 +251,7 @@ public class States {
                 () -> DashboardOutputs.getInstance().getUpcomingReefLevel() == 4,
                 () -> L4_CORAL_SCORE)
             .onEmergency(() -> CORAL_STOW)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector);
 
     L1_CORAL_SCORE =
@@ -234,6 +259,7 @@ public class States {
             .whileTrue(SuperstructureCommands.L1)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> HOMING_READY)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L2_CORAL_SCORE =
@@ -241,6 +267,7 @@ public class States {
             .whileTrue(SuperstructureCommands.L2)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> HOMING_READY)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L3_CORAL_SCORE =
@@ -248,6 +275,7 @@ public class States {
             .whileTrue(SuperstructureCommands.L3)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> HOMING_READY)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     L4_CORAL_SCORE =
@@ -255,6 +283,7 @@ public class States {
             .whileTrue(SuperstructureCommands.L4)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> HOMING_READY)
             .onEmergency(() -> HOMING_READY)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onAccelerationLimit(() -> CORAL_STOW);
 
     HOMING_READY =
@@ -266,12 +295,14 @@ public class States {
                         Superstructure.getSuperstructureState(),
                         SuperstructureSetpoints.HOMING_READY),
                 () -> HOMING)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onEmergency(() -> IDLE);
 
     HOMING =
         new State("HOMING")
             .withDeadline(SuperstructureCommands.HOMING, () -> IDLE)
             .onEmergency(() -> IDLE)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .withTimeout(Seconds.of(1), () -> IDLE);
 
     HOMING_READYCR =
@@ -283,22 +314,26 @@ public class States {
                         Superstructure.getSuperstructureState(),
                         SuperstructureSetpoints.HOMING_READY),
                 () -> HOMINGCR)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .onEmergency(() -> IDLE);
 
     HOMINGCR =
         new State("HOMING")
             .withDeadline(SuperstructureCommands.HOMING, () -> CORAL_STOW)
             .onEmergency(() -> CORAL_STOW)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .withTimeout(Seconds.of(1), () -> CORAL_STOW);
 
     REJECT_CORAL =
         new State("REJECT_CORAL")
             .whileTrue(SuperstructureCommands.REJECT_CORAL)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE);
 
     REJECT_ALGAE =
         new State("REJECT_ALGAE")
             .whileTrue(SuperstructureCommands.REJECT_ALGAE)
+            .mapTriggerCommandsOnTrue(operatorControls)
             .withTimeout(Seconds.of(0.5), () -> IDLE);
 
     TEST_IDLE = new State("TEST_IDLE");

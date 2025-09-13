@@ -40,6 +40,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   private Voltage whileRunningRollerVolts = Volts.of(0.0);
   private boolean waitToRoller = false;
   private Trigger waitForRollerTrigger = Controls.ROLLER_TRIGGER;
+  private boolean internalForceRoller = false;
   boolean coral = false;
 
   /**
@@ -69,6 +70,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   @Override
   public void initialize() {
+    internalForceRoller = false;
     setState(SuperstructureCommandState.TO_SAFE_ANGLE);
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
@@ -252,7 +254,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   }
 
   public void runRollerVelo() {
-    if (RobotContainer.driver.a().getAsBoolean()) {
+    if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
       Subsystems.roller.setVelocity(
           RotationsPerSecond.of(20).times(Math.signum(setpoint.wheelSpeed().magnitude())));
     } else {
@@ -261,7 +263,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   }
 
   public void runRollerVelo(AngularVelocity velocity) {
-    if (RobotContainer.driver.a().getAsBoolean()) {
+    if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
       Subsystems.roller.setVelocity(
           RotationsPerSecond.of(20).times(Math.signum(setpoint.wheelSpeed().magnitude())));
     } else {
@@ -270,7 +272,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   }
 
   public void runRollerVelo(Voltage volts) {
-    if (RobotContainer.driver.a().getAsBoolean()) {
+    if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
       Subsystems.roller.setVelocity(
           RotationsPerSecond.of(20).times(Math.signum(setpoint.wheelSpeed().magnitude())));
     } else {
@@ -286,5 +288,9 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   public SuperstructureCommand waitForRoller(Trigger trigger) {
     this.waitForRollerTrigger = trigger;
     return waitForRoller();
+  }
+
+  public void forceRoller() {
+    internalForceRoller = true;
   }
 }
