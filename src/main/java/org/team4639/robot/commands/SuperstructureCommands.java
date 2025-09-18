@@ -378,7 +378,7 @@ public class SuperstructureCommands {
   private static Command l4AutoCreator() {
     var command =
         new SuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone().withCoral();
-    return command.alongWith(Commands.waitSeconds(1).finallyDo(command::forceRoller));
+    return command.alongWith(Commands.waitSeconds(2).finallyDo(command::forceRoller));
   }
 
   public static Command l4Auto() {
@@ -415,7 +415,14 @@ public class SuperstructureCommands {
   }
 
   public static Command homing() {
-    return new HomingCommand();
+    return Commands.defer(
+            HomingCommand::new,
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("HOMING");
   }
 
   public static Command hold() {

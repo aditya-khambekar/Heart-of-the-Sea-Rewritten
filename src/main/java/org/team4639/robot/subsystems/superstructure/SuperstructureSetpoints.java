@@ -100,7 +100,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState HP_LOWER =
       new SuperstructureState(
-          Value.of(0.048), Rotation2d.fromDegrees(58), RotationsPerSecond.of(20));
+          Value.of(0.048), Rotation2d.fromDegrees(54), RotationsPerSecond.of(20));
 
   public static final SuperstructureState HP_LOWER_AUTO =
       new SuperstructureState(

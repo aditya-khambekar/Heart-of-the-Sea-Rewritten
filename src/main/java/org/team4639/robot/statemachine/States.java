@@ -81,8 +81,7 @@ public class States {
           Map.entry(Controls.ALGAE_BARGE_MANUAL, SuperstructureCommands.barge()),
           Map.entry(Controls.INTAKE, SuperstructureCommands.hpLower()),
           Map.entry(Controls.ALGAE_INTAKE_HIGH, SuperstructureCommands.l3Algae()),
-          Map.entry(Controls.ALGAE_INTAKE_LOW, SuperstructureCommands.l2Algae()),
-          Map.entry(Controls.FORCE_HOMING, SuperstructureCommands.homing()));
+          Map.entry(Controls.ALGAE_INTAKE_LOW, SuperstructureCommands.l2Algae()));
 
   public static void initStaticStates() {
     IDLE =
@@ -97,6 +96,7 @@ public class States {
             .onTrigger(DriveTriggers.closeToRightStation, () -> HP_RIGHT)
             .onTrigger(DriveTriggers.closeToLeftStation, () -> HP_LEFT)
             .onTrigger(Controls.ALGAE_INTAKE_AUTO, () -> ALGAE_INTAKE)
+            .onTrigger(Controls.FORCE_HOMING, () -> HOMING_READY)
             .mapTriggerCommandsOnTrue(operatorControls)
             .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW);
 

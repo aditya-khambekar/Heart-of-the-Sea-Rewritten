@@ -90,7 +90,6 @@ public class AutoGenerator {
                       case RHP -> DriveCommands.HPRightAlign(Subsystems.drive);
                       default -> throw new IllegalArgumentException("what the fuck");
                     })
-                .withTimeout(5)
                 .until(Subsystems.wrist::hasCoral)
                 .andThen(DriveCommands.stopWithX().withTimeout(0.5)))
             .deadlineFor(

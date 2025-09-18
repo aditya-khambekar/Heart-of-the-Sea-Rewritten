@@ -22,10 +22,10 @@ public final class AutoCommands {
                 .defer(() -> DriveCommands.PIDToReefPose(pose))
                 .deadlineFor((SuperstructureCommands.autoL4Prep())))
             .andThen(
-                Subsystems.drive
-                    .defer(DriveCommands::stopWithX)
-                    .alongWith(SuperstructureCommands.l4Auto()))
-            .until(Subsystems.wrist::doesNotHaveCoral))
+                (Subsystems.drive
+                        .defer(() -> DriveCommands.PIDToReefPose(pose))
+                        .alongWith(SuperstructureCommands.l4Auto()))
+                    .until(Subsystems.wrist::doesNotHaveCoral)))
         .andThen(
             SuperstructureCommands.idle()
                 .until(() -> Subsystems.elevator.getPercentage().lte(Value.of(0.5)))));

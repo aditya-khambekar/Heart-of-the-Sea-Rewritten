@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIO;
 import org.team4639.robot.subsystems.superstructure.wrist.io.WristIO;
 
@@ -95,9 +96,12 @@ public class WristSubsystem extends SubsystemBase {
 
   public boolean hasCoral() {
 
-    return hasCoralDebouncer.calculate(
-        laserCanIOInputs.measurement.in(Millimeter) < 23
-            && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT);
+    return RobotModeTriggers.autonomous().getAsBoolean()
+        ? (laserCanIOInputs.measurement.in(Millimeter) < 23
+            && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT)
+        : (hasCoralDebouncer.calculate(
+            laserCanIOInputs.measurement.in(Millimeter) < 23
+                && laserCanIOInputs.status == LaserCan.LASERCAN_STATUS_VALID_MEASUREMENT));
   }
 
   public boolean doesNotHaveCoral() {

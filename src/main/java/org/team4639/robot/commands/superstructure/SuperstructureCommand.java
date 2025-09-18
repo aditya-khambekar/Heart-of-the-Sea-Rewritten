@@ -255,8 +255,14 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   public void runRollerVelo() {
     if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
-      Subsystems.roller.setVelocity(
-          RotationsPerSecond.of(20).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      if (internalForceRoller) {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      } else {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      }
+
     } else {
       Subsystems.roller.setVelocity(setpoint.wheelSpeed());
     }
@@ -264,8 +270,13 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   public void runRollerVelo(AngularVelocity velocity) {
     if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
-      Subsystems.roller.setVelocity(
-          RotationsPerSecond.of(20).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      if (internalForceRoller) {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      } else {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      }
     } else {
       Subsystems.roller.setVelocity(velocity);
     }
@@ -273,8 +284,13 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   public void runRollerVelo(Voltage volts) {
     if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
-      Subsystems.roller.setVelocity(
-          RotationsPerSecond.of(20).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      if (internalForceRoller) {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      } else {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      }
     } else {
       Subsystems.roller.setVoltage(volts);
     }

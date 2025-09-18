@@ -211,6 +211,7 @@ public class RobotContainer {
     autoChooser.addOption("LS-I-J-K-L", AutoFactory.LS_I_J_K_L());
     autoChooser.addOption("LS-I-J-K", AutoFactory.LS_I_J_K());
     autoChooser.addOption("LS-J-K-L", AutoFactory.LS_J_K_L());
+    autoChooser.addOption("Leave", AutoFactory.leave());
 
     autoChooser.addOption(
         "Drive Wheel Radius Characterization",
