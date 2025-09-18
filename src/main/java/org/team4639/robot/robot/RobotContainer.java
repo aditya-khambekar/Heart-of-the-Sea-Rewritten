@@ -101,9 +101,9 @@ public class RobotContainer {
                 new VisionIOLimelight(
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
-                    VisionConstants.cameraRightName, Subsystems.drive::getRotation),
-                new VisionIOLimelight(
-                    VisionConstants.cameraLeftName, Subsystems.drive::getRotation));
+                    VisionConstants.cameraRightName, Subsystems.drive::getRotation));
+        // new VisionIOLimelight(
+        // VisionConstants.cameraBackName, Subsystems.drive::getRotation));
 
         Subsystems.elevator =
             new ElevatorSubsystem(new ElevatorIOTalonFX(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
@@ -177,13 +177,14 @@ public class RobotContainer {
     VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
 
     // Configure the button bindings
-    configureButtonBindings();
+
     SuperstructureCommands.initCommands();
     FieldConstants.init();
     FieldConstants.initAlgaeLocations();
     States.initStaticStates();
     // I truly have no idea why calling this variable instantiates FieldConstants but it works so.
     double x = FieldConstants.fieldLength;
+    configureButtonBindings();
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -210,6 +211,7 @@ public class RobotContainer {
     autoChooser.addOption("LS-I-J-K-L", AutoFactory.LS_I_J_K_L());
     autoChooser.addOption("LS-I-J-K", AutoFactory.LS_I_J_K());
     autoChooser.addOption("LS-J-K-L", AutoFactory.LS_J_K_L());
+    autoChooser.addOption("Leave", AutoFactory.leave());
 
     autoChooser.addOption(
         "Drive Wheel Radius Characterization",

@@ -12,6 +12,8 @@ import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
+import org.team4639.robot.subsystems.superstructure.Superstructure;
+import org.team4639.robot.subsystems.superstructure.SuperstructureSetpoints;
 
 public class AutoGenerator {
 
@@ -88,8 +90,17 @@ public class AutoGenerator {
                       case RHP -> DriveCommands.HPRightAlign(Subsystems.drive);
                       default -> throw new IllegalArgumentException("what the fuck");
                     })
+                .until(Subsystems.wrist::hasCoral)
                 .andThen(DriveCommands.stopWithX().withTimeout(0.5)))
-            .deadlineFor(SuperstructureCommands.hp());
+            .deadlineFor(
+                SuperstructureCommands.homingReady()
+                    .until(
+                        () ->
+                            Superstructure.atPosition(
+                                Superstructure.getSuperstructureState(),
+                                SuperstructureSetpoints.HOMING_READY))
+                    .andThen(SuperstructureCommands.homing())
+                    .andThen(SuperstructureCommands.hpLowerAuto()));
         case OUT_CORAL -> (pathCommand.deadlineFor(SuperstructureCommands.elevatorReady()))
             .andThen(
                 switch (ending) {

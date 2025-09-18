@@ -231,12 +231,12 @@ public class FieldConstants {
   }
 
   // change this to tune how far the align tries to go from the reef face
-  static Transform2d fromReef = new Transform2d(Units.inchesToMeters(29.25), 0, Rotation2d.k180deg);
+  static Transform2d fromReef = new Transform2d(Units.inchesToMeters(26.25), 0, Rotation2d.k180deg);
   static Transform2d fromProcessor =
       new Transform2d(Units.inchesToMeters(25), 0, Rotation2d.k180deg);
   // change this to tune how far the align tries to go from the forceIntake station
   static Transform2d fromCoralStation =
-      new Transform2d(Units.inchesToMeters(16), 0, Rotation2d.kZero);
+      new Transform2d(Units.inchesToMeters(9), 0, Rotation2d.kZero);
   static Transform2d fromBarge = new Transform2d(Units.inchesToMeters(-39), 0, Rotation2d.kZero);
 
   public static enum TargetPositions {

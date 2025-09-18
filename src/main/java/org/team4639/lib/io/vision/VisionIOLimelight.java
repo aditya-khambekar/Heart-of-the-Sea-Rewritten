@@ -64,7 +64,7 @@ public class VisionIOLimelight implements VisionIO {
     megatag2SubscriberBlue =
         table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
     megatag2SubscriberRed =
-        table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
+        table.getDoubleArrayTopic("botpose_orb_wpired").subscribe(new double[] {});
 
     Errors.addCheck(() -> this.connected, "Limelight " + name + " disconnected");
   }
@@ -83,7 +83,14 @@ public class VisionIOLimelight implements VisionIO {
 
     // Update orientation for MegaTag 2
     orientationPublisher.accept(
-        new double[] {rotationSupplier.get().getDegrees(), 0.0, 0.0, 0.0, 0.0, 0.0});
+        new double[] {
+          rotationSupplier.get().getDegrees() + (DriverStationUtil.isBlueAlliance() ? 0 : 180),
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        });
     NetworkTableInstance.getDefault()
         .flush(); // Increases network traffic but recommended by Limelight
 
@@ -101,7 +108,7 @@ public class VisionIOLimelight implements VisionIO {
               rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
 
               // 3D pose estimate
-              parsePose(rawSample.value),
+              (parsePose(rawSample.value)),
 
               // Ambiguity, using only the first tag because ambiguity isn't applicable for multitag
               rawSample.value.length >= 18 ? rawSample.value[17] : 0.0,
@@ -126,7 +133,7 @@ public class VisionIOLimelight implements VisionIO {
               rawSample.timestamp * 1.0e-6 - rawSample.value[6] * 1.0e-3,
 
               // 3D pose estimate
-              parsePose(rawSample.value),
+              (parsePose(rawSample.value)),
 
               // Ambiguity, zeroed because the pose is already disambiguated
               0.0,

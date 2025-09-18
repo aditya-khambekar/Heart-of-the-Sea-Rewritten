@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.io.IOException;
 import org.json.simple.parser.ParseException;
+import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.robot.Subsystems;
 
 public class AutoFactory {
@@ -93,5 +94,10 @@ public class AutoFactory {
     } catch (IOException | ParseException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static Command leave() {
+
+    return DriveCommands.joystickDrive(() -> -0.4, () -> 0, () -> 0).withTimeout(3);
   }
 }

@@ -186,8 +186,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   }
 
   public boolean atSetpointTranslation() {
-    return Math.abs(Subsystems.drive.getPose().getX() - setpoint.getX()) < 0.03
-        && Math.abs(Subsystems.drive.getPose().getY() - setpoint.getY()) < 0.03;
+    return Math.abs(Subsystems.drive.getPose().getX() - setpoint.getX()) < 0.06
+        && Math.abs(Subsystems.drive.getPose().getY() - setpoint.getY()) < 0.06;
   }
 
   @Override
@@ -361,7 +361,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
-    return poseEstimator.getEstimatedPosition();
+    return (poseEstimator.getEstimatedPosition());
   }
 
   /** Returns the current odometry rotation. */

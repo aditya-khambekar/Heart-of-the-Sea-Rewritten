@@ -18,4 +18,7 @@ public class Subsystems {
   public static Superstructure superstructure;
   public static LimelightFlash limelightFlash;
   public static PhysicalLEDStrip leds;
+
+  // public static Set<Subsystem> superstructureRequirements =
+  // Set.of(elevator, wrist, roller, superstructure);
 }

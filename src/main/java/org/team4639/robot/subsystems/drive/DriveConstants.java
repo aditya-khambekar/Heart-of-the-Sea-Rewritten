@@ -12,5 +12,5 @@ public class DriveConstants {
   public static final Double driverStatorCurrentLimit = 90.0;
   public static final Double rotatorStatorCurrentLimit = 40.0;
 
-  public static final LinearVelocity MAX_LINEAR_MPS = MetersPerSecond.of(5.0);
+  public static final LinearVelocity MAX_LINEAR_MPS = MetersPerSecond.of(8.0);
 }

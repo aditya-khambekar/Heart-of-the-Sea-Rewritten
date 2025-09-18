@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import org.team4639.robot.commands.superstructure.HomingCommand;
 import org.team4639.robot.commands.superstructure.SuperstructureCommand;
+import org.team4639.robot.constants.Controls;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
@@ -28,6 +29,7 @@ public class SuperstructureCommands {
   public static Command L2_ALGAE;
   public static Command L3_ALGAE;
   public static Command BARGE;
+  public static Command BARGE_SCORE;
   public static Command BARGE_NO_OUTTAKE;
   public static Command ALGAE_STOW;
   public static Command HOMING_READY;
@@ -210,6 +212,18 @@ public class SuperstructureCommands {
                     Subsystems.superstructure))
             .withName("BARGE");
 
+    BARGE_SCORE =
+        Commands.defer(
+                () ->
+                    new SuperstructureCommand(SuperstructureSetpoints.BARGE_SCORE, "BARGE")
+                        .withAlgae(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("BARGE");
+
     BARGE_NO_OUTTAKE =
         Commands.defer(
                 () ->
@@ -226,8 +240,13 @@ public class SuperstructureCommands {
     ALGAE_STOW =
         Commands.defer(
                 () ->
-                    new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW, "ALGAE_STOW")
-                        .withAlgae(),
+                    (new SuperstructureCommand(SuperstructureSetpoints.ALGAE_STOW, "ALGAE_STOW")
+                            .withAlgae())
+                        .withTimeout(1)
+                        .andThen(
+                            (new SuperstructureCommand(
+                                    SuperstructureSetpoints.ALGAE_STOW_LOWER, "ALGAE_STOW")
+                                .withAlgae())),
                 Set.of(
                     Subsystems.elevator,
                     Subsystems.wrist,
@@ -317,6 +336,11 @@ public class SuperstructureCommands {
     return new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER, "HP_LOWER").flashOnDone();
   }
 
+  public static SuperstructureCommand hpLowerAuto() {
+    return new SuperstructureCommand(SuperstructureSetpoints.HP_LOWER_AUTO, "HP_LOWER")
+        .flashOnDone();
+  }
+
   public static SuperstructureCommand coralStow() {
     return new SuperstructureCommand(SuperstructureSetpoints.CORAL_STOW, "CORAL_STOW");
   }
@@ -337,8 +361,35 @@ public class SuperstructureCommands {
     return new SuperstructureCommand(SuperstructureSetpoints.L3, "L3").flashOnDone();
   }
 
-  public static SuperstructureCommand l4() {
-    return new SuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone();
+  public static Command l4() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L4, "L4")
+                    .flashOnDone()
+                    .withCoral(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4");
+  }
+
+  private static Command l4AutoCreator() {
+    var command =
+        new SuperstructureCommand(SuperstructureSetpoints.L4, "L4").flashOnDone().withCoral();
+    return command.alongWith(Commands.waitSeconds(2).finallyDo(command::forceRoller));
+  }
+
+  public static Command l4Auto() {
+    return Commands.defer(
+            SuperstructureCommands::l4AutoCreator,
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4");
   }
 
   public static SuperstructureCommand l2Algae() {
@@ -350,7 +401,9 @@ public class SuperstructureCommands {
   }
 
   public static SuperstructureCommand barge() {
-    return new SuperstructureCommand(SuperstructureSetpoints.BARGE, "BARGE");
+    return new SuperstructureCommand(SuperstructureSetpoints.BARGE, "BARGE")
+        .flashOnDone()
+        .waitForRoller(Controls.ALGAE_BARGE.or(Controls.ALGAE_BARGE_MANUAL));
   }
 
   public static SuperstructureCommand algaeStow() {
@@ -362,7 +415,14 @@ public class SuperstructureCommands {
   }
 
   public static Command homing() {
-    return new HomingCommand();
+    return Commands.defer(
+            HomingCommand::new,
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("HOMING");
   }
 
   public static Command hold() {
@@ -410,5 +470,78 @@ public class SuperstructureCommands {
                   FieldConstants.TargetPositions.REEF_IJ.getPose(),
                   FieldConstants.TargetPositions.REEF_KL.getPose()));
         });
+  }
+
+  public static Command l4Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L4, "L4")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4");
+  }
+
+  public static Command l3Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L3, "L3")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L3");
+  }
+
+  public static Command l2Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L2, "L2")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L2");
+  }
+
+  public static Command l1Manual() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.L1, "L1")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L1");
+  }
+
+  public static Command autoL4Prep() {
+    return Commands.defer(
+            () ->
+                new SuperstructureCommand(SuperstructureSetpoints.AUTO_L4_PREP, "L4_PREP")
+                    .withCoral(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4_PREP");
   }
 }

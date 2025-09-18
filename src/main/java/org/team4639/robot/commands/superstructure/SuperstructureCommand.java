@@ -10,13 +10,17 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
 import org.team4639.lib.util.RotationUtil;
+import org.team4639.robot.constants.Controls;
+import org.team4639.robot.robot.RobotContainer;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.SuperstructureState;
@@ -34,6 +38,10 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   private boolean flash;
   private boolean wristSupposedToBeStopped = true;
   private Voltage whileRunningRollerVolts = Volts.of(0.0);
+  private boolean waitToRoller = false;
+  private Trigger waitForRollerTrigger = Controls.ROLLER_TRIGGER;
+  private boolean internalForceRoller = false;
+  boolean coral = false;
 
   /**
    * Commands the superstructure to go to a specific state
@@ -62,9 +70,11 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   @Override
   public void initialize() {
+    internalForceRoller = false;
     setState(SuperstructureCommandState.TO_SAFE_ANGLE);
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
+    timeOfExecutingAction = Seconds.mutable(0);
   }
 
   @Override
@@ -101,7 +111,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
                 RotationUtil.max(safeTransitionRange.getFirst(), safeTransitionRange.getSecond())
                     .minus(Rotation2d.fromDegrees(2))));
         Subsystems.elevator.setPercentageRaw(holdPosition);
-        Subsystems.roller.setVoltage(whileRunningRollerVolts);
+        runRollerVelo(whileRunningRollerVolts);
       }
       case TO_ELEVATOR_SETPOINT -> {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
@@ -113,7 +123,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
           wristSupposedToBeStopped = true;
         }
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
-        Subsystems.roller.setVoltage(whileRunningRollerVolts);
+        runRollerVelo(whileRunningRollerVolts);
       }
       case TO_WRIST_SETPOINT -> {
         wristSupposedToBeStopped = false;
@@ -123,7 +133,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
         ;
-        Subsystems.roller.setVoltage(whileRunningRollerVolts);
+        runRollerVelo(whileRunningRollerVolts);
       }
       case EXECUTING_ACTION -> {
         wristSupposedToBeStopped = true;
@@ -132,9 +142,29 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
         if (timeOfExecutingAction.gte(executingActionTimeout))
           setState(SuperstructureCommandState.DONE);
         if (flash) Subsystems.limelightFlash.flash();
+
+        if (waitToRoller) {
+          if (waitForRollerTrigger.getAsBoolean()) {
+            runRollerVelo();
+          }
+        } else {
+          if (coral) {
+            if (timeOfExecutingAction.gte(Seconds.of(0.2))) {
+              runRollerVelo();
+            }
+          } else {
+            runRollerVelo();
+          }
+        }
+        if (coral) {
+          if (timeOfExecutingAction.gte(Seconds.of(0.2))) {
+            runRollerVelo();
+          }
+        } else {
+          runRollerVelo();
+        }
         Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
         Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
-        Subsystems.roller.setVelocity(setpoint.wheelSpeed());
       }
       case DONE -> {
         // at this point the command will be ended, but we do these just to make sure nothing
@@ -159,12 +189,13 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   }
 
   public SuperstructureCommand withCoral() {
-    this.whileRunningRollerVolts = Volts.of(0.0);
+    this.whileRunningRollerVolts = Volts.of(-0.1);
+    coral = true;
     return this;
   }
 
   public SuperstructureCommand withAlgae() {
-    this.whileRunningRollerVolts = Volts.of(-1.0);
+    this.whileRunningRollerVolts = Volts.of(-5.0);
     return this;
   }
 
@@ -220,5 +251,62 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
                 Rotations.of(Subsystems.wrist.getEncoderVelocity().in(RotationsPerSecond)))
             .times(0.1);
     return Superstructure.isWristAtSafeAngle(Subsystems.wrist.getWristAngle().plus(lookahead));
+  }
+
+  public void runRollerVelo() {
+    if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
+      if (internalForceRoller) {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      } else {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      }
+
+    } else {
+      Subsystems.roller.setVelocity(setpoint.wheelSpeed());
+    }
+  }
+
+  public void runRollerVelo(AngularVelocity velocity) {
+    if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
+      if (internalForceRoller) {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      } else {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      }
+    } else {
+      Subsystems.roller.setVelocity(velocity);
+    }
+  }
+
+  public void runRollerVelo(Voltage volts) {
+    if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
+      if (internalForceRoller) {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      } else {
+        Subsystems.roller.setVelocity(
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+      }
+    } else {
+      Subsystems.roller.setVoltage(volts);
+    }
+  }
+
+  public SuperstructureCommand waitForRoller() {
+    this.waitToRoller = true;
+    return this;
+  }
+
+  public SuperstructureCommand waitForRoller(Trigger trigger) {
+    this.waitForRollerTrigger = trigger;
+    return waitForRoller();
+  }
+
+  public void forceRoller() {
+    internalForceRoller = true;
   }
 }

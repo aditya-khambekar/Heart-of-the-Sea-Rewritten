@@ -189,7 +189,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    StateMachine.setState(States.IDLE);
+    // StateMachine.setState(States.IDLE);
+    StateMachine.setState(States.HOMING_READY);
     StateMachine.getState().scheduleCommands();
   }
 
