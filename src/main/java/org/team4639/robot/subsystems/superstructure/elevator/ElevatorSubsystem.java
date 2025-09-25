@@ -31,7 +31,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void elevatorDown() {
-    io.setDutyCycleSetpoint(Percent.of(-0.05));
+    io.setDutyCycleSetpoint(Percent.of(-0.2));
   }
 
   public void elevatorStop() {
