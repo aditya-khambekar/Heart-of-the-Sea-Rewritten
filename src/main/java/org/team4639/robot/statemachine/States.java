@@ -98,6 +98,7 @@ public class States {
             .onTrigger(Controls.ALGAE_INTAKE_AUTO, () -> ALGAE_INTAKE)
             .onTrigger(Controls.FORCE_HOMING, () -> HOMING_READY)
             .mapTriggerCommandsOnTrue(operatorControls)
+            .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector)
             .withEndCondition(Subsystems.wrist::hasCoral, () -> CORAL_STOW);
 
     HP_LEFT =
@@ -107,6 +108,7 @@ public class States {
                 SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER)
             .mapTriggerCommandsOnTrue(operatorControls)
+            .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector)
             .onEmergency(() -> IDLE);
 
     HP_RIGHT =
@@ -116,6 +118,7 @@ public class States {
                 SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER)
             .mapTriggerCommandsOnTrue(operatorControls)
+            .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector)
             .onEmergency(() -> IDLE);
 
     Debouncer hasCoralDebouncer = new Debouncer(0.5, DebounceType.kRising);
@@ -129,6 +132,7 @@ public class States {
             .withEndCondition(
                 () -> hasCoralDebouncer.calculate(Subsystems.wrist.hasCoral()), () -> CORAL_STOW)
             .mapTriggerCommandsOnTrue(operatorControls)
+            .mapTriggerCommandsOnTrue(driverInputToDashboardOutputSelector)
             .onEmergency(() -> IDLE);
 
     CORAL_STOW =

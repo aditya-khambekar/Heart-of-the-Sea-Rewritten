@@ -69,7 +69,7 @@ public class ElevatorConstants {
   public static TunableNumber elevatorVelocity =
       new TunableNumber().withDefaultValue(300.0).send("Scoring PIDs/Elevator Velocity");
   public static TunableNumber elevatorAcceleration =
-      new TunableNumber().withDefaultValue(300).send("Scoring PIDs/Elevator Acceleration");
+      new TunableNumber().withDefaultValue(600).send("Scoring PIDs/Elevator Acceleration");
   public static TunableNumber elevatorKs =
       new TunableNumber().withDefaultValue(0.27919).send("Scoring PIDs/Elevator Ks");
   public static TunableNumber elevatorKg =

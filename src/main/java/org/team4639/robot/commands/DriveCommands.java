@@ -46,7 +46,7 @@ import org.team4639.robot.subsystems.drive.Drive;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
-  private static final double ANGLE_KP = 24.0;
+  private static final double ANGLE_KP = 32.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_KI = 0.01;
   private static final double ANGLE_MAX_VELOCITY = 15.0;
@@ -65,7 +65,7 @@ public class DriveCommands {
     Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
 
     // Square magnitude for more precise control
-    linearMagnitude = 2 * linearMagnitude * linearMagnitude;
+    linearMagnitude = 3 * linearMagnitude * linearMagnitude;
 
     // Return new linear velocity
     return new Pose2d(new Translation2d(), linearDirection)
@@ -454,7 +454,7 @@ public class DriveCommands {
         new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
     ProfiledPIDController pidY =
         new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
-    PIDController headingController = new PIDController(16, 0, 0);
+    PIDController headingController = new PIDController(32, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
 

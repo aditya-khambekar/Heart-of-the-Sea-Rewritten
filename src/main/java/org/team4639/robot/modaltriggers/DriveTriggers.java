@@ -14,7 +14,7 @@ public class DriveTriggers {
                           .getPose()
                           .getTranslation()
                           .getDistance(FieldConstants.CoralStation.leftCenterFace.getTranslation())
-                      < 1.75)
+                      < 1.0)
           .and(VisionTriggers.visionIsActive());
 
   public static Trigger closeToRightStation =
@@ -24,7 +24,7 @@ public class DriveTriggers {
                           .getPose()
                           .getTranslation()
                           .getDistance(FieldConstants.CoralStation.rightCenterFace.getTranslation())
-                      < 1.75)
+                      < 1.0)
           .and(VisionTriggers.visionIsActive());
 
   public static Trigger joysticksActive =
