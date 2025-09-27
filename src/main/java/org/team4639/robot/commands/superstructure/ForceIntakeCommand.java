@@ -35,6 +35,7 @@ public class ForceIntakeCommand extends SuperstructureCommandBase {
 
     @Override
     public void execute() {
+        super.execute();
         Subsystems.elevator.elevatorStop();
         Subsystems.wrist.setWristDutyCycle(Value.zero());
 
