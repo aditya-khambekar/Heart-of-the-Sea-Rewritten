@@ -88,7 +88,7 @@ public class AutoGenerator {
                     switch (ending) {
                       case LHP -> DriveCommands.HPLeftAlign(Subsystems.drive);
                       case RHP -> DriveCommands.HPRightAlign(Subsystems.drive);
-                      default -> throw new IllegalArgumentException("what the fuck");
+                      default -> throw new IllegalArgumentException("Unexpected value: " + ending);
                     })
                 .until(Subsystems.wrist::hasCoral)
                 .andThen(DriveCommands.stopWithX().withTimeout(0.5)))
@@ -116,7 +116,7 @@ public class AutoGenerator {
                   case J -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_J.getPose());
                   case K -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_K.getPose());
                   case L -> AutoCommands.scoreL4(FieldConstants.TargetPositions.REEF_L.getPose());
-                  default -> throw new IllegalArgumentException("what the fuck");
+                  default -> throw new IllegalArgumentException("Unexpected value: " + ending);
                 });
         case IN_ALGAE -> (pathCommand.deadlineFor(SuperstructureCommands.elevatorReady()))
             .andThen(AutoCommands.algaeIntakeSequence());
@@ -129,7 +129,7 @@ public class AutoGenerator {
                       FieldConstants.TargetPositions.BARGE_MIDDLECAGE.getPose());
                   case ALGSC3 -> AutoCommands.scoreBarge(
                       FieldConstants.TargetPositions.BARGE_CLOSECAGE.getPose());
-                  default -> throw new IllegalArgumentException("what the fuck");
+                  default -> throw new IllegalArgumentException("Unexpected value: " + ending);
                 });
       };
     } catch (Exception e) {
