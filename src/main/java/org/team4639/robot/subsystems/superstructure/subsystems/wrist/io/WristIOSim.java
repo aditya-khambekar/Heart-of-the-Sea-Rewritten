@@ -1,4 +1,4 @@
-package org.team4639.robot.subsystems.superstructure.wrist.io;
+package org.team4639.robot.subsystems.superstructure.subsystems.wrist.io;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -16,7 +16,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team4639.lib.unit.Units2;
-import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
+import org.team4639.robot.subsystems.superstructure.subsystems.wrist.WristConstants;
 
 public class WristIOSim extends WristIO {
   SingleJointedArmSim pivotSim;

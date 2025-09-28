@@ -1,4 +1,4 @@
-package org.team4639.robot.subsystems.superstructure.elevator.io;
+package org.team4639.robot.subsystems.superstructure.subsystems.elevator.io;
 
 import static edu.wpi.first.units.Units.*;
 

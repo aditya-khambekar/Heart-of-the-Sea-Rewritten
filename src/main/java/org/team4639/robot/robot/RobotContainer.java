@@ -51,15 +51,15 @@ import org.team4639.robot.subsystems.LimelightFlash;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
-import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
-import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFX;
-import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIOTalonFXSim;
-import org.team4639.robot.subsystems.superstructure.roller.RollerSubsystem;
-import org.team4639.robot.subsystems.superstructure.roller.io.RollerIOSim;
-import org.team4639.robot.subsystems.superstructure.roller.io.RollerIOSparkFlex;
-import org.team4639.robot.subsystems.superstructure.wrist.WristSubsystem;
-import org.team4639.robot.subsystems.superstructure.wrist.io.WristIOSim;
-import org.team4639.robot.subsystems.superstructure.wrist.io.WristIOSparkFlex;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorSubsystem;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.io.ElevatorIOTalonFX;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.io.ElevatorIOTalonFXSim;
+import org.team4639.robot.subsystems.superstructure.subsystems.roller.RollerSubsystem;
+import org.team4639.robot.subsystems.superstructure.subsystems.roller.io.RollerIOSim;
+import org.team4639.robot.subsystems.superstructure.subsystems.roller.io.RollerIOSparkFlex;
+import org.team4639.robot.subsystems.superstructure.subsystems.wrist.WristSubsystem;
+import org.team4639.robot.subsystems.superstructure.subsystems.wrist.io.WristIOSim;
+import org.team4639.robot.subsystems.superstructure.subsystems.wrist.io.WristIOSparkFlex;
 import org.team4639.robot.subsystems.vision.*;
 
 /**

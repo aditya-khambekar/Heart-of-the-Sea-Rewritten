@@ -11,15 +11,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.team4639.robot.robot.RobotContainer;
 
+@Getter
 public class DashboardOutputs {
 
   private static volatile DashboardOutputs instance;
-  @Getter @Setter private int upcomingReefLevel = 0;
+  @Setter private int upcomingReefLevel = 0;
 
-  @Getter private final Trigger selectedL4 = new Trigger(() -> upcomingReefLevel == 4);
-  @Getter private final Trigger selectedL3 = new Trigger(() -> upcomingReefLevel == 3);
-  @Getter private final Trigger selectedL2 = new Trigger(() -> upcomingReefLevel == 2);
-  @Getter private final Trigger selectedL1 = new Trigger(() -> upcomingReefLevel == 1);
+  private final Trigger selectedL4 = new Trigger(() -> upcomingReefLevel == 4);
+  private final Trigger selectedL3 = new Trigger(() -> upcomingReefLevel == 3);
+  private final Trigger selectedL2 = new Trigger(() -> upcomingReefLevel == 2);
+  private final Trigger selectedL1 = new Trigger(() -> upcomingReefLevel == 1);
 
   public static synchronized DashboardOutputs getInstance() {
     return instance = Objects.requireNonNullElseGet(instance, DashboardOutputs::new);

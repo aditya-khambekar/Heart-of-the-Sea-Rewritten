@@ -1,4 +1,4 @@
-package org.team4639.robot.subsystems.superstructure.wrist;
+package org.team4639.robot.subsystems.superstructure.subsystems.wrist;
 
 import static edu.wpi.first.units.Units.*;
 
@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIO;
-import org.team4639.robot.subsystems.superstructure.wrist.io.WristIO;
+import org.team4639.robot.subsystems.superstructure.subsystems.wrist.io.WristIO;
 
 public class WristSubsystem extends SubsystemBase {
   WristIO.WristIOInputs wristIOInputs;

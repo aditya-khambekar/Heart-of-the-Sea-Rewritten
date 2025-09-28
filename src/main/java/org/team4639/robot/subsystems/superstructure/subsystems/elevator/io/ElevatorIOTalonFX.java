@@ -1,6 +1,6 @@
-package org.team4639.robot.subsystems.superstructure.elevator.io;
+package org.team4639.robot.subsystems.superstructure.subsystems.elevator.io;
 
-import static org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants.*;
+import static org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;

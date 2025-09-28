@@ -3,6 +3,7 @@ package org.team4639.robot.subsystems.superstructure;
 import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import org.team4639.robot.subsystems.superstructure.state.SuperstructureState;
 
 public class SuperstructureSetpoints {
   public static final double offset = 0.0555;

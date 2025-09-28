@@ -4,9 +4,9 @@ import org.team4639.lib.led.subsystem.PhysicalLEDStrip;
 import org.team4639.robot.subsystems.LimelightFlash;
 import org.team4639.robot.subsystems.drive.Drive;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
-import org.team4639.robot.subsystems.superstructure.elevator.ElevatorSubsystem;
-import org.team4639.robot.subsystems.superstructure.roller.RollerSubsystem;
-import org.team4639.robot.subsystems.superstructure.wrist.WristSubsystem;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorSubsystem;
+import org.team4639.robot.subsystems.superstructure.subsystems.roller.RollerSubsystem;
+import org.team4639.robot.subsystems.superstructure.subsystems.wrist.WristSubsystem;
 import org.team4639.robot.subsystems.vision.Vision;
 
 public class Subsystems {
@@ -18,7 +18,4 @@ public class Subsystems {
   public static Superstructure superstructure;
   public static LimelightFlash limelightFlash;
   public static PhysicalLEDStrip leds;
-
-  // public static Set<Subsystem> superstructureRequirements =
-  // Set.of(elevator, wrist, roller, superstructure);
 }

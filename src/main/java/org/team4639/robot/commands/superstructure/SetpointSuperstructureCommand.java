@@ -23,11 +23,11 @@ import org.team4639.robot.constants.Controls;
 import org.team4639.robot.robot.RobotContainer;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
-import org.team4639.robot.subsystems.superstructure.SuperstructureState;
-import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
-import org.team4639.robot.subsystems.superstructure.wrist.WristConstants;
+import org.team4639.robot.subsystems.superstructure.state.SuperstructureState;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorConstants;
+import org.team4639.robot.subsystems.superstructure.subsystems.wrist.WristConstants;
 
-public class SuperstructureCommand extends SuperstructureCommandBase {
+public class SetpointSuperstructureCommand extends SuperstructureCommandBase {
   private SuperstructureState setpoint;
   private SuperstructureCommandState state;
   private BooleanSupplier endCondition;
@@ -36,7 +36,6 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   private Time executingActionTimeout = Seconds.of(Double.POSITIVE_INFINITY);
   private String name;
   private boolean flash;
-  private boolean wristSupposedToBeStopped = true;
   private Voltage whileRunningRollerVolts = Volts.of(0.0);
   private boolean waitToRoller = false;
   private Trigger waitForRollerTrigger = Controls.ROLLER_TRIGGER;
@@ -51,7 +50,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
    *     can always return false for a command that doesn't end by itself. This is checked only once
    *     the command has reached the EXECUTING_ACTION state.
    */
-  public SuperstructureCommand(
+  public SetpointSuperstructureCommand(
       SuperstructureState setpoint, BooleanSupplier endCondition, String name) {
     addRequirements(
         Subsystems.elevator, Subsystems.wrist, Subsystems.roller, Subsystems.superstructure);
@@ -64,7 +63,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
     setName(name);
   }
 
-  public SuperstructureCommand(SuperstructureState setpoint, String name) {
+  public SetpointSuperstructureCommand(SuperstructureState setpoint, String name) {
     this(setpoint, () -> false, name);
   }
 
@@ -79,10 +78,10 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
   @Override
   public void execute() {
-    SmartDashboard.putNumber("Wrist Setpoint", setpoint.wristRotation().getDegrees());
+    SmartDashboard.putNumber("Wrist Setpoint", setpoint.getWristRotation().getDegrees());
     super.execute();
     SmartDashboard.putBoolean("Elevator At Setpoint", elevatorAtSetpoint());
-    SmartDashboard.putNumber("Elevator Setpoint", setpoint.elevatorProportion().in(Value));
+    SmartDashboard.putNumber("Elevator Setpoint", setpoint.getElevatorProportion().in(Value));
     SmartDashboard.putNumber("Elevator Position", Subsystems.elevator.getPercentage().in(Value));
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
@@ -96,47 +95,42 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
                 WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getFirst(),
                 WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getSecond())
             && RotationUtil.boundedBy(
-                setpoint.wristRotation(),
+                setpoint.getWristRotation(),
                 WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getFirst(),
                 WristConstants.SAFE_TRANSITION_RANGE_INTERIOR.getSecond()))
           setState(SuperstructureCommandState.TO_ELEVATOR_SETPOINT);
-        wristSupposedToBeStopped = false;
         Pair<Rotation2d, Rotation2d> safeTransitionRange =
             Superstructure.getEffectiveExteriorSafeZone();
         Subsystems.wrist.setWristSetpoint(
             RotationUtil.nearest(
-                setpoint.wristRotation(),
+                setpoint.getWristRotation(),
                 RotationUtil.min(safeTransitionRange.getFirst(), safeTransitionRange.getSecond())
                     .plus(Rotation2d.fromDegrees(2)),
                 RotationUtil.max(safeTransitionRange.getFirst(), safeTransitionRange.getSecond())
                     .minus(Rotation2d.fromDegrees(2))));
         Subsystems.elevator.setPercentageRaw(holdPosition);
-        runRollerVelo(whileRunningRollerVolts);
+        runRollerVelocity(whileRunningRollerVolts);
       }
       case TO_ELEVATOR_SETPOINT -> {
         if (elevatorAtSetpoint()) setState(SuperstructureCommandState.TO_WRIST_SETPOINT);
         if (Superstructure.isWristAtSafeAngle()) {
-          Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
-          wristSupposedToBeStopped = false;
+          Subsystems.wrist.setWristSetpoint(setpoint.getWristRotation());
         } else {
           Subsystems.wrist.setWristDutyCycle(Percent.zero());
-          wristSupposedToBeStopped = true;
         }
-        Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
-        runRollerVelo(whileRunningRollerVolts);
+        Subsystems.elevator.setPercentageRaw(setpoint.getElevatorProportion());
+        runRollerVelocity(whileRunningRollerVolts);
       }
       case TO_WRIST_SETPOINT -> {
-        wristSupposedToBeStopped = false;
         if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
           setState(SuperstructureCommandState.EXECUTING_ACTION);
 
-        Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
-        Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
+        Subsystems.wrist.setWristSetpoint(setpoint.getWristRotation());
+        Subsystems.elevator.setPercentageRaw(setpoint.getElevatorProportion());
         ;
-        runRollerVelo(whileRunningRollerVolts);
+        runRollerVelocity(whileRunningRollerVolts);
       }
       case EXECUTING_ACTION -> {
-        wristSupposedToBeStopped = true;
         timeOfExecutingAction.mut_plus(0.02, Seconds);
         if (endCondition.getAsBoolean()) setState(SuperstructureCommandState.DONE);
         if (timeOfExecutingAction.gte(executingActionTimeout))
@@ -145,61 +139,43 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
 
         if (waitToRoller) {
           if (waitForRollerTrigger.getAsBoolean()) {
-            runRollerVelo();
+            runRollerVelocity();
           }
         } else {
-          if (coral) {
-            if (timeOfExecutingAction.gte(Seconds.of(0.2))) {
-              runRollerVelo();
-            }
-          } else {
-            runRollerVelo();
-          }
+          runRollerVelocity();
         }
-        if (coral) {
-          if (timeOfExecutingAction.gte(Seconds.of(0.2))) {
-            runRollerVelo();
-          }
-        } else {
-          runRollerVelo();
-        }
-        Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
-        Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
+        Subsystems.wrist.setWristSetpoint(setpoint.getWristRotation());
+        Subsystems.elevator.setPercentageRaw(setpoint.getElevatorProportion());
       }
       case DONE -> {
         // at this point the command will be ended, but we do these just to make sure nothing
         // strange happens.
-        Subsystems.wrist.setWristSetpoint(setpoint.wristRotation());
-        Subsystems.elevator.setPercentageRaw(setpoint.elevatorProportion());
+        Subsystems.wrist.setWristSetpoint(setpoint.getWristRotation());
+        Subsystems.elevator.setPercentageRaw(setpoint.getElevatorProportion());
         ;
-        Subsystems.roller.setVelocity(setpoint.wheelSpeed());
-      }
-      case STOPPED -> {
-        Subsystems.wrist.setWristDutyCycle(Value.zero());
-        Subsystems.elevator.elevatorStop();
-        Subsystems.roller.setDutyCycle(Value.zero());
+        Subsystems.roller.setVelocity(setpoint.getWheelSpeed());
       }
       default -> throw new IllegalArgumentException("Unexpected state: " + state);
     }
   }
 
-  public SuperstructureCommand flashOnDone() {
+  public SetpointSuperstructureCommand flashOnDone() {
     this.flash = true;
     return this;
   }
 
-  public SuperstructureCommand withCoral() {
+  public SetpointSuperstructureCommand withCoral() {
     this.whileRunningRollerVolts = Volts.of(-0.1);
     coral = true;
     return this;
   }
 
-  public SuperstructureCommand withAlgae() {
+  public SetpointSuperstructureCommand withAlgae() {
     this.whileRunningRollerVolts = Volts.of(-5.0);
     return this;
   }
 
-  public SuperstructureCommand withNone() {
+  public SetpointSuperstructureCommand withNone() {
     this.whileRunningRollerVolts = Volts.of(0.0);
     return this;
   }
@@ -217,7 +193,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
   private boolean elevatorAtSetpoint() {
     return MathUtil.isNear(
         Subsystems.elevator.getPercentage().baseUnitMagnitude(),
-        setpoint.elevatorProportion().baseUnitMagnitude(),
+        setpoint.getElevatorProportion().baseUnitMagnitude(),
         Math.abs(ElevatorConstants.elevatorTolerance.baseUnitMagnitude()));
   }
 
@@ -230,7 +206,7 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
     setHoldPosition();
   }
 
-  public SuperstructureCommand withExecutionTimeout(Time time) {
+  public SetpointSuperstructureCommand withExecutionTimeout(Time time) {
     this.executingActionTimeout = time;
     return this;
   }
@@ -253,55 +229,55 @@ public class SuperstructureCommand extends SuperstructureCommandBase {
     return Superstructure.isWristAtSafeAngle(Subsystems.wrist.getWristAngle().plus(lookahead));
   }
 
-  public void runRollerVelo() {
+  public void runRollerVelocity() {
     if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
       if (internalForceRoller) {
         Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
       } else {
         Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
       }
 
     } else {
-      Subsystems.roller.setVelocity(setpoint.wheelSpeed());
+      Subsystems.roller.setVelocity(setpoint.getWheelSpeed());
     }
   }
 
-  public void runRollerVelo(AngularVelocity velocity) {
+  public void runRollerVelocity(AngularVelocity velocity) {
     if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
       if (internalForceRoller) {
         Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
       } else {
         Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
       }
     } else {
       Subsystems.roller.setVelocity(velocity);
     }
   }
 
-  public void runRollerVelo(Voltage volts) {
+  public void runRollerVelocity(Voltage volts) {
     if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
       if (internalForceRoller) {
         Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
       } else {
         Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.wheelSpeed().magnitude())));
+            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
       }
     } else {
       Subsystems.roller.setVoltage(volts);
     }
   }
 
-  public SuperstructureCommand waitForRoller() {
+  public SetpointSuperstructureCommand waitForRoller() {
     this.waitToRoller = true;
     return this;
   }
 
-  public SuperstructureCommand waitForRoller(Trigger trigger) {
+  public SetpointSuperstructureCommand waitForRoller(Trigger trigger) {
     this.waitForRollerTrigger = trigger;
     return waitForRoller();
   }

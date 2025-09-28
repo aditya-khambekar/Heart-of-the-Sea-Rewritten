@@ -1,4 +1,4 @@
-package org.team4639.robot.subsystems.superstructure.wrist;
+package org.team4639.robot.subsystems.superstructure.subsystems.wrist;
 
 import static edu.wpi.first.units.Units.*;
 

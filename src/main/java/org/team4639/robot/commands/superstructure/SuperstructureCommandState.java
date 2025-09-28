@@ -6,7 +6,5 @@ public enum SuperstructureCommandState {
   TO_WRIST_SETPOINT,
   EXECUTING_ACTION,
   DONE,
-  HOMING,
-  MICROADJUSTMENTS,
-  STOPPED;
+  HOMING;
 }

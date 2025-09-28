@@ -1,7 +1,7 @@
-package org.team4639.robot.subsystems.superstructure.elevator.io;
+package org.team4639.robot.subsystems.superstructure.subsystems.elevator.io;
 
 import static edu.wpi.first.units.Units.*;
-import static org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants.*;
+import static org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.ControlRequest;
@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team4639.lib.io.motor.MotorIOTalonFX;
 import org.team4639.lib.unit.Units2;
-import org.team4639.robot.subsystems.superstructure.elevator.ElevatorConstants;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorConstants;
 
 public class ElevatorIOTalonFXSim extends ElevatorIO {
   private final ElevatorFeedforward elevatorFeedforward;

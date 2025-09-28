@@ -1,4 +1,4 @@
-package org.team4639.robot.subsystems.superstructure.elevator;
+package org.team4639.robot.subsystems.superstructure.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.Rotations;
@@ -12,18 +12,19 @@ import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
+import lombok.Getter;
 import org.team4639.robot.robot.Subsystems;
-import org.team4639.robot.subsystems.superstructure.elevator.io.ElevatorIO;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.io.ElevatorIO;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private ElevatorIO io;
-  private ElevatorIO.ElevatorIOInputs elevatorIOInputs;
-  private Debouncer stoppedDebouncer = new Debouncer(0.5, Debouncer.DebounceType.kRising);
+  @Getter private final ElevatorIO io;
+  @Getter private final ElevatorIO.ElevatorIOInputs inputs;
+  private final Debouncer stoppedDebouncer = new Debouncer(0.5, Debouncer.DebounceType.kRising);
 
   public ElevatorSubsystem(ElevatorIO io) {
     this.io = io;
-    elevatorIOInputs = new ElevatorIO.ElevatorIOInputs();
-    SmartDashboard.putData("Elevator", elevatorIOInputs);
+    inputs = new ElevatorIO.ElevatorIOInputs();
+    SmartDashboard.putData("Elevator", inputs);
   }
 
   public void elevatorUp() {
@@ -52,18 +53,18 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    io.updateInputs(elevatorIOInputs);
+    io.updateInputs(inputs);
     SmartDashboard.putString(
         "Elevator Command",
         Optional.ofNullable(this.getCurrentCommand()).map(x -> x.getName()).orElse("NONE"));
   }
 
   public void elevatorHoldRaw() {
-    setMotionMagicSetpoint(elevatorIOInputs.rightMotorPosition.copy());
+    setMotionMagicSetpoint(inputs.rightMotorPosition.copy());
   }
 
   public Dimensionless getPercentage() {
-    return ElevatorConstants.rotationsToPercentage.convert(elevatorIOInputs.rightMotorPosition);
+    return ElevatorConstants.rotationsToPercentage.convert(inputs.rightMotorPosition);
   }
 
   public void zero() {
@@ -71,15 +72,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public AngularVelocity getMotorSpeed() {
-    return elevatorIOInputs.leftMotorSpeed;
+    return inputs.leftMotorSpeed;
   }
 
   public boolean isElevatorPhysicallyStopped() {
     return stoppedDebouncer.calculate(
         MathUtil.isNear(0, Subsystems.elevator.getMotorSpeed().in(RotationsPerSecond), 0.1));
-  }
-
-  public ElevatorIO.ElevatorIOInputs getInputs() {
-    return elevatorIOInputs;
   }
 }
