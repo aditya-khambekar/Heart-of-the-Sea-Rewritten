@@ -110,8 +110,8 @@ public class ElevatorIOTalonFX extends ElevatorIO {
           .getConfigurator()
           .apply(
               new MotionMagicConfigs()
-                  .withMotionMagicAcceleration(elevatorAcceleration.get() / 3)
-                  .withMotionMagicCruiseVelocity(elevatorVelocity.get() / 1.5));
+                  .withMotionMagicAcceleration(elevatorAcceleration.get() * 2.0)
+                  .withMotionMagicCruiseVelocity(elevatorVelocity.get()));
     }
     setControl(requestGetter.getMotionMagicRequestSlot0(mechanismPosition));
   }

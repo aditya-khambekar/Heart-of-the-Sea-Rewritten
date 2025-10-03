@@ -454,7 +454,7 @@ public class DriveCommands {
         new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
     ProfiledPIDController pidY =
         new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
-    PIDController headingController = new PIDController(32, 0, 0);
+    PIDController headingController = new PIDController(24, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
 
@@ -473,8 +473,10 @@ public class DriveCommands {
     return drive
         .run(
             () -> {
-              headingController.setSetpoint(
-                  FieldConstants.getRotationToClosestBranchPosition(drive.getPose()).getRadians());
+              // headingController.setSetpoint(
+              // FieldConstants.getRotationToClosestBranchPosition(drive.getPose()).getRadians());
+
+              headingController.setSetpoint(destinationPose.getRotation().getRadians());
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       new ChassisSpeeds(
