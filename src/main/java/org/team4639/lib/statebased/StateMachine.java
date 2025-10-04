@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.Objects;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.team4639.robot.constants.Controls;
 import org.team4639.robot.statemachine.States;
 
@@ -27,6 +28,7 @@ public class StateMachine {
     Controls.IDLE_PATHWAY.onTrue(Commands.runOnce(() -> setState(States.IDLE_PATHWAY)));
   }
 
+  @AutoLogOutput
   public static State getState() {
     return getInstance().state;
   }

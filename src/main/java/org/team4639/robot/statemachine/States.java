@@ -92,6 +92,11 @@ public class States {
                 SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER);
 
+    HP_NODIR =
+        new HPState("HP_NODIR")
+            .whileTrue(SuperstructureCommands.HP)
+            .withEndCondition(Subsystems.wrist::hasCoral, () -> INTAKE_LOWER);
+
     INTAKE_LOWER = new IntakeState("INTAKE_LOWER", () -> CORAL_STOW);
 
     INTAKE_LOWER_INTO_LEFT_ALIGN =

@@ -2,6 +2,7 @@ package org.team4639.robot.commands;
 
 import static org.team4639.robot.robot.Subsystems.drive;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -15,6 +16,7 @@ import lombok.Getter;
 import org.team4639.lib.tunable.TunableNumber;
 import org.team4639.lib.unit.Units2;
 import org.team4639.robot.robot.Subsystems;
+import org.team4639.robot.util.AlignAngleToMultiplierTable;
 
 public class DriveToReefCommand extends Command {
 
@@ -71,15 +73,19 @@ public class DriveToReefCommand extends Command {
             ChassisSpeeds.fromFieldRelativeSpeeds(
                 new ChassisSpeeds(
                     xController.getSetpoint().velocity
-                        + Math.pow(getRotationToSetpoint().getCos(), cosPower.get())
+                        + AlignAngleToMultiplierTable.getInstance()
+                                .get(getRotationToSetpoint().getRadians())
                             * inXVelocity.get(),
                     yController.getSetpoint().velocity
                         + yController.calculate(drivePoseRelativeToSetpoint().getY()),
                     thetaController.calculate(
                         drivePoseRelativeToSetpoint().getRotation().getRadians())),
                 drivePoseRelativeToSetpoint().getRotation()));
-        if (drivePoseRelativeToSetpoint().getX() >= 0) {
+        if (drivePoseRelativeToSetpoint().getX() >= 0
+            && MathUtil.isNear(0, driveSpeedsRelativeToSetpoint().vyMetersPerSecond, 1e-2)) {
           setState(DriveToReefCommandState.SCORE);
+        } else if (drivePoseRelativeToSetpoint().getX() >= 0) {
+          setState(DriveToReefCommandState.CANCEL);
         }
         break;
       case SCORE:
@@ -93,6 +99,10 @@ public class DriveToReefCommand extends Command {
             new ChassisSpeeds(
                 xLimiter.calculate(outXVelocity.getAsDouble()), yLimiter.calculate(0), 0));
         break;
+      case CANCEL:
+        drive.runVelocity(
+            new ChassisSpeeds(
+                xLimiter.calculate(outXVelocity.getAsDouble()), yLimiter.calculate(0), 0));
     }
 
     xLimiter.calculate(driveSpeedsRelativeToSetpoint().vxMetersPerSecond);
@@ -104,7 +114,8 @@ public class DriveToReefCommand extends Command {
   public static enum DriveToReefCommandState {
     ALIGN,
     SCORE,
-    OUT;
+    OUT,
+    CANCEL;
   }
 
   private Pose2d drivePoseRelativeToSetpoint() {
@@ -126,6 +137,8 @@ public class DriveToReefCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return (state == DriveToReefCommandState.OUT);
+    return (state == DriveToReefCommandState.OUT
+        || (state == DriveToReefCommandState.CANCEL
+            && drivePoseRelativeToSetpoint().getX() < -0.5));
   }
 }

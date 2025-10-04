@@ -36,6 +36,7 @@ import org.team4639.robot.Constants;
 import org.team4639.robot.commands.LEDCommands;
 import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
+import org.team4639.robot.util.AlignAngleToMultiplierTable;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -133,6 +134,7 @@ public class Robot extends LoggedRobot {
         AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose()));
     SmartDashboard.putData("Robot/Field", robotContainer.field);
     Errors.checkForErrors();
+    AlignAngleToMultiplierTable.getInstance().periodic();
   }
 
   /** This function is called once when the robot is disabled. */
