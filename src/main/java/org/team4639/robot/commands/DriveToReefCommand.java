@@ -19,7 +19,7 @@ import org.team4639.robot.robot.Subsystems;
 public class DriveToReefCommand extends Command {
 
   private final Pose2d setpoint;
-  @Getter private DTRCState state;
+  @Getter private DriveToReefCommandState state;
   private final ProfiledPIDController xController;
   private final ProfiledPIDController yController;
   private final PIDController thetaController;
@@ -46,7 +46,7 @@ public class DriveToReefCommand extends Command {
 
   @Override
   public void initialize() {
-    this.state = DTRCState.ALIGN;
+    this.state = DriveToReefCommandState.ALIGN;
     xController.reset(
         drivePoseRelativeToSetpoint().getX(), driveSpeedsRelativeToSetpoint().vxMetersPerSecond);
     xController.setGoal(0);
@@ -79,14 +79,14 @@ public class DriveToReefCommand extends Command {
                         drivePoseRelativeToSetpoint().getRotation().getRadians())),
                 drivePoseRelativeToSetpoint().getRotation()));
         if (drivePoseRelativeToSetpoint().getX() >= 0) {
-          setState(DTRCState.SCORE);
+          setState(DriveToReefCommandState.SCORE);
         }
         break;
       case SCORE:
         drive.runVelocity(
             new ChassisSpeeds(
                 xLimiter.calculate(whileScoringXSpeed.getAsDouble()), yLimiter.calculate(0), 0));
-        if (Subsystems.wrist.doesNotHaveCoral()) setState(DTRCState.OUT);
+        if (Subsystems.wrist.doesNotHaveCoral()) setState(DriveToReefCommandState.OUT);
         break;
       case OUT:
         drive.runVelocity(
@@ -101,7 +101,7 @@ public class DriveToReefCommand extends Command {
     SmartDashboard.putString("Align Command State", getState().name());
   }
 
-  public static enum DTRCState {
+  public static enum DriveToReefCommandState {
     ALIGN,
     SCORE,
     OUT;
@@ -120,12 +120,12 @@ public class DriveToReefCommand extends Command {
     return Rotation2d.fromRadians(Math.atan2(-drive.getPose().getY(), -drive.getPose().getX()));
   }
 
-  private void setState(DTRCState state) {
+  private void setState(DriveToReefCommandState state) {
     this.state = state;
   }
 
   @Override
   public boolean isFinished() {
-    return (state == DTRCState.OUT);
+    return (state == DriveToReefCommandState.OUT);
   }
 }

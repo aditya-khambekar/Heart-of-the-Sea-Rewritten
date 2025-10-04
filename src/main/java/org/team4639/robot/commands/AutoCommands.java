@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.List;
-import org.team4639.robot.commands.DriveToReefCommand.DTRCState;
+import org.team4639.robot.commands.DriveToReefCommand.DriveToReefCommandState;
 import org.team4639.robot.commands.superstructure.SetpointSuperstructureCommand;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.modaltriggers.DriveTriggers;
@@ -103,7 +103,7 @@ public final class AutoCommands {
     var driveCommand = DriveCommands.alignToNearestReefLeftNew();
     return driveCommand.deadlineFor(
         (SuperstructureCommands.l4PrepNew()
-            .until(() -> driveCommand.getState() == DTRCState.SCORE)
+            .until(() -> driveCommand.getState() == DriveToReefCommandState.SCORE)
             .andThen(SuperstructureCommands.l4New())));
   }
 
@@ -111,7 +111,7 @@ public final class AutoCommands {
     var driveCommand = DriveCommands.alignToNearestReefRightNew();
     return driveCommand.deadlineFor(
         (SuperstructureCommands.l4PrepNew()
-            .until(() -> driveCommand.getState() == DTRCState.SCORE)
+            .until(() -> driveCommand.getState() == DriveToReefCommandState.SCORE)
             .andThen(SuperstructureCommands.l4New())));
   }
 }
