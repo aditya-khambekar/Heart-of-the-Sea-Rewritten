@@ -134,7 +134,7 @@ public class Superstructure extends SubsystemBase implements Sendable {
   }
 
   public static Pair<Rotation2d, Rotation2d> getEffectiveExteriorSafeZone() {
-    return Subsystems.elevator.getPercentage().compareTo(ElevatorConstants.SAFE_ZONE_EXPANSION) >= 0
+    return Subsystems.elevator.getPercentage().gte(ElevatorConstants.SAFE_ZONE_EXPANSION)
         ? WristConstants.SAFE_TRANSITION_RANGE_HIGH
         : WristConstants.SAFE_TRANSITION_RANGE_LOW;
   }

@@ -25,6 +25,8 @@ public class WristIOSparkFlex extends WristIO {
   ArmFeedforward withoutCoral;
   ArmFeedforward withCoral;
 
+  private double lastRequestedVolts = 0;
+
   public WristIOSparkFlex(int ID) {
     sparkFlex = new SparkFlex(ID, SparkLowLevel.MotorType.kBrushless);
 
@@ -49,27 +51,34 @@ public class WristIOSparkFlex extends WristIO {
     inputs.motorTemperature.mut_replace(Celsius.of(sparkFlex.getMotorTemperature()));
     inputs.motorVelocity.mut_replace(
         RotationsPerSecond.of(sparkFlex.getAbsoluteEncoder().getVelocity() / 60.));
-    inputs.motorVoltage.mut_replace(Volts.of(sparkFlex.getBusVoltage()));
+    inputs.busVoltage.mut_replace(Volts.of(sparkFlex.getBusVoltage()));
+    inputs.requestedVoltage.mut_replace(Volts.of(lastRequestedVolts));
   }
 
   @Override
   public void setDutyCycleOutput(Dimensionless percent) {
     sparkFlex.set(percent.in(Value));
+    lastRequestedVolts = percent.in(Value) * 12;
   }
 
   @Override
   public void setPosition(Angle position) {
     wristPIDController.setGoal(position.in(Rotations));
-    sparkFlex.setVoltage(
-        (Subsystems.wrist.hasCoral() ? withCoral : withoutCoral)
-                .calculate(
-                    Subsystems.wrist.getWristAngle().minus(Rotation2d.fromDegrees(35)).getRadians(),
-                    0)
-            + wristPIDController.calculate(sparkFlex.getAbsoluteEncoder().getPosition()));
+    setVoltage(
+        Volts.of(
+            (Subsystems.wrist.hasCoral() ? withCoral : withoutCoral)
+                    .calculate(
+                        Subsystems.wrist
+                            .getWristAngle()
+                            .minus(Rotation2d.fromDegrees(35))
+                            .getRadians(),
+                        0)
+                + wristPIDController.calculate(sparkFlex.getAbsoluteEncoder().getPosition())));
   }
 
   @Override
   public void setVoltage(Voltage voltage) {
     sparkFlex.setVoltage(voltage);
+    lastRequestedVolts = voltage.in(Volts);
   }
 }

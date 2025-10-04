@@ -3,7 +3,6 @@ package org.team4639.robot.subsystems.superstructure.subsystems.wrist;
 import static edu.wpi.first.units.Units.*;
 
 import au.grapplerobotics.LaserCan;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,15 +16,16 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import lombok.Getter;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIO;
 import org.team4639.robot.subsystems.superstructure.subsystems.wrist.io.WristIO;
 
+@Getter
 public class WristSubsystem extends SubsystemBase {
   WristIO.WristIOInputs wristIOInputs;
   org.team4639.lib.io.sensor.lasercan.LaserCanIO.LaserCanIOInputs laserCanIOInputs;
   WristIO WristIO;
   LaserCanIO LaserCanIO;
-  private Debouncer wristStoppedDebouncer = new Debouncer(0.5, DebounceType.kRising);
 
   private AngularVelocity lastVelocity = RotationsPerSecond.zero();
   private AngularVelocity currVelocity = RotationsPerSecond.mutable(0);
@@ -33,7 +33,7 @@ public class WristSubsystem extends SubsystemBase {
 
   private AngularAcceleration acceleration = RotationsPerSecondPerSecond.zero();
 
-  private Debouncer hasCoralDebouncer = new Debouncer(0.5, DebounceType.kFalling);
+  private final Debouncer hasCoralDebouncer = new Debouncer(0.0, DebounceType.kFalling);
 
   public WristSubsystem(WristIO WristIO, LaserCanIO laserCanIO) {
     wristIOInputs = new WristIO.WristIOInputs();
@@ -114,11 +114,6 @@ public class WristSubsystem extends SubsystemBase {
         : wristIOInputs.motorCurrent.in(Amps) > WristConstants.ALGAE_CURRENT.in(Amps);
   }
 
-  public boolean isWristStopped() {
-    return wristStoppedDebouncer.calculate(
-        MathUtil.isNear(0, wristIOInputs.motorVelocity.in(RotationsPerSecond), 0.3));
-  }
-
   public AngularVelocity getEncoderVelocity() {
     return currVelocity;
   }
@@ -132,6 +127,6 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public Voltage getBusVoltage() {
-    return wristIOInputs.motorVoltage;
+    return wristIOInputs.busVoltage;
   }
 }

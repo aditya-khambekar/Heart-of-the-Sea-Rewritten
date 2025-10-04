@@ -22,10 +22,12 @@ public class SuperstructureCommands {
   public static Command L3_PREP;
   public static Command L2_PREP;
   public static Command L1_PREP;
+  public static Command L4_PREP_NEW;
   public static Command L1;
   public static Command L2;
   public static Command L3;
   public static Command L4;
+  public static Command L4_NEW;
   public static Command L2_ALGAE;
   public static Command L3_ALGAE;
   public static Command BARGE;
@@ -126,7 +128,7 @@ public class SuperstructureCommands {
     L1_PREP =
         Commands.defer(
                 () ->
-                    new SetpointSuperstructureCommand(SuperstructureSetpoints.L2_PREP, "L1_PREP")
+                    new SetpointSuperstructureCommand(SuperstructureSetpoints.L1_PREP, "L1_PREP")
                         .withCoral(),
                 Set.of(
                     Subsystems.elevator,
@@ -134,6 +136,19 @@ public class SuperstructureCommands {
                     Subsystems.roller,
                     Subsystems.superstructure))
             .withName("L1_PREP");
+
+    L4_PREP_NEW =
+        Commands.defer(
+                () ->
+                    new SetpointSuperstructureCommand(
+                            SuperstructureSetpoints.L4_PREP_NEW, "L4_PREP_NEW")
+                        .withCoral(),
+                Set.of(
+                    Subsystems.elevator,
+                    Subsystems.wrist,
+                    Subsystems.roller,
+                    Subsystems.superstructure))
+            .withName("L4_PREP_NEW");
 
     L1 =
         Commands.defer(
@@ -183,6 +198,7 @@ public class SuperstructureCommands {
                     Subsystems.roller,
                     Subsystems.superstructure))
             .withName("L4");
+
     L2_ALGAE =
         Commands.defer(
                 () ->
@@ -557,5 +573,59 @@ public class SuperstructureCommands {
                 Subsystems.roller,
                 Subsystems.superstructure))
         .withName("L4_PREP");
+  }
+
+  // Add these methods to the SuperstructureCommands class
+
+  public static Command l4New() {
+    return Commands.defer(
+            () ->
+                new SetpointSuperstructureCommand(SuperstructureSetpoints.L4_NEW, "L4_NEW")
+                    .flashOnDone()
+                    .withCoral(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4_NEW");
+  }
+
+  public static SetpointSuperstructureCommand l4PrepNew() {
+    return new SetpointSuperstructureCommand(SuperstructureSetpoints.L4_PREP_NEW, "L4_PREP_NEW");
+  }
+
+  public static Command l4NewManual() {
+    return Commands.defer(
+            () ->
+                new SetpointSuperstructureCommand(SuperstructureSetpoints.L4_NEW, "L4_NEW")
+                    .flashOnDone()
+                    .withCoral()
+                    .waitForRoller(),
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4_NEW");
+  }
+
+  private static Command l4NewAutoCreator() {
+    var command =
+        new SetpointSuperstructureCommand(SuperstructureSetpoints.L4_NEW, "L4_NEW")
+            .flashOnDone()
+            .withCoral();
+    return command.alongWith(Commands.waitSeconds(2).finallyDo(command::forceRoller));
+  }
+
+  public static Command l4NewAuto() {
+    return Commands.defer(
+            SuperstructureCommands::l4NewAutoCreator,
+            Set.of(
+                Subsystems.elevator,
+                Subsystems.wrist,
+                Subsystems.roller,
+                Subsystems.superstructure))
+        .withName("L4_NEW");
   }
 }

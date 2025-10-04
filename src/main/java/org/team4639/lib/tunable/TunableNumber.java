@@ -26,7 +26,9 @@ public class TunableNumber implements Sendable, DoubleSupplier2, Supplier<Double
          * @param value the input argument
          */
         @Override
-        public void accept(double value) {}
+        public void accept(double value) {
+          TunableNumber.this.value = value;
+        }
       };
 
   @Override

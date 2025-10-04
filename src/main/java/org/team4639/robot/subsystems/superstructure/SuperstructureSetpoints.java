@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.team4639.robot.subsystems.superstructure.state.SuperstructureState;
+import org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorConstants;
 
 public class SuperstructureSetpoints {
   public static final double offset = 0.0555;
@@ -26,7 +27,7 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState L4_PREP =
       new SuperstructureState(
-          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(0));
+          Value.of(0.95685), Rotation2d.fromDegrees(230), RotationsPerSecond.of(0));
 
   public static final SuperstructureState AUTO_L4_PREP =
       new SuperstructureState(
@@ -34,31 +35,43 @@ public class SuperstructureSetpoints {
 
   public static final SuperstructureState L3_PREP =
       new SuperstructureState(
-          Value.of(0.573 + offset * 0), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
+          Value.of(0.573), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
 
   public static final SuperstructureState L2_PREP =
       new SuperstructureState(
-          Value.of(0.3693 + offset * 0), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
+          Value.of(0.3693), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
 
   public static final SuperstructureState L1_PREP =
       new SuperstructureState(
-          Value.of(0.23 + offset * 0), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
+          Value.of(0.23), Rotation2d.fromDegrees(220), RotationsPerSecond.of(0));
 
   public static final SuperstructureState L1 =
       new SuperstructureState(
-          Value.of(0.23 + offset * 0), Rotation2d.fromDegrees(220), RotationsPerSecond.of(-4));
+          Value.of(0.23), Rotation2d.fromDegrees(220), RotationsPerSecond.of(-4));
 
   public static final SuperstructureState L2 =
       new SuperstructureState(
-          Value.of(0.3693 + offset * 0), Rotation2d.fromDegrees(220), RotationsPerSecond.of(-5));
+          Value.of(0.3693), Rotation2d.fromDegrees(220), RotationsPerSecond.of(-5));
 
   public static final SuperstructureState L3 =
       new SuperstructureState(
-          Value.of(0.573 + offset * 0), Rotation2d.fromDegrees(220), RotationsPerSecond.of(-5));
+          Value.of(0.573), Rotation2d.fromDegrees(220), RotationsPerSecond.of(-5));
 
   public static final SuperstructureState L4 =
       new SuperstructureState(
-          Value.of(0.90135 + offset), Rotation2d.fromDegrees(230), RotationsPerSecond.of(-5));
+          Value.of(0.95685), Rotation2d.fromDegrees(230), RotationsPerSecond.of(-5));
+
+  public static final SuperstructureState L4_NEW =
+      new SuperstructureState(
+          Value.of(0.95685).minus(ElevatorConstants.heightToPercentage.convert(Inches.of(1.5))),
+          Rotation2d.fromDegrees(230),
+          RotationsPerSecond.of(-15));
+
+  public static final SuperstructureState L4_PREP_NEW =
+      new SuperstructureState(
+          Value.of(0.95685).minus(ElevatorConstants.heightToPercentage.convert(Inches.of(1.5))),
+          Rotation2d.fromDegrees(230),
+          RotationsPerSecond.of(0));
 
   public static final SuperstructureState L4_AUTO =
       new SuperstructureState(

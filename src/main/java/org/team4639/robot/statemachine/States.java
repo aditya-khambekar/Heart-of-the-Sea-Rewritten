@@ -3,8 +3,13 @@ package org.team4639.robot.statemachine;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.team4639.lib.command.Commands2;
+import org.team4639.lib.lookahead.LookaheadFunction;
+import org.team4639.lib.lookahead.SecondDerivativeLookaheadFunction;
 import org.team4639.lib.statebased.State;
+import org.team4639.lib.tunable.TunableNumber;
 import org.team4639.robot.commands.AutoCommands;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.commands.LEDCommands;
@@ -50,6 +55,8 @@ public class States {
   public static State L2_CORAL_SCORE;
   public static State L3_CORAL_SCORE;
   public static State L4_CORAL_SCORE;
+  public static State NEW_L4_LEFT;
+  public static State NEW_L4_RIGHT;
   public static State HOMING_READY;
   public static State HOMING;
   public static State REJECT_CORAL;
@@ -105,6 +112,10 @@ public class States {
             .withDeadline(new ForceIntakeCommand(), () -> CORAL_SCORE_ALIGN_RIGHT)
             .whileTrue(DriveCommands.alignToNearestReefRight());
 
+    LookaheadFunction<Double> reefSnapLookaheadFunction = new SecondDerivativeLookaheadFunction();
+    TunableNumber reefSnapLookaheadTimeDelta =
+        new TunableNumber().withDefaultValue(0.2).send("Reef Snap Lookahead Time Delta");
+
     CORAL_STOW =
         new CoralCycleState("CORAL_STOW")
             .whileTrue(
@@ -112,12 +123,30 @@ public class States {
                 DriveCommands.joystickDriveAtAngle(
                     () -> -RobotContainer.driver.getLeftY(),
                     () -> -RobotContainer.driver.getLeftX(),
-                    () ->
-                        FieldConstants.getRotationToClosestBranchPosition(
-                            Subsystems.drive.getPose())),
+                    () -> {
+                      reefSnapLookaheadFunction.addSample(
+                          FieldConstants.getRotationToClosestBranchPosition(
+                                  Subsystems.drive.getPose())
+                              .getDegrees(),
+                          Timer.getTimestamp());
+
+                      return Rotation2d.fromDegrees(
+                          reefSnapLookaheadFunction.predict(
+                              Timer.getTimestamp() + reefSnapLookaheadTimeDelta.getAsDouble()));
+                    }),
                 LEDCommands.hasCoral())
-            .onTrigger(Controls.ALIGN_LEFT, () -> CORAL_SCORE_ALIGN_LEFT)
-            .onTrigger(Controls.ALIGN_RIGHT, () -> CORAL_SCORE_ALIGN_RIGHT)
+            .onTrigger(
+                Controls.ALIGN_LEFT.and(() -> SmartDashboard.getNumber("DOUT", 0) != 4.0),
+                () -> CORAL_SCORE_ALIGN_LEFT)
+            .onTrigger(
+                Controls.ALIGN_RIGHT.and(() -> SmartDashboard.getNumber("DOUT", 0) != 4.0),
+                () -> CORAL_SCORE_ALIGN_RIGHT)
+            .onTrigger(
+                Controls.ALIGN_LEFT.and(() -> SmartDashboard.getNumber("DOUT", 0) == 4.0),
+                () -> NEW_L4_LEFT)
+            .onTrigger(
+                Controls.ALIGN_RIGHT.and(() -> SmartDashboard.getNumber("DOUT", 0) == 4.0),
+                () -> NEW_L4_RIGHT)
             .withEndCondition(Subsystems.wrist::doesNotHaveCoral, () -> IDLE)
             .onEmergency(() -> REJECT_CORAL);
 
@@ -256,6 +285,18 @@ public class States {
                         () -> -RobotContainer.driver.getRightX())
                     .withName("Drive Joystick"))
             .withTimeout(Seconds.of(1), () -> IDLE);
+
+    NEW_L4_LEFT =
+        new CoralCycleState("NEW_L4_LEFT")
+            .withDeadline(
+                Commands2.defer(AutoCommands::newL4OuttakeSequenceLeft), () -> HOMING_READY)
+            .onEmergency(() -> CORAL_STOW);
+
+    NEW_L4_RIGHT =
+        new CoralCycleState("NEW_L4_RIGHT")
+            .withDeadline(
+                Commands2.defer(AutoCommands::newL4OuttakeSequenceRight), () -> HOMING_READY)
+            .onEmergency(() -> CORAL_STOW);
   }
 
   public static State determineState() {

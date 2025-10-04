@@ -54,4 +54,6 @@ public class Controls {
 
   public static final Trigger FORCE_HOMING = RobotContainer.operator.rightStick();
   public static final Trigger FORCE_GYRO_RESET = RobotContainer.operator.leftStick();
+
+  public static final Trigger UNJAM_ENDEFFECTOR = RobotContainer.driver.b();
 }

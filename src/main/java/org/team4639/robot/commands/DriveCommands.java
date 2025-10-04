@@ -387,6 +387,40 @@ public class DriveCommands {
     return PIDToReefPose(nearestReefPose);
   }
 
+  public static DriveToReefCommand alignToNearestReefLeftNew() {
+    Pose2d drivePose = drive.getPose();
+
+    Pose2d nearestReefPose =
+        PoseUtil.ReefRelativeLeftOf(
+            drivePose.nearest(
+                List.of(
+                    FieldConstants.TargetPositions.REEF_AB.getPose(),
+                    FieldConstants.TargetPositions.REEF_CD.getPose(),
+                    FieldConstants.TargetPositions.REEF_EF.getPose(),
+                    FieldConstants.TargetPositions.REEF_GH.getPose(),
+                    FieldConstants.TargetPositions.REEF_IJ.getPose(),
+                    FieldConstants.TargetPositions.REEF_KL.getPose())));
+
+    return new DriveToReefCommand(nearestReefPose);
+  }
+
+  public static DriveToReefCommand alignToNearestReefRightNew() {
+    Pose2d drivePose = drive.getPose();
+
+    Pose2d nearestReefPose =
+        PoseUtil.ReefRelativeRightOf(
+            drivePose.nearest(
+                List.of(
+                    FieldConstants.TargetPositions.REEF_AB.getPose(),
+                    FieldConstants.TargetPositions.REEF_CD.getPose(),
+                    FieldConstants.TargetPositions.REEF_EF.getPose(),
+                    FieldConstants.TargetPositions.REEF_GH.getPose(),
+                    FieldConstants.TargetPositions.REEF_IJ.getPose(),
+                    FieldConstants.TargetPositions.REEF_KL.getPose())));
+
+    return new DriveToReefCommand(nearestReefPose);
+  }
+
   public static Command alignToNearestReefRight() {
     Pose2d drivePose = drive.getPose();
 
@@ -503,13 +537,17 @@ public class DriveCommands {
   }
 
   public static Command HPLeftAlign(Drive drive) {
-    return Subsystems.drive.defer(
-        () -> PIDToPose(FieldConstants.TargetPositions.HP_LEFT.getPose()));
+    return // Subsystems.drive.defer(
+    // () -> PIDToPose(FieldConstants.TargetPositions.HP_LEFT.getPose()));
+    Subsystems.drive.defer(
+        () -> new DriveToHPCommand(FieldConstants.TargetPositions.HP_LEFT.getPose()));
   }
 
   public static Command HPRightAlign(Drive drive) {
-    return Subsystems.drive.defer(
-        () -> PIDToPose(FieldConstants.TargetPositions.HP_RIGHT.getPose()));
+    return // Subsystems.drive.defer(
+    // () -> PIDToPose(FieldConstants.TargetPositions.HP_RIGHT.getPose()));
+    Subsystems.drive.defer(
+        () -> new DriveToHPCommand(FieldConstants.TargetPositions.HP_RIGHT.getPose()));
   }
 
   public static Command stopWithX() {

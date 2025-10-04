@@ -23,6 +23,8 @@ public class WristIOSim extends WristIO {
   ProfiledPIDController wristPIDController;
   ArmFeedforward feedforward;
 
+  private double lastRequestedVolts = 0;
+
   public WristIOSim(int ID) {
     pivotSim =
         new SingleJointedArmSim(
@@ -73,11 +75,13 @@ public class WristIOSim extends WristIO {
                 WristConstants.RotationToPosition.convert(
                         Rotation2d.fromRadians(pivotSim.getVelocityRadPerSec()))
                     .in(Rotations)));
+    inputs.requestedVoltage.mut_replace(Volts.of(lastRequestedVolts));
   }
 
   @Override
   public void setDutyCycleOutput(Dimensionless percent) {
     pivotSim.setInputVoltage(12 * percent.in(Value));
+    lastRequestedVolts = 12 * percent.in(Value);
     pivotSim.update(0.02);
   }
 
@@ -98,5 +102,6 @@ public class WristIOSim extends WristIO {
   @Override
   public void setVoltage(Voltage voltage) {
     pivotSim.setInputVoltage(voltage.in(Volts));
+    lastRequestedVolts = voltage.in(Volts);
   }
 }

@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import java.util.List;
+import org.team4639.robot.commands.DriveToReefCommand.DTRCState;
 import org.team4639.robot.commands.superstructure.SetpointSuperstructureCommand;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.modaltriggers.DriveTriggers;
@@ -96,5 +97,21 @@ public final class AutoCommands {
         .deadlineFor(SuperstructureCommands.algaeIntake())
         .until(DriveTriggers.joysticksActive)
         .andThen(Commands.waitSeconds(0.2));
+  }
+
+  public static Command newL4OuttakeSequenceLeft() {
+    var driveCommand = DriveCommands.alignToNearestReefLeftNew();
+    return driveCommand.deadlineFor(
+        (SuperstructureCommands.l4PrepNew()
+            .until(() -> driveCommand.getState() == DTRCState.SCORE)
+            .andThen(SuperstructureCommands.l4New())));
+  }
+
+  public static Command newL4OuttakeSequenceRight() {
+    var driveCommand = DriveCommands.alignToNearestReefRightNew();
+    return driveCommand.deadlineFor(
+        (SuperstructureCommands.l4PrepNew()
+            .until(() -> driveCommand.getState() == DTRCState.SCORE)
+            .andThen(SuperstructureCommands.l4New())));
   }
 }

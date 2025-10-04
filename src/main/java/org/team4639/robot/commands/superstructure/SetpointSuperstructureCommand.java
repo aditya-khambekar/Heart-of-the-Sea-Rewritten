@@ -10,11 +10,12 @@ import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.math.interpolation.TimeInterpolatableBuffer;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.MutTime;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.function.BooleanSupplier;
@@ -28,19 +29,24 @@ import org.team4639.robot.subsystems.superstructure.subsystems.elevator.Elevator
 import org.team4639.robot.subsystems.superstructure.subsystems.wrist.WristConstants;
 
 public class SetpointSuperstructureCommand extends SuperstructureCommandBase {
-  private SuperstructureState setpoint;
+  private final SuperstructureState setpoint;
   private SuperstructureCommandState state;
-  private BooleanSupplier endCondition;
+  private final BooleanSupplier endCondition;
   private Dimensionless holdPosition;
   private MutTime timeOfExecutingAction;
   private Time executingActionTimeout = Seconds.of(Double.POSITIVE_INFINITY);
-  private String name;
+  private final String name;
   private boolean flash;
   private Voltage whileRunningRollerVolts = Volts.of(0.0);
   private boolean waitToRoller = false;
   private Trigger waitForRollerTrigger = Controls.ROLLER_TRIGGER;
   private boolean internalForceRoller = false;
-  boolean coral = false;
+  private boolean coral = false;
+
+  private final TimeInterpolatableBuffer<Double> wristSpeedBuffer =
+      TimeInterpolatableBuffer.createDoubleBuffer(1);
+  private final TimeInterpolatableBuffer<Double> wristVoltageBuffer =
+      TimeInterpolatableBuffer.createDoubleBuffer(1);
 
   /**
    * Commands the superstructure to go to a specific state
@@ -74,6 +80,8 @@ public class SetpointSuperstructureCommand extends SuperstructureCommandBase {
     if (Superstructure.atPosition(Superstructure.getSuperstructureState(), setpoint))
       setState(SuperstructureCommandState.EXECUTING_ACTION);
     timeOfExecutingAction = Seconds.mutable(0);
+    wristSpeedBuffer.clear();
+    wristSpeedBuffer.addSample(Timer.getTimestamp(), 0.0);
   }
 
   @Override
@@ -166,6 +174,14 @@ public class SetpointSuperstructureCommand extends SuperstructureCommandBase {
     }
   }
 
+  private void recordWristInformation() {
+    wristSpeedBuffer.addSample(
+        Timer.getTimestamp(),
+        Subsystems.wrist.getWristIOInputs().motorVelocity.in(RotationsPerSecond));
+    wristVoltageBuffer.addSample(
+        Timer.getTimestamp(), Subsystems.wrist.getWristIOInputs().requestedVoltage.in(Volts));
+  }
+
   public SetpointSuperstructureCommand flashOnDone() {
     this.flash = true;
     return this;
@@ -238,30 +254,10 @@ public class SetpointSuperstructureCommand extends SuperstructureCommandBase {
 
   public void runRollerVelocity() {
     if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
-      if (internalForceRoller) {
-        Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
-      } else {
-        Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
-      }
-
+      Subsystems.roller.setVelocity(
+          RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
     } else {
       Subsystems.roller.setVelocity(setpoint.getWheelSpeed());
-    }
-  }
-
-  public void runRollerVelocity(AngularVelocity velocity) {
-    if (internalForceRoller || RobotContainer.driver.a().getAsBoolean()) {
-      if (internalForceRoller) {
-        Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
-      } else {
-        Subsystems.roller.setVelocity(
-            RotationsPerSecond.of(5).times(Math.signum(setpoint.getWheelSpeed().magnitude())));
-      }
-    } else {
-      Subsystems.roller.setVelocity(velocity);
     }
   }
 
