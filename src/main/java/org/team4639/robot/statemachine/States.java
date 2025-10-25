@@ -8,6 +8,7 @@ import org.team4639.lib.statebased.State;
 import org.team4639.robot.commands.AutoCommands;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.commands.LEDCommands;
+import org.team4639.robot.commands.PIDToPoseCommand;
 import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.commands.superstructure.ForceIntakeCommand;
 import org.team4639.robot.constants.Controls;
@@ -55,6 +56,7 @@ public class States {
   public static State REJECT_CORAL;
   public static State REJECT_ALGAE;
   public static State IDLE_PATHWAY;
+  public static State TEST_IDLE;
 
   public static void initStaticStates() {
     IDLE =
@@ -256,6 +258,12 @@ public class States {
                         () -> -RobotContainer.driver.getRightX())
                     .withName("Drive Joystick"))
             .withTimeout(Seconds.of(1), () -> IDLE);
+
+    TEST_IDLE = new State("TEST_IDLE");
+
+    TEST_IDLE
+        .and(RobotContainer.driver.a())
+        .whileTrue(new PIDToPoseCommand(FieldConstants.TargetPositions.REEF_A.getPose()));
   }
 
   public static State determineState() {

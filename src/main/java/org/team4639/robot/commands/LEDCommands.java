@@ -10,13 +10,27 @@ import org.team4639.robot.robot.Subsystems;
 
 public class LEDCommands {
   public static Command disabled() {
+    /*return Subsystems.leds
+    .defer(
+        () ->
+            Subsystems.leds.usePattern(
+                new TwoSegmentLEDPattern(
+                    new MovingLEDPattern(Color.kBlack, new Color(255, 125, 125), -3, 0.2, 1),
+                    new MovingLEDPattern(Color.kBlack, new Color(255, 125, 125), -3, 0.2, 1),
+                    4,
+                    32,
+                    65,
+                    94,
+                    true)))
+    .ignoringDisable(true);*/
+
     return Subsystems.leds
         .defer(
             () ->
                 Subsystems.leds.usePattern(
                     new TwoSegmentLEDPattern(
-                        new MovingLEDPattern(Color.kBlack, new Color(255, 125, 125), -3, 0.2, 1),
-                        new MovingLEDPattern(Color.kBlack, new Color(255, 125, 125), -3, 0.2, 1),
+                        new MovingLEDPattern(Color.kBlack, Color.kMaroon, -3, 0.2, 1),
+                        new MovingLEDPattern(Color.kBlack, Color.kMaroon, -3, 0.2, 1),
                         4,
                         32,
                         65,
