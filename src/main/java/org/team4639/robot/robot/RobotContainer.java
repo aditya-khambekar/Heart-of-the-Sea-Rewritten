@@ -14,26 +14,25 @@
 package org.team4639.robot.robot;
 
 import static edu.wpi.first.units.Units.Millimeter;
+import static org.team4639.robot.robot.SimRobot.driveSimulation;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.Set;
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.team4639.lib.error.Errors;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIOHardware;
 import org.team4639.lib.io.sensor.lasercan.LaserCanIOSim;
-import org.team4639.lib.io.swerve.GyroIO;
-import org.team4639.lib.io.swerve.GyroIOPigeon2;
-import org.team4639.lib.io.swerve.ModuleIO;
-import org.team4639.lib.io.swerve.ModuleIOSim;
-import org.team4639.lib.io.swerve.ModuleIOTalonFX;
 import org.team4639.lib.io.vision.VisionIO;
 import org.team4639.lib.io.vision.VisionIOLimelight;
 import org.team4639.lib.io.vision.VisionIOPhotonVisionSim;
@@ -48,8 +47,12 @@ import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.constants.IDs;
 import org.team4639.robot.statemachine.States;
 import org.team4639.robot.subsystems.LimelightFlash;
-import org.team4639.robot.subsystems.drive.Drive;
+import org.team4639.robot.subsystems.drive.BaseDriveConsumer;
+import org.team4639.robot.subsystems.drive.akit.*;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
+import org.team4639.robot.subsystems.drive.maple.MDrive;
+import org.team4639.robot.subsystems.drive.maple.MGyroIOSim;
+import org.team4639.robot.subsystems.drive.maple.MModuleIOTalonFXSim;
 import org.team4639.robot.subsystems.superstructure.Superstructure;
 import org.team4639.robot.subsystems.superstructure.subsystems.elevator.ElevatorSubsystem;
 import org.team4639.robot.subsystems.superstructure.subsystems.elevator.io.ElevatorIOTalonFX;
@@ -84,6 +87,10 @@ public class RobotContainer {
   public RobotContainer() {
     Errors.addCheck(OI.driver::isConnected, "Driver Controller disconnected");
     Errors.addCheck(OI.operator::isConnected, "Operator Controller disconnected");
+
+    SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+    SimulatedArena.getInstance().resetFieldForAuto();
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -97,7 +104,7 @@ public class RobotContainer {
 
         Subsystems.vision =
             new Vision(
-                VisionUpdates.getInstance(),
+                BaseVisionConsumer.getInstance(),
                 new VisionIOLimelight(
                     VisionConstants.cameraLeftName, Subsystems.drive::getRotation),
                 new VisionIOLimelight(
@@ -116,31 +123,38 @@ public class RobotContainer {
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
         Subsystems.drive =
-            new Drive(
-                new GyroIO() {},
-                new ModuleIOSim(TunerConstants.FrontLeft),
-                new ModuleIOSim(TunerConstants.FrontRight),
-                new ModuleIOSim(TunerConstants.BackLeft),
-                new ModuleIOSim(TunerConstants.BackRight));
+            new MDrive(
+                new MGyroIOSim(driveSimulation.getGyroSimulation()),
+                new MModuleIOTalonFXSim(TunerConstants.FrontLeft, driveSimulation.getModules()[0]),
+                new MModuleIOTalonFXSim(TunerConstants.FrontRight, driveSimulation.getModules()[1]),
+                new MModuleIOTalonFXSim(TunerConstants.BackLeft, driveSimulation.getModules()[2]),
+                new MModuleIOTalonFXSim(TunerConstants.BackRight, driveSimulation.getModules()[3]),
+                driveSimulation::setSimulationWorldPose);
 
         // We flip the vision pose in the VisionIO if Red Alliance, so if we are on red we need to
         // flip the poses back when we feed them in to maintain the VisionIO being given the Blue
         // Alliance pose.
         Subsystems.vision =
             new Vision(
-                VisionUpdates.getInstance(),
+                BaseVisionConsumer.getInstance(),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.cameraLeftName,
                     VisionConstants.robotToCameraLeft,
-                    () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())),
+                    () ->
+                        AllianceFlipUtil.flipIfRedAlliance(
+                            SimRobot.driveSimulation.getSimulatedDriveTrainPose())),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.cameraRightName,
                     VisionConstants.robotToCameraRight,
-                    () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())),
+                    () ->
+                        AllianceFlipUtil.flipIfRedAlliance(
+                            SimRobot.driveSimulation.getSimulatedDriveTrainPose())),
                 new VisionIOPhotonVisionSim(
                     VisionConstants.cameraBackName,
                     VisionConstants.robotToCameraBack,
-                    () -> AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose())));
+                    () ->
+                        AllianceFlipUtil.flipIfRedAlliance(
+                            SimRobot.driveSimulation.getSimulatedDriveTrainPose())));
         SmartDashboard.putBoolean("Has Coral", false);
         Subsystems.elevator =
             new ElevatorSubsystem(new ElevatorIOTalonFXSim(IDs.ELEVATOR_LEFT, IDs.ELEVATOR_RIGHT));
@@ -165,7 +179,7 @@ public class RobotContainer {
                 new ModuleIO() {});
 
         Subsystems.vision =
-            new Vision(VisionUpdates.getInstance(), new VisionIO() {}, new VisionIO() {});
+            new Vision(BaseVisionConsumer.getInstance(), new VisionIO() {}, new VisionIO() {});
         break;
     }
 
@@ -173,8 +187,10 @@ public class RobotContainer {
     Subsystems.limelightFlash = new LimelightFlash(VisionConstants.cameraBackName);
     Subsystems.leds = new PhysicalLEDStrip(9, 96);
 
-    VisionUpdates.addConsumer(Subsystems.drive);
-    VisionUpdates.addConsumer(VisionPoses.frontCamerasPoseEstimate);
+    BaseVisionConsumer.addConsumer(Subsystems.drive);
+    BaseVisionConsumer.addConsumer(VisionPoses.frontCamerasPoseEstimate);
+    BaseVisionConsumer.addConsumer(RobotState.getInstance());
+    BaseDriveConsumer.addConsumer(RobotState.getInstance());
 
     // Configure the button bindings
 
@@ -231,6 +247,11 @@ public class RobotContainer {
     autoChooser.addOption(
         "Drive SysId (Dynamic Reverse)",
         Subsystems.drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+
+    RobotModeTriggers.teleop()
+        .onTrue(
+            Commands.runOnce(
+                () -> Preferences.setDouble("Cycles", Preferences.getDouble("Cycles", 0) + 1)));
   }
 
   /**

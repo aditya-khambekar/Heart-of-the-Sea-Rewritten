@@ -1,0 +1,10 @@
+[
+  {
+    "name": "/Preferences/Cycles",
+    "type": "double",
+    "value": 87.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]

@@ -11,15 +11,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package org.team4639.robot.subsystems.drive;
+package org.team4639.robot.subsystems.drive.maple;
 
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -32,39 +30,40 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
+import org.ironmaple.simulation.drivesims.COTS;
+import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.team4639.lib.io.swerve.GyroIO;
-import org.team4639.lib.io.swerve.GyroIOInputsAutoLogged;
-import org.team4639.lib.io.swerve.ModuleIO;
 import org.team4639.robot.Constants;
 import org.team4639.robot.Constants.Mode;
 import org.team4639.robot.robot.Subsystems;
+import org.team4639.robot.subsystems.drive.BaseDriveConsumer;
+import org.team4639.robot.subsystems.drive.DriveBase;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
-import org.team4639.robot.subsystems.vision.Vision;
-import org.team4639.robot.subsystems.vision.VisionPoses;
 import org.team4639.robot.util.LocalADStarAK;
 
-public class Drive extends SubsystemBase implements Vision.VisionConsumer {
-  // TunerConstants doesn't include these org.team4639.frobot.constants, so they are declared
-  // locally
-  public static final double ODOMETRY_FREQUENCY =
+public class MDrive extends DriveBase {
+  // TunerConstants doesn't include these constants, so they are declared locally
+  static final double ODOMETRY_FREQUENCY =
       new CANBus(TunerConstants.DrivetrainConstants.CANBusName).isNetworkFD() ? 250.0 : 100.0;
   public static final double DRIVE_BASE_RADIUS =
       Math.max(
@@ -75,29 +74,30 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
               Math.hypot(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
               Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
-  // PathPlanner config org.team4639.frobot.constants
-  private static final double ROBOT_MASS_KG = 136;
-  private static final double ROBOT_MOI = 3.97;
-  private static final double WHEEL_COF = 1.9;
-  private static final RobotConfig PP_CONFIG =
-      new RobotConfig(
-          ROBOT_MASS_KG,
-          ROBOT_MOI,
-          new ModuleConfig(
-              TunerConstants.FrontLeft.WheelRadius,
-              11.0,
-              // TunerConstants.kSpeedAt12Volts.in(MetersPerSecond),
-              WHEEL_COF,
-              DCMotor.getKrakenX60Foc(1)
-                  .withReduction(TunerConstants.FrontLeft.DriveMotorGearRatio),
-              TunerConstants.FrontLeft.SlipCurrent,
-              1),
-          getModuleTranslations());
+  public static final DriveTrainSimulationConfig mapleSimConfig =
+      DriveTrainSimulationConfig.Default()
+          .withRobotMass(Kilograms.of(ROBOT_MASS_KG))
+          .withCustomModuleTranslations(getModuleTranslations())
+          .withGyro(COTS.ofPigeon2())
+          /*.withSwerveModule(
+          new SwerveModuleSimulationConfig(
+              DCMotor.getKrakenX60(1),
+              DCMotor.getKrakenX60(1),
+              TunerConstants.FrontLeft.DriveMotorGearRatio,
+              TunerConstants.FrontLeft.SteerMotorGearRatio,
+              Volts.of(TunerConstants.FrontLeft.DriveFrictionVoltage),
+              Volts.of(TunerConstants.FrontLeft.SteerFrictionVoltage),
+              Meters.of(TunerConstants.FrontLeft.WheelRadius),
+              KilogramSquareMeters.of(TunerConstants.FrontLeft.SteerInertia),
+              WHEEL_COF))*/
+          .withSwerveModule(
+              COTS.ofMark4i(DCMotor.getKrakenX60(1), DCMotor.getKrakenX60(1), WHEEL_COF, 3))
+          .withBumperSize(Inches.of(32), Inches.of(32));
 
   static final Lock odometryLock = new ReentrantLock();
-  private final GyroIO gyroIO;
-  private final GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
-  private final Module[] modules = new Module[4]; // FL, FR, BL, BR
+  private final MGyroIO gyroIO;
+  private final MGyroIOInputsAutoLogged gyroInputs = new MGyroIOInputsAutoLogged();
+  private final MModule[] modules = new MModule[4]; // FL, FR, BL, BR
   private final SysIdRoutine sysId;
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
@@ -115,27 +115,29 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private final Consumer<Pose2d> resetSimulationPoseCallBack;
+
   private final Field2d field = new Field2d();
 
-  public Pose2d setpoint = new Pose2d();
-
-  public Drive(
-      GyroIO gyroIO,
-      ModuleIO flModuleIO,
-      ModuleIO frModuleIO,
-      ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
+  public MDrive(
+      MGyroIO gyroIO,
+      MModuleIO flModuleIO,
+      MModuleIO frModuleIO,
+      MModuleIO blModuleIO,
+      MModuleIO brModuleIO,
+      Consumer<Pose2d> resetSimulationPoseCallBack) {
     this.gyroIO = gyroIO;
-    modules[0] = new Module(flModuleIO, 0, TunerConstants.FrontLeft);
-    modules[1] = new Module(frModuleIO, 1, TunerConstants.FrontRight);
-    modules[2] = new Module(blModuleIO, 2, TunerConstants.BackLeft);
-    modules[3] = new Module(brModuleIO, 3, TunerConstants.BackRight);
+    this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
+    modules[0] = new MModule(flModuleIO, 0, TunerConstants.FrontLeft);
+    modules[1] = new MModule(frModuleIO, 1, TunerConstants.FrontRight);
+    modules[2] = new MModule(blModuleIO, 2, TunerConstants.BackLeft);
+    modules[3] = new MModule(brModuleIO, 3, TunerConstants.BackRight);
 
     // Usage reporting for swerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_AdvantageKit);
 
     // Start odometry thread
-    PhoenixOdometryThread.getInstance().start();
+    MPhoenixOdometryThread.getInstance().start();
 
     // Configure AutoBuilder for PathPlanner
     AutoBuilder.configure(
@@ -144,9 +146,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         this::getChassisSpeeds,
         this::runVelocity,
         new PPHolonomicDriveController(
-            new PIDConstants(9.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
+            new PIDConstants(5.0, 0.0, 0.0), new PIDConstants(5.0, 0.0, 0.0)),
         PP_CONFIG,
-        () -> false,
+        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
     Pathfinding.setPathfinder(new LocalADStarAK());
     PathPlannerLogging.setLogActivePathCallback(
@@ -169,25 +171,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 (state) -> Logger.recordOutput("Drive/SysIdState", state.toString())),
             new SysIdRoutine.Mechanism(
                 (voltage) -> runCharacterization(voltage.in(Volts)), null, this));
-
-    SmartDashboard.putData(
-        "Chassis Speeds",
-        new Sendable() {
-
-          @Override
-          public void initSendable(SendableBuilder builder) {
-            builder.setSmartDashboardType("Chassis Speeds");
-            builder.addDoubleProperty("vx", () -> getChassisSpeeds().vxMetersPerSecond, null);
-            builder.addDoubleProperty("vy", () -> getChassisSpeeds().vyMetersPerSecond, null);
-            builder.addDoubleProperty(
-                "omega", () -> getChassisSpeeds().omegaRadiansPerSecond, null);
-          }
-        });
-  }
-
-  public boolean atSetpointTranslation() {
-    return Math.abs(Subsystems.drive.getPose().getX() - setpoint.getX()) < 0.06
-        && Math.abs(Subsystems.drive.getPose().getY() - setpoint.getY()) < 0.06;
   }
 
   @Override
@@ -199,8 +182,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
       module.periodic();
     }
     odometryLock.unlock();
-
-    field.getObject("Drive Setpoint").setPose(setpoint);
 
     // Stop moving when disabled
     if (DriverStation.isDisabled()) {
@@ -245,12 +226,20 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+
+      BaseDriveConsumer.getInstance()
+          .accept(
+              getPose(),
+              getModuleStates(),
+              modulePositions,
+              gyroInputs.connected ? Optional.of(rawGyroRotation) : Optional.empty(),
+              sampleTimestamps[i]);
     }
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+
     field.setRobotPose(getPose());
-    field.getObject("Vision Pose").setPose(VisionPoses.frontCamerasPoseEstimate.getPoseEstimate());
     SmartDashboard.putData("Field", field);
   }
 
@@ -261,13 +250,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
    */
   public void runVelocity(ChassisSpeeds speeds) {
     // Calculate module setpoints
-    ChassisSpeeds discreteSpeeds = ChassisSpeeds.discretize(speeds, 0.02);
-    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(discreteSpeeds);
+    speeds = ChassisSpeeds.discretize(speeds, 0.02);
+    SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, TunerConstants.kSpeedAt12Volts);
 
     // Log unoptimized setpoints and setpoint speeds
     Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
-    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", discreteSpeeds);
+    Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
     // Send setpoints to modules
     for (int i = 0; i < 4; i++) {
@@ -287,7 +276,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   /** Stops the drive. */
   public void stop() {
-    runVelocity(new ChassisSpeeds(0, 0, 0));
+    runVelocity(new ChassisSpeeds());
   }
 
   /**
@@ -361,7 +350,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   /** Returns the current odometry pose. */
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {
-    return (poseEstimator.getEstimatedPosition());
+    return poseEstimator.getEstimatedPosition();
   }
 
   /** Returns the current odometry rotation. */
@@ -371,21 +360,19 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
+    resetSimulationPoseCallBack.accept(pose);
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
-  /** Adds a new timestamped vision measurement. */
+  @Override
   public void addVisionMeasurement(
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
-      Matrix<N3, N1> visionMeasurementStdDevs) {
-    poseEstimator.addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-  }
+      Matrix<N3, N1> visionMeasurementStdDevs) {}
 
   /** Returns the maximum linear speed in meters per sec. */
   public double getMaxLinearSpeedMetersPerSec() {
-    return DriveConstants.MAX_LINEAR_MPS.in(MetersPerSecond);
+    return TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
   }
 
   /** Returns the maximum angular speed in radians per sec. */
@@ -404,15 +391,22 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   }
 
   @Override
+  public boolean atSetpointTranslation() {
+    return Math.abs(Subsystems.drive.getPose().getX() - setpoint.getX()) < 0.06
+        && Math.abs(Subsystems.drive.getPose().getY() - setpoint.getY()) < 0.06;
+  }
+
+  @Override
   public void accept(
       int cameraIndex,
       Pose2d visionRobotPoseMeters,
       double timestampSeconds,
       Matrix<N3, N1> visionMeasurementStdDevs) {
-    addVisionMeasurement(
-        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs.times(10));
+    poseEstimator.addVisionMeasurement(
+        visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
   }
 
+  @Override
   public double[] getSpeeds() {
     var fieldOrientedChassisSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getPose().getRotation());
@@ -421,6 +415,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     };
   }
 
+  @Override
   public Field2d getField() {
     return field;
   }

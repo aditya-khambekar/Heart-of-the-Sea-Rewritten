@@ -75,16 +75,12 @@ public class States {
 
     HP_LEFT =
         new HPState("HP_LEFT")
-            .whileTrue(
-                DriveCommands.HPLeftAlign(Subsystems.drive).withTimeout(2),
-                SuperstructureCommands.HP)
+            .whileTrue(DriveCommands.HPLeftAlign().withTimeout(2), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER);
 
     HP_RIGHT =
         new HPState("HP_RIGHT")
-            .whileTrue(
-                DriveCommands.HPRightAlign(Subsystems.drive).withTimeout(2),
-                SuperstructureCommands.HP)
+            .whileTrue(DriveCommands.HPRightAlign().withTimeout(2), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER);
 
     INTAKE_LOWER = new IntakeState("INTAKE_LOWER", () -> CORAL_STOW);
