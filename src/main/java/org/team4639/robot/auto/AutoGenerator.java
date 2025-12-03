@@ -86,8 +86,8 @@ public class AutoGenerator {
         case IN_CORAL -> (pathCommand
                 .andThen(
                     switch (ending) {
-                      case LHP -> DriveCommands.HPLeftAlign(Subsystems.drive);
-                      case RHP -> DriveCommands.HPRightAlign(Subsystems.drive);
+                      case LHP -> DriveCommands.HPLeftAlign();
+                      case RHP -> DriveCommands.HPRightAlign();
                       default -> throw new IllegalArgumentException("Unexpected value: " + ending);
                     })
                 .until(Subsystems.wrist::hasCoral)

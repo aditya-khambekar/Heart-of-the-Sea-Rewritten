@@ -2,6 +2,7 @@ package org.team4639.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.LinearVelocity;
 
 public class DriveConstants {
@@ -13,4 +14,7 @@ public class DriveConstants {
   public static final Double rotatorStatorCurrentLimit = 40.0;
 
   public static final LinearVelocity MAX_LINEAR_MPS = MetersPerSecond.of(8.0);
+
+  // this should be a constant but in reality its not so we just ball
+  public static double driveWheelRadius = Units.inchesToMeters(1.9458);
 }

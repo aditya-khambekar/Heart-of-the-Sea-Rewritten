@@ -17,11 +17,13 @@ import au.grapplerobotics.CanBridge;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import java.util.Optional;
+import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -35,6 +37,7 @@ import org.team4639.lib.util.AllianceFlipUtil;
 import org.team4639.robot.Constants;
 import org.team4639.robot.commands.LEDCommands;
 import org.team4639.robot.statemachine.States;
+import org.team4639.robot.subsystems.drive.DriveConstants;
 import org.team4639.robot.subsystems.drive.generated.TunerConstants;
 
 /**
@@ -131,6 +134,15 @@ public class Robot extends LoggedRobot {
 
     robotContainer.field.setRobotPose(
         AllianceFlipUtil.flipIfRedAlliance(Subsystems.drive.getPose()));
+
+    robotContainer
+        .field
+        .getObject("Robot State Pose")
+        .setPose(AllianceFlipUtil.flipIfRedAlliance(RobotState.getInstance().getEstimatedPose()));
+    robotContainer
+        .field
+        .getObject("Odometry Pose")
+        .setPose(AllianceFlipUtil.flipIfRedAlliance(RobotState.getInstance().getOdometryPose()));
     SmartDashboard.putData("Robot/Field", robotContainer.field);
     Errors.checkForErrors();
   }
@@ -187,8 +199,8 @@ public class Robot extends LoggedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    // StateMachine.setState(States.IDLE);
     StateMachine.setState(States.HOMING_READY);
+    // StateMachine.setState(States.TEST_IDLE);
     StateMachine.getState().scheduleCommands();
   }
 
@@ -215,5 +227,10 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    SimulatedArena.getInstance().simulationPeriodic();
+    SimField.addFieldGamePieces();
+    SimRobot.add3DComponentPoses();
+    SimRobot.addRobotHeldGamePieces();
+  }
 }

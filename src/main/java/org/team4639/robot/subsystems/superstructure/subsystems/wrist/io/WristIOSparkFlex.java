@@ -34,7 +34,7 @@ public class WristIOSparkFlex extends WristIO {
     SmartDashboard.putData("Wrist PID Controller", wristPIDController);
 
     sparkFlex.configure(
-        new SparkFlexConfig().apply(new AbsoluteEncoderConfig().zeroOffset(0.46)),
+        new SparkFlexConfig().apply(new AbsoluteEncoderConfig().zeroOffset(0.27)),
         ResetMode.kNoResetSafeParameters,
         PersistMode.kPersistParameters);
 

@@ -142,6 +142,13 @@ public class SetpointSuperstructureCommand extends SuperstructureCommandBase {
             runRollerVelocity();
           }
         } else {
+          if (coral) {
+            if (timeOfExecutingAction.gte(Seconds.of(0.5))) {
+              runRollerVelocity();
+            } else {
+              Subsystems.roller.setDutyCycle(Percent.of(0));
+            }
+          }
           runRollerVelocity();
         }
         Subsystems.wrist.setWristSetpoint(setpoint.getWristRotation());

@@ -4,7 +4,6 @@ import edu.wpi.first.math.filter.Debouncer;
 import java.util.function.Supplier;
 import org.team4639.lib.statebased.State;
 import org.team4639.robot.commands.SuperstructureCommands;
-import org.team4639.robot.constants.Controls;
 import org.team4639.robot.robot.Subsystems;
 import org.team4639.robot.statemachine.States;
 import org.team4639.robot.statemachine.reefscape.coral.CoralCycleState;
@@ -23,7 +22,7 @@ public class IntakeState extends CoralCycleState {
     this.withEndCondition(
         () -> hasCoralDebouncer.calculate(Subsystems.wrist.hasCoral()), nextState);
     this.onEmergency(() -> States.IDLE);
-    this.onTrigger(Controls.ALIGN_LEFT, () -> States.FORCE_INTAKE_INTO_LEFT_ALIGN);
-    this.onTrigger(Controls.ALIGN_RIGHT, () -> States.FORCE_INTAKE_INTO_RIGHT_ALIGN);
+    // this.onTrigger(Controls.ALIGN_LEFT, () -> States.FORCE_INTAKE_INTO_LEFT_ALIGN);
+    // this.onTrigger(Controls.ALIGN_RIGHT, () -> States.FORCE_INTAKE_INTO_RIGHT_ALIGN);
   }
 }

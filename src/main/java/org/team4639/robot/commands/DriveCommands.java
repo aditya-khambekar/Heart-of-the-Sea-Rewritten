@@ -42,11 +42,12 @@ import java.util.function.Supplier;
 import org.team4639.lib.util.PoseUtil;
 import org.team4639.robot.constants.FieldConstants;
 import org.team4639.robot.robot.Subsystems;
-import org.team4639.robot.subsystems.drive.Drive;
+import org.team4639.robot.subsystems.drive.DriveBase;
+import org.team4639.robot.subsystems.drive.akit.Drive;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
-  private static final double ANGLE_KP = 32.0;
+  private static final double ANGLE_KP = 24.0;
   private static final double ANGLE_KD = 0.4;
   private static final double ANGLE_KI = 0.01;
   private static final double ANGLE_MAX_VELOCITY = 15.0;
@@ -221,7 +222,7 @@ public class DriveCommands {
    *
    * <p>This command should only be used in voltage control mode.
    */
-  public static Command feedforwardCharacterization(Drive drive) {
+  public static Command feedforwardCharacterization(DriveBase drive) {
     List<Double> velocitySamples = new LinkedList<>();
     List<Double> voltageSamples = new LinkedList<>();
     Timer timer = new Timer();
@@ -280,7 +281,7 @@ public class DriveCommands {
   }
 
   /** Measures the robot's wheel radius by spinning in a circle. */
-  public static Command wheelRadiusCharacterization(Drive drive) {
+  public static Command wheelRadiusCharacterization(DriveBase drive) {
     SlewRateLimiter limiter = new SlewRateLimiter(WHEEL_RADIUS_RAMP_RATE);
     WheelRadiusCharacterizationState state = new WheelRadiusCharacterizationState();
 
@@ -454,7 +455,7 @@ public class DriveCommands {
         new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
     ProfiledPIDController pidY =
         new ProfiledPIDController(3, 0, 0, new TrapezoidProfile.Constraints(8, 8));
-    PIDController headingController = new PIDController(32, 0, 0);
+    PIDController headingController = new PIDController(24, 0, 0);
     headingController.enableContinuousInput(-Math.PI, Math.PI);
     headingController.setSetpoint(destinationPose.getRotation().getRadians());
 
@@ -473,8 +474,10 @@ public class DriveCommands {
     return drive
         .run(
             () -> {
-              headingController.setSetpoint(
-                  FieldConstants.getRotationToClosestBranchPosition(drive.getPose()).getRadians());
+              // headingController.setSetpoint(
+              // FieldConstants.getRotationToClosestBranchPosition(drive.getPose()).getRadians());
+
+              headingController.setSetpoint(destinationPose.getRotation().getRadians());
               drive.runVelocity(
                   ChassisSpeeds.fromFieldRelativeSpeeds(
                       new ChassisSpeeds(
@@ -500,12 +503,12 @@ public class DriveCommands {
     return drive.run(() -> drive.runVelocity(speeds));
   }
 
-  public static Command HPLeftAlign(Drive drive) {
+  public static Command HPLeftAlign() {
     return Subsystems.drive.defer(
         () -> PIDToPose(FieldConstants.TargetPositions.HP_LEFT.getPose()));
   }
 
-  public static Command HPRightAlign(Drive drive) {
+  public static Command HPRightAlign() {
     return Subsystems.drive.defer(
         () -> PIDToPose(FieldConstants.TargetPositions.HP_RIGHT.getPose()));
   }

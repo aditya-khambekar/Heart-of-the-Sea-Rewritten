@@ -10,13 +10,13 @@ import java.util.Objects;
 import java.util.Set;
 
 /** Utility class to update vision measurements across the entire program. */
-public class VisionUpdates implements Vision.VisionConsumer {
-  private static volatile VisionUpdates instance = new VisionUpdates();
+public class BaseVisionConsumer implements Vision.VisionConsumer {
+  private static volatile BaseVisionConsumer instance = new BaseVisionConsumer();
   private Set<Vision.VisionConsumer> consumers = new HashSet<>();
   private double lastVisionUpdate = Double.NEGATIVE_INFINITY;
 
-  public static synchronized VisionUpdates getInstance() {
-    return instance = Objects.requireNonNullElseGet(instance, VisionUpdates::new);
+  public static synchronized BaseVisionConsumer getInstance() {
+    return instance = Objects.requireNonNullElseGet(instance, BaseVisionConsumer::new);
   }
 
   @Override

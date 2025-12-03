@@ -8,6 +8,7 @@ import org.team4639.lib.statebased.State;
 import org.team4639.robot.commands.AutoCommands;
 import org.team4639.robot.commands.DriveCommands;
 import org.team4639.robot.commands.LEDCommands;
+import org.team4639.robot.commands.PIDToPoseCommand;
 import org.team4639.robot.commands.SuperstructureCommands;
 import org.team4639.robot.commands.superstructure.ForceIntakeCommand;
 import org.team4639.robot.constants.Controls;
@@ -55,6 +56,7 @@ public class States {
   public static State REJECT_CORAL;
   public static State REJECT_ALGAE;
   public static State IDLE_PATHWAY;
+  public static State TEST_IDLE;
 
   public static void initStaticStates() {
     IDLE =
@@ -73,16 +75,12 @@ public class States {
 
     HP_LEFT =
         new HPState("HP_LEFT")
-            .whileTrue(
-                DriveCommands.HPLeftAlign(Subsystems.drive).withTimeout(2),
-                SuperstructureCommands.HP)
+            .whileTrue(DriveCommands.HPLeftAlign().withTimeout(2), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToLeftStation.negate(), () -> INTAKE_LOWER);
 
     HP_RIGHT =
         new HPState("HP_RIGHT")
-            .whileTrue(
-                DriveCommands.HPRightAlign(Subsystems.drive).withTimeout(2),
-                SuperstructureCommands.HP)
+            .whileTrue(DriveCommands.HPRightAlign().withTimeout(2), SuperstructureCommands.HP)
             .withEndCondition(DriveTriggers.closeToRightStation.negate(), () -> INTAKE_LOWER);
 
     INTAKE_LOWER = new IntakeState("INTAKE_LOWER", () -> CORAL_STOW);
@@ -256,6 +254,12 @@ public class States {
                         () -> -RobotContainer.driver.getRightX())
                     .withName("Drive Joystick"))
             .withTimeout(Seconds.of(1), () -> IDLE);
+
+    TEST_IDLE = new State("TEST_IDLE");
+
+    TEST_IDLE
+        .and(RobotContainer.driver.a())
+        .whileTrue(new PIDToPoseCommand(FieldConstants.TargetPositions.REEF_A.getPose()));
   }
 
   public static State determineState() {
